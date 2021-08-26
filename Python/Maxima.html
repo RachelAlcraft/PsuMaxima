@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" href="img/c9.png"><title>PsuMaxima</title>
+<link type="text/css" rel="stylesheet" href="css/alcraft.css">
+<style> 
+body {text-align:left;background-color:LightSteelBlue;margin-left: 52px;} 
+img {width:95% }table {font-size:0.8vw;width:95%;table-layout:fixed;display:table;margin:0 auto;background-color:LightSteelBlue ;} 
+td {border:1px solid MistyRose;background-color:AliceBlue;}</style></head>
+</head>
+<body>
+
+<hr/>
+
+<h1>
+<font color="DC143C">Psu</font>Max<font color="DC143C">ima</font>
+</h1>
+<p>
+<h3>PhD project: <font color="DC143C">Psu</font>Max<font color="DC143C">ima</font></h3>
+</p>
+<p>
+This webpage interfaces with a C++ executable which calculates density maxima in ccp4 files from the PdbE. Enter the pdb code for the results.
+</p>
+
+<hr/>
+<div class="middle">
+<p>
+Enter 4 digit pdb code:
+</p>
+<form method="post" action="/cgi-bin/cgiwrap/ab002/PhD/Maxima.cgi" accept-charset="UTF-8">
+<p><input type='text' name='dataInput'/>
+<input type='Submit' value='Analyse' />
+</form>
+</div>
+<hr/>
+<div id="bottom">
+<p>
+Created by: Rachel Alcraft<br/>
+<a href="https://student.cryst.bbk.ac.uk/~ab002/" title="PhDBio" target="_blank">Birkbeck Student Page - Rachel Alcraft</a>
+</p>
+</div>
+</body>
