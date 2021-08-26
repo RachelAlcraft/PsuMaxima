@@ -1,5 +1,10 @@
 https://cmake.org/cmake/help/latest/guide/tutorial/A%20Basic%20Starting%20Point.html#build-and-test
 To compile this on linux with CMake, which is installed, do the following
+
+!!! FILE NAME CHANGE !!!
+Windows and Pandora have different cmake versioins
+First change the CMakeLists.tct_pandora.txt to be CMakeLists.txt
+
 1. Open terminal in the Cpp/BuildLinux directory
 2. Type into console: cmake ../PsuMaxima
 3. Navigate to Cpp/PsuMaxima directory or stay in the same place, the level above where the CMake directory is
