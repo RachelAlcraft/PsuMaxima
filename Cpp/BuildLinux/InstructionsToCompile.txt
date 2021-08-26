@@ -1,0 +1,11 @@
+https://cmake.org/cmake/help/latest/guide/tutorial/A%20Basic%20Starting%20Point.html#build-and-test
+To compile this on linux with CMake, which is installed, do the following
+1. Open terminal in the Cpp/BuildLinux directory
+2. Type into console: cmake ../PsuMaxima
+3. Navigate to Cpp/PsuMaxima directory or stay in the same place, the level above where the CMake directory is
+4. Type into console: cmake --build .
+(yes there is a spae dot at the end of the above)
+5. The executable will now be in the Cpp/PsuMaxima directory and is executable. 
+(Move it as per python instructions.)
+
+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
