@@ -32,12 +32,19 @@ int main(int argc, char* argv[])
 	
 		if (argc > 5)
 		{		
-			pdbFileName = argv[2];
-			ccp4FileName = argv[3];
-			diffFileName = argv[4];
-			newPdbFileName = argv[5];
-			peaksFileName = argv[6];
-			reportFileName = argv[7];
+			string pdbFileNameX(argv[2]);
+			string ccp4FileNameX(argv[3]);
+			string diffFileNameX(argv[4]);
+			string newPdbFileNameX(argv[5]);
+			string peaksFileNameX(argv[6]);
+			string reportFileNameX(argv[7]);
+
+			pdbFileName = pdbFileNameX;
+			ccp4FileName = ccp4FileNameX;
+			diffFileName = diffFileNameX;
+			newPdbFileName = newPdbFileNameX;
+			peaksFileName = peaksFileNameX;
+			reportFileName = reportFileNameX;
 		}
 
 		Ccp4* c4 = new Ccp4(ccp4FileName, diffFileName);
