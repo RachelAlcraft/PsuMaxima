@@ -7,7 +7,7 @@ Ccp4::Ccp4(string ccp4, string diff)
 	_resolution = 0.8;
 	//Attempt to load a binary file
 	char buffer[100];
-	ifstream myFile(ccp4, ios::in | ios::binary);
+	ifstream myFile(ccp4, ios::in);// | ios::binary);
 	myFile.read(buffer, 100);
 	if (!myFile)
 		_loaded = false;
