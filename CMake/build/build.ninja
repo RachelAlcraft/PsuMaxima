@@ -12,7 +12,7 @@
 
 # =============================================================================
 # Project: LinuxMaxima
-# Configuration: Release
+# Configuration: 
 # =============================================================================
 
 #############################################
@@ -268,13 +268,11 @@ build cmake_object_order_depends_target_LinuxMaxima: phony || CMakeFiles/LinuxMa
 
 build CMakeFiles/LinuxMaxima.dir/main.cpp.o: CXX_COMPILER__LinuxMaxima ../main.cpp || cmake_object_order_depends_target_LinuxMaxima
   DEP_FILE = CMakeFiles/LinuxMaxima.dir/main.cpp.o.d
-  FLAGS = -O3 -DNDEBUG
   OBJECT_DIR = CMakeFiles/LinuxMaxima.dir
   OBJECT_FILE_DIR = CMakeFiles/LinuxMaxima.dir
 
 build CMakeFiles/LinuxMaxima.dir/Ccp4.cpp.o: CXX_COMPILER__LinuxMaxima ../Ccp4.cpp || cmake_object_order_depends_target_LinuxMaxima
   DEP_FILE = CMakeFiles/LinuxMaxima.dir/Ccp4.cpp.o.d
-  FLAGS = -O3 -DNDEBUG
   OBJECT_DIR = CMakeFiles/LinuxMaxima.dir
   OBJECT_FILE_DIR = CMakeFiles/LinuxMaxima.dir
 
@@ -287,7 +285,6 @@ build CMakeFiles/LinuxMaxima.dir/Ccp4.cpp.o: CXX_COMPILER__LinuxMaxima ../Ccp4.c
 # Link the executable LinuxMaxima
 
 build LinuxMaxima: CXX_EXECUTABLE_LINKER__LinuxMaxima CMakeFiles/LinuxMaxima.dir/main.cpp.o CMakeFiles/LinuxMaxima.dir/Ccp4.cpp.o
-  FLAGS = -O3 -DNDEBUG
   LINK_FLAGS = -rdynamic
   OBJECT_DIR = CMakeFiles/LinuxMaxima.dir
   POST_BUILD = :

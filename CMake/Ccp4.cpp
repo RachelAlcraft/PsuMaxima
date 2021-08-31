@@ -4,7 +4,7 @@ using namespace std;
 
 Ccp4::Ccp4(string ccp4, string diff)
 {
-	_resolution = 0.8;
+	_resolution = 0.9;
 	//Attempt to load a binary file
 	char buffer[100];
 	ifstream myFile(ccp4, ios::in | ios::binary);
