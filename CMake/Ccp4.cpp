@@ -13,6 +13,7 @@ Ccp4::Ccp4(string ccp4, string diff)
 		_loaded = false;
 	else
 		_loaded = true;
+	myFile.close();
 }
 
 double Ccp4::Resolution()
