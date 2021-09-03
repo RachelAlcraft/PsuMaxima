@@ -1,5 +1,0 @@
-cmake_minimum_required (VERSION 2.8)
-
-project (PsuMaxima)
-
-add_executable (PsuMaxima "PsuMaxima.cpp" "PsuMaxima.h" "Ccp4.h" "Ccp4.cpp")

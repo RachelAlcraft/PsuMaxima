@@ -1,3 +1,0 @@
-/home/rachel/Documents/Bioinformatics/PsuMaxima/Cpp/PsuMaxima/CMakeFiles/rebuild_cache.dir
-/home/rachel/Documents/Bioinformatics/PsuMaxima/Cpp/PsuMaxima/CMakeFiles/edit_cache.dir
-/home/rachel/Documents/Bioinformatics/PsuMaxima/Cpp/PsuMaxima/CMakeFiles/PsuMaxima.dir
