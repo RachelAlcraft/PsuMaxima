@@ -2,10 +2,12 @@
 //
 
 #include <iostream>
+#include "Ccp4.h"
 
 int main()
-{
-    std::cout << "Hello World!\n";
+{    
+    Ccp4 myCcp4("1rae");
+    std::cout << myCcp4.getPdbCode() << " " << myCcp4.getResolution() << " " << myCcp4.isLoaded() << "\n";
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

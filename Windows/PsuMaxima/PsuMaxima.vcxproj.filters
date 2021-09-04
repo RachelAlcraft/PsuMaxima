@@ -18,5 +18,13 @@
     <ClCompile Include="PsuMaxima.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Ccp4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Ccp4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
