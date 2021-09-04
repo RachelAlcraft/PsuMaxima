@@ -6,13 +6,15 @@
 
 #IncludeRegexTransform: 
 
-/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/Ccp4.h
-string
--
-
-/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/main.cpp
+/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/Ccp4.cpp
 iostream
+-
+fstream
 -
 Ccp4.h
 /d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/Ccp4.h
+
+/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/Ccp4.h
+string
+-
 
