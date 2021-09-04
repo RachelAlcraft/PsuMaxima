@@ -537,6 +537,33 @@ ContinuousUpdate/fast:
 	$(MAKE) -f CMakeFiles/ContinuousUpdate.dir/build.make CMakeFiles/ContinuousUpdate.dir/build
 .PHONY : ContinuousUpdate/fast
 
+Ccp4.o: Ccp4.cpp.o
+
+.PHONY : Ccp4.o
+
+# target to build an object file
+Ccp4.cpp.o:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/Ccp4.cpp.o
+.PHONY : Ccp4.cpp.o
+
+Ccp4.i: Ccp4.cpp.i
+
+.PHONY : Ccp4.i
+
+# target to preprocess a source file
+Ccp4.cpp.i:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/Ccp4.cpp.i
+.PHONY : Ccp4.cpp.i
+
+Ccp4.s: Ccp4.cpp.s
+
+.PHONY : Ccp4.s
+
+# target to generate assembly for a file
+Ccp4.cpp.s:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/Ccp4.cpp.s
+.PHONY : Ccp4.cpp.s
+
 main.o: main.cpp.o
 
 .PHONY : main.o
@@ -604,6 +631,9 @@ help:
 	@echo "... NightlyTest"
 	@echo "... NightlyUpdate"
 	@echo "... PsuMaxima"
+	@echo "... Ccp4.o"
+	@echo "... Ccp4.i"
+	@echo "... Ccp4.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
