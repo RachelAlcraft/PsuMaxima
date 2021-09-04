@@ -1,0 +1,10 @@
+Open terminal here at /d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux
+
+git pull
+git add --all
+git commit -m "don't forget the message"
+
+git push
+
+RachelAlcraft
+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
