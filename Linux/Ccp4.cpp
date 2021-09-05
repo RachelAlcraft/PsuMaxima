@@ -2,9 +2,11 @@
 /************************************************************************
 * RSA 4.9.21
 ************************************************************************/
-#include<iostream>
-#include<fstream>
-#include<vector>
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <algorithm>
+#include <sstream>
 
 #include "Ccp4.h"
 using namespace std;
@@ -86,7 +88,26 @@ Ccp4::Ccp4(string pdbCode, string directory)
     {        
         _matrix.push_back(mtx);        
     }
-    cout << "done, length=" << _matrix.size() << "\n";
+    
+    infile.close();
+
+    //Put the vector into a kind of 3d matrix which is really just a map
+    int count = 0;
+    for (int i = 0; i < _w03_NZ; ++i)
+    {
+        for (int j = 0; j < _w02_NY; ++j)
+        {
+            for (int k = 0; k < _w01_NX; ++k)
+            {
+                stringstream ss;
+                ss << i << "," << j << "," << k;
+                string key = ss.str();
+                float val = _matrix[count];
+                _matrixMap.insert(pair<string, float>(key, val));
+                ++count;
+            }
+        }
+    }
 
  }
 double Ccp4::getResolution()
@@ -104,7 +125,57 @@ string Ccp4::getPdbCode()
 	return _pdbCode;
 }
 
-const int makeConst(const int& num)
+//Weird but becuase we are returning via cmake to p[ython, we just print out the results
+
+void Ccp4::makePeaks()
 {
-    return num;
+    //1. Turn it into a dictionary
+    vector<pair<float,string> > tmpmatrix;
+    for (map<string,float>::iterator iter = _matrixMap.begin(); iter != _matrixMap.end(); ++iter)
+    {
+        string coords = iter->first;
+        float density = iter->second;
+        tmpmatrix.push_back(std::pair<float,string>(density,coords));
+    }    
+    //2. sort it on values
+    /*std::sort(tmpmatrix.begin(), tmpmatrix.end(), [](auto& left, auto& right) {
+        return left.second > right.second;
+    });*/
+
+     // Using simple sort() function to sort
+    sort(tmpmatrix.begin(), tmpmatrix.end());
+
+    unsigned int maxdensity = 500;
+    if (tmpmatrix.size() < maxdensity)
+        maxdensity = tmpmatrix.size();
+
+    cout << "C,R,S,Density\n";
+
+
+    for (unsigned int i = 1; i <= maxdensity; ++i)
+    {
+        string coords = tmpmatrix[tmpmatrix.size()-i].second;
+        float density = tmpmatrix[tmpmatrix.size()-i].first;
+        cout << coords << "," << density << "\n";
+    }
+
+  
+
+
 }
+
+float Ccp4::getDensity(int C, int R, int S)
+{
+    stringstream ss;
+    ss << C << "," << R << "," << S;
+    return _matrixMap[ss.str()];
+}
+
+
+
+
+
+
+
+
+
