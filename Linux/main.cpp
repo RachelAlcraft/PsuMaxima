@@ -4,7 +4,7 @@
 int main(int argc, char* argv[]) 
 {
     /******   INPUTS  ***************/
-    string userInput = "6eex";
+    string userInput = "4rek";
     string COMMAND= "PEAKS";
     if (argc >= 2)
     {
@@ -20,9 +20,9 @@ int main(int argc, char* argv[])
     
     if (COMMAND == "PEAKS")
     {
-        std::cout << userInput << "\n";        
-        //Ccp4 myCcp4(userInput,ccp4directory);
-        //myCcp4.makePeaks();
+        //std::cout << userInput << "\n";        
+        Ccp4 myCcp4(userInput,ccp4directory);
+        myCcp4.makePeaks();
     }
     else
     {

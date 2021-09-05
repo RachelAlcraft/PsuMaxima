@@ -27,18 +27,18 @@ def doWeHaveAllFiles(pdbCode):
   directory = '/d/projects/u/ab002/Thesis/PhD/Data/'
   allFiles = True
   #Files from the PDBE	
-  origPdb = directory + 'Pdb' + pdbCode + '.ent'
+  origPdb = directory + 'Pdb/pdb' + pdbCode + '.ent'
   ccp4File = directory + 'Ccp4/' + pdbCode + '.ccp4'
   ccp4Diff = directory + 'Ccp4/' + pdbCode + '_diff.ccp4'
 
   if not os.path.isfile(origPdb):
     #print('getting pdb file from pdb</br>')    
-    getFile(origPdb,'https://www.ebi.ac.uk/pdbe/entry-files/download/pdb3qr7.ent')
+    getFile(origPdb,'https://www.ebi.ac.uk/pdbe/entry-files/download/pdb' + pdbCode + '.ent')
 
   if not os.path.isfile(ccp4File):
     #print('getting ccp4 files from pdb</br>')    
-    getFile(ccp4File,'https://www.ebi.ac.uk/pdbe/coordinates/files/3qr7_diff.ccp4')
-    getFile(ccp4Diff,'https://www.ebi.ac.uk/pdbe/coordinates/files/3qr7.ccp4')
+    getFile(ccp4File,'https://www.ebi.ac.uk/pdbe/coordinates/files/' + pdbCode + '_diff.ccp4')
+    getFile(ccp4Diff,'https://www.ebi.ac.uk/pdbe/coordinates/files/' + pdbCode +'.ccp4')
 
   # Files to calculate
   adjPdb = directory + 'Adjusted/pdb' + pdbCode + '.ent'
@@ -63,3 +63,4 @@ def runCppModule(dataText):
 #exe_result = str(runCppModule("hi!"),'utf-8')    
 #exe_data = sio(exe_result)
 #df = pd.read_csv(exe_data)
+
