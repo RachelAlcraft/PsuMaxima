@@ -25,7 +25,7 @@ private:
 
 	//The matrix data
 	vector<float> _matrix;
-	map<string,float> _matrixMap;
+	vector<pair<float,int> > _matrixPeaks;
 
 public:
 	Ccp4(string pdbCode, string directory);
