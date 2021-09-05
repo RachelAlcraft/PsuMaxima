@@ -6,11 +6,19 @@
 
 int main()
 {
+    /******   COMMAND LINE INPUTS  ***************/
+    string COMMAND = "PEAKS";
+    /***************************************************/
     /******   WINDOWS SPECIFIC SETTINGS  ***************/
     string ccp4directory = "C:/Dev/Github/ProteinDataFiles/ccp4_data/";
     /***************************************************/
-    Ccp4 myCcp4("1ejg",ccp4directory);
-    std::cout << myCcp4.getPdbCode() << " " << myCcp4.getResolution() << " " << myCcp4.isLoaded() << "\n";
+    Ccp4 myCcp4("1ejg", ccp4directory);
+    if (COMMAND == "PEAKS")
+    {
+        myCcp4.makePeaks();
+    }
+    
+
 }
 
 

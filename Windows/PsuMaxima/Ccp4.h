@@ -6,6 +6,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 using namespace std;
 
 class Ccp4
@@ -24,13 +25,16 @@ private:
 
 	//The matrix data
 	vector<float> _matrix;
+	map<string,float> _matrixMap;
 
 public:
 	Ccp4(string pdbCode, string directory);
 	double getResolution();
 	bool isLoaded();
 	string getPdbCode();
+	void makePeaks();
+	float getDensity(int C, int R, int S);
 };
 
-const int makeConst(const int& num);
+
 
