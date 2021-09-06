@@ -1,5 +1,12 @@
 #include "VectorThree.h"
 
+VectorThree::VectorThree()
+{
+    A = 0;
+    B = 0;
+    C = 0;
+}
+
 double VectorThree::getByIndex(int idx)
 {
     if (idx == 0)

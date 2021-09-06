@@ -15,6 +15,7 @@ using namespace std;
 PdbFile::PdbFile(string pdbCode, string directory)
 {
 	_pdbCode = pdbCode;
+	_loaded = false;
 	string fileName = directory + "pdb" + pdbCode + ".ent";
 	ifstream myfile(fileName.c_str());
 
@@ -54,16 +55,20 @@ Atom* PdbFile::getNearest(double x, double y, double z)
 	for (unsigned int i = 1; i < _atoms.size(); ++i)
 	{
 		Atom* atm = &_atoms[i];
-		double distance = atm->distance(x, y, z);
-		if (distance < neardistance)
+		if (atm->Element != "H")
 		{
-			nearest = atm;
-			neardistance = distance;
+			double distance = atm->distance(x, y, z);
+			if (distance < neardistance)
+			{
+				nearest = atm;
+				neardistance = distance;
+			}
 		}
 	}
+
 
 	if (neardistance < 5)
 		return nearest;
 	else
-		return nullptr;
+		return NULL;
 }

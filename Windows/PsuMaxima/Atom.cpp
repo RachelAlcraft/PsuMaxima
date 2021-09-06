@@ -1,4 +1,5 @@
 #include <cmath>
+#include <stdlib.h> 
 
 #include "Atom.h"
 
@@ -30,17 +31,17 @@ Atom::Atom(string line)
 	string z_c = trim(line.substr(46, 8));
 	_x = atof(x_c.c_str());
 	_y = atof(y_c.c_str());
-	_z = atof(z_c.c_str());	
+	_z = atof(z_c.c_str());
 	//55 - 60        Real(8.3)     occupancy   Double
 	string occ = trim(line.substr(54, 6));
-	double occupancy = atof(occ.c_str());	
+	double occupancy = atof(occ.c_str());
 	//61 - 66        Real(8.3)     b factor   Double
 	string bfac = trim(line.substr(60, 6));
 	double bfactor = atof(bfac.c_str());
 	//77 - 78        LString(2)    element      Element symbol, right-justified.
-	string elementType = "";
+	Element = "";
 	if (line.length() > 76)
-		elementType = trim(line.substr(76, 2));
+		Element = trim(line.substr(76, 2));
 
 }
 

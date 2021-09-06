@@ -18,26 +18,30 @@ using namespace std;
 
 Ccp4::Ccp4(string pdbCode, string directory)
 {
+    PI = 3.14159265;
+    _loaded = false;
+    _resolution = 0.0;
 
     _pdbCode = pdbCode;
-    _loaded = true;
     _resolution = 0.78;
     _directory = directory;
     //Load the binary data
+    std::ifstream input((_directory + pdbCode + ".ccp4").c_str(), std::ios::binary);
+    std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(input), {});
+    
     ifstream infile;
-    infile.open((_directory + pdbCode + ".ccp4").c_str(), ios::binary | ios::in);
-
+    infile.open((_directory + pdbCode + ".ccp4").c_str(), ios::binary | ios::in);    
     //This opens the WORDS in the ccp4	    
     infile.read((char*)&_w01_NX, sizeof(_w01_NX));
     infile.read((char*)&_w02_NY, sizeof(_w02_NY));
     infile.read((char*)&_w03_NZ, sizeof(_w03_NZ));
     int MODE = 0;
-    infile.read((char*)&MODE, sizeof(MODE));    
-    infile.read((char*)&_w05_NXSTART, sizeof(_w05_NXSTART));    
-    infile.read((char*)&_w06_NYSTART, sizeof(_w06_NYSTART));    
-    infile.read((char*)&_w07_NZSTART, sizeof(_w07_NZSTART));    
-    infile.read((char*)&_w08_MX, sizeof(_w08_MX));    
-    infile.read((char*)&_w09_MY, sizeof(_w09_MY));    
+    infile.read((char*)&MODE, sizeof(MODE));
+    infile.read((char*)&_w05_NXSTART, sizeof(_w05_NXSTART));
+    infile.read((char*)&_w06_NYSTART, sizeof(_w06_NYSTART));
+    infile.read((char*)&_w07_NZSTART, sizeof(_w07_NZSTART));
+    infile.read((char*)&_w08_MX, sizeof(_w08_MX));
+    infile.read((char*)&_w09_MY, sizeof(_w09_MY));
     infile.read((char*)&_w10_MZ, sizeof(_w10_MZ));
     float w11_CELLA_X = 0.0;
     infile.read((char*)&w11_CELLA_X, sizeof(w11_CELLA_X));
@@ -50,9 +54,9 @@ Ccp4::Ccp4(string pdbCode, string directory)
     _w15_CELLB_Y = 0.0;
     infile.read((char*)&_w15_CELLB_Y, sizeof(_w15_CELLB_Y));
     _w16_CELLB_Z = 0.0;
-    infile.read((char*)&_w16_CELLB_Z, sizeof(_w16_CELLB_Z));    
-    infile.read((char*)&_w17_MAPC, sizeof(_w17_MAPC));    
-    infile.read((char*)&_w18_MAPR, sizeof(_w18_MAPR));    
+    infile.read((char*)&_w16_CELLB_Z, sizeof(_w16_CELLB_Z));
+    infile.read((char*)&_w17_MAPC, sizeof(_w17_MAPC));
+    infile.read((char*)&_w18_MAPR, sizeof(_w18_MAPR));
     infile.read((char*)&_w19_MAPS, sizeof(_w19_MAPS));
     _w17_MAPC -= 1;
     _w18_MAPR -= 1;
@@ -80,45 +84,71 @@ Ccp4::Ccp4(string pdbCode, string directory)
     //we don;t want any of the rest of this, but we want the last bit as long as the matrix is:
     vector<float> tmpData;
     float bulk = 0.0;
-    while (infile.read((char*)&bulk, sizeof(float)))
-    {        
-        tmpData.push_back(bulk);
+
+
+    unsigned char temp[sizeof(float)];
+    while (infile.read(reinterpret_cast<char*>(temp), sizeof(float)))
+        //while (infile.read((char*)&bulk, sizeof(float)))
+    {
+        if (false)
+        {
+            unsigned char t = temp[0];
+            temp[0] = temp[3];
+            temp[3] = t;
+            t = temp[1];
+            temp[1] = temp[2];
+            temp[2] = t;
+            float bulk = reinterpret_cast<float&>(temp);
+            tmpData.push_back(bulk);
+        }
+        else
+        {
+            float bulk = reinterpret_cast<float&>(temp);
+            tmpData.push_back(bulk);
+        }
     }
     infile.close();
-    int len = _w01_NX * _w02_NY * _w03_NZ;        
+    _loaded = true;
+
+    int len = _w01_NX * _w02_NY * _w03_NZ;
     int startBulk = tmpData.size() - len;
     int count = 0;
     for (unsigned int i = startBulk; i < tmpData.size(); ++i)
     {
         float mtx = tmpData[i];
         _matrix.push_back(mtx);
-        _matrixPeaks.push_back(pair<float, int>(mtx,count));        
+        _matrixPeaks.push_back(pair<float, int>(mtx, count));
+        if (i == 28484)
+        {
+            int bp = 0;
+            ++bp;
+        }
         count++;
     }
     calculateOrthoMat(w11_CELLA_X, w12_CELLA_Y, w13_CELLA_Z, _w14_CELLB_X, _w15_CELLB_Y, _w16_CELLB_Z);
-    calculateOrigin(_w05_NXSTART,_w06_NYSTART,_w07_NZSTART,_w17_MAPC,_w18_MAPR,_w19_MAPS);
-               
+    calculateOrigin(_w05_NXSTART, _w06_NYSTART, _w07_NZSTART, _w17_MAPC, _w18_MAPR, _w19_MAPS);
+
     _map2xyz.push_back(0);
     _map2xyz.push_back(0);
     _map2xyz.push_back(0);
     _map2xyz[_w17_MAPC] = 0;
     _map2xyz[_w18_MAPR] = 1;
     _map2xyz[_w19_MAPS] = 2;
-    
+
     _map2crs.push_back(0);
     _map2crs.push_back(0);
     _map2crs.push_back(0);
     _map2crs[0] = _w17_MAPC;
     _map2crs[1] = _w18_MAPR;
     _map2crs[2] = _w19_MAPS;
-    
+
     _cellDims.push_back(0.0);
     _cellDims.push_back(0.0);
     _cellDims.push_back(0.0);
     _cellDims[0] = w11_CELLA_X;
     _cellDims[1] = w12_CELLA_Y;
     _cellDims[2] = w13_CELLA_Z;
-    
+
     _axisSampling.push_back(0);
     _axisSampling.push_back(0);
     _axisSampling.push_back(0);
@@ -132,13 +162,13 @@ Ccp4::Ccp4(string pdbCode, string directory)
     _crsStart[0] = _w05_NXSTART;
     _crsStart[1] = _w06_NYSTART;
     _crsStart[2] = _w07_NZSTART;
-    
+
     _dimOrder.push_back(0);
     _dimOrder.push_back(0);
     _dimOrder.push_back(0);
     _dimOrder[0] = _w01_NX;
     _dimOrder[1] = _w02_NY;
-    _dimOrder[2] = _w03_NZ;    
+    _dimOrder[2] = _w03_NZ;
 }
 double Ccp4::getResolution()
 {
@@ -159,7 +189,7 @@ string Ccp4::getPdbCode()
 
 void Ccp4::makePeaks(PdbFile* pdbFile)
 {
-    sort(_matrixPeaks.begin(), _matrixPeaks.end());
+    sort(_matrixPeaks.rbegin(), _matrixPeaks.rend());
 
     unsigned int maxdensity = 500;
     if (_matrixPeaks.size() < maxdensity)
@@ -168,25 +198,27 @@ void Ccp4::makePeaks(PdbFile* pdbFile)
     cout << "Density,C,R,S,X,Y,Z,NearestAtom,Distance\n";
 
 
-    for (unsigned int i = 1; i <= maxdensity; ++i)
+    for (unsigned int i = 0; i < maxdensity; ++i)
     {
-        int pos = _matrixPeaks[_matrixPeaks.size() - i].second;
+        int pos = _matrixPeaks[i].second;
         vector<int> coords = getCRS(pos);
         VectorThree XYZ = getXYZ(coords[0], coords[1], coords[2]);
-        float density = _matrixPeaks[_matrixPeaks.size() - i].first;
+        float density = _matrixPeaks[i].first;
         double distance = 0;
-        string line = "";
+        string line = "-";
         if (pdbFile->isLoaded())
         {
             Atom* atm = pdbFile->getNearest(XYZ.A, XYZ.B, XYZ.C);
-            if (atm != nullptr)
+            if (atm != NULL)
             {
                 line = atm->getLine();
-                distance = atm->distance(0, 0, 0);
-            }                    
+                distance = atm->distance(XYZ.A, XYZ.B, XYZ.C);
+            }
         }
-            
-        cout << "" << density << "," << coords[0] << "," << coords[1] << "," << coords[2] << "," << XYZ.A << "," << XYZ.B << "," << XYZ.C << "," << line << ", " << distance << "\n";
+        if (line == "-")
+            cout << "" << density << "," << coords[0] << "," << coords[1] << "," << coords[2] << "," << XYZ.A << "," << XYZ.B << "," << XYZ.C << "," << line << ",-" << "\n";
+        else
+            cout << "" << density << "," << coords[0] << "," << coords[1] << "," << coords[2] << "," << XYZ.A << "," << XYZ.B << "," << XYZ.C << "," << line << "," << distance << "\n";
     }
 
 
@@ -252,25 +284,25 @@ void Ccp4::calculateOrthoMat(float w11_CELLA_X, float w12_CELLA_Y, float w13_CEL
     _orthoMat.putValue(w13_CELLA_Z * (cos(alpha) - cos(beta) * cos(gamma)) / sin(gamma), 1, 2);
     _orthoMat.putValue(0, 2, 0);
     _orthoMat.putValue(0, 2, 1);
-    _orthoMat.putValue( w13_CELLA_Z * temp / sin(gamma), 2, 2);
+    _orthoMat.putValue(w13_CELLA_Z * temp / sin(gamma), 2, 2);
     _deOrthoMat = _orthoMat.getInverse();
 }
 
 
 VectorThree Ccp4::getCRS(double x, double y, double z)
-{    
-    VectorThree vXYZIn; 
+{
+    VectorThree vXYZIn;
     VectorThree vCRS;
-    
+
     vXYZIn.A = x;
     vXYZIn.B = y;
     vXYZIn.C = z;
-    
+
     //If the axes are all orthogonal            
     if (_w14_CELLB_X == 90 && _w15_CELLB_Y == 90 && _w16_CELLB_Z == 90)
     {
         for (int i = 0; i < 3; ++i)
-        {            
+        {
             double startVal = vXYZIn.getByIndex(i) - _origin.getByIndex(i);
             startVal /= _cellDims[i] / _axisSampling[i];
             //vCRS[i] = startVal;
@@ -278,30 +310,30 @@ VectorThree Ccp4::getCRS(double x, double y, double z)
         }
     }
     else // they are not orthogonal
-    {        
+    {
         VectorThree vFraction = _deOrthoMat.multiply(vXYZIn);
         for (int i = 0; i < 3; ++i)
-        {     
-            double val = vFraction.getByIndex(i) * _axisSampling[i] - _crsStart[_map2xyz[i]];     
-            vCRS.putByIndex(i,val);
+        {
+            double val = vFraction.getByIndex(i) * _axisSampling[i] - _crsStart[_map2xyz[i]];
+            vCRS.putByIndex(i, val);
         }
-    }    
+    }
     double c = vCRS.getByIndex(_map2crs[0]);
     double r = vCRS.getByIndex(_map2crs[1]);
     double s = vCRS.getByIndex(_map2crs[2]);
-    
+
     VectorThree CRS;
     CRS.A = c;
     CRS.B = r;
-    CRS.C = s;    
+    CRS.C = s;
     return CRS;
 
 }
 VectorThree Ccp4::getXYZ(double c, double r, double s)
-{    
-    VectorThree vXYZ;    
+{
+    VectorThree vXYZ;
     VectorThree vCRSIn;
-        
+
     vCRSIn.A = c;
     vCRSIn.B = r;
     vCRSIn.C = s;
@@ -309,16 +341,16 @@ VectorThree Ccp4::getXYZ(double c, double r, double s)
     if (_w14_CELLB_X == 90 && _w15_CELLB_Y == 90 && _w16_CELLB_Z == 90)
     {
         for (int i = 0; i < 3; ++i)
-        {    
+        {
             double startVal = vCRSIn.getByIndex(_map2xyz[i]);
-            startVal *= _cellDims[i] / _axisSampling[i];    
+            startVal *= _cellDims[i] / _axisSampling[i];
             startVal += _origin.getByIndex(i);
-            vXYZ.putByIndex(i,startVal);    
+            vXYZ.putByIndex(i, startVal);
         }
     }
     else // they are not orthogonal
-    {    
-        VectorThree vCRS;    
+    {
+        VectorThree vCRS;
         for (int i = 0; i < 3; ++i)
         {
             double startVal = 0;
@@ -327,14 +359,14 @@ VectorThree Ccp4::getXYZ(double c, double r, double s)
             else if (_w18_MAPR == i)
                 startVal = _w06_NYSTART + r;
             else
-                startVal = _w07_NZSTART + s;    
-            vCRS.putByIndex(i,startVal);
-        }    
-        vCRS.putByIndex(0,vCRS.getByIndex(0) / _w08_MX);
+                startVal = _w07_NZSTART + s;
+            vCRS.putByIndex(i, startVal);
+        }
+        vCRS.putByIndex(0, vCRS.getByIndex(0) / _w08_MX);
         vCRS.putByIndex(1, vCRS.getByIndex(1) / _w09_MY);
         vCRS.putByIndex(2, vCRS.getByIndex(2) / _w10_MZ);
-        vXYZ = _orthoMat.multiply(vCRS);    
-    }        
+        vXYZ = _orthoMat.multiply(vCRS);
+    }
     return vXYZ;
 }
 
@@ -345,13 +377,13 @@ void Ccp4::calculateOrigin(int w05_NXSTART, int w06_NYSTART, int w07_NZSTART, in
     * ******************************
      *TODO I am ignoring the possibility of passing in the origin for nowand using the dot product calc for non orthoganality.
      *The origin is perhaps used for cryoEM only and requires orthoganility
-     *CRSSTART is w05_NXSTART, w06_NYSTART, w07_NZSTART             
-     *Cell dims w08_MX, w09_MY, w10_MZ;            
+     *CRSSTART is w05_NXSTART, w06_NYSTART, w07_NZSTART
+     *Cell dims w08_MX, w09_MY, w10_MZ;
      *Map of indices from crs to xyz is w17_MAPC, w18_MAPR, w19_MAPS
      */
-    
+
     VectorThree oro;
-    
+
     for (int i = 0; i < 3; ++i)
     {
         int startVal = 0;
@@ -361,13 +393,13 @@ void Ccp4::calculateOrigin(int w05_NXSTART, int w06_NYSTART, int w07_NZSTART, in
             startVal = w06_NYSTART;
         else
             startVal = w07_NZSTART;
-        
+
         oro.putByIndex(i, startVal);
     }
     oro.putByIndex(0, oro.getByIndex(0) / _w08_MX);
     oro.putByIndex(1, oro.getByIndex(1) / _w09_MY);
-    oro.putByIndex(2, oro.getByIndex(2) / _w10_MZ);                
-    _origin = _orthoMat.multiply(oro);    
+    oro.putByIndex(2, oro.getByIndex(2) / _w10_MZ);
+    _origin = _orthoMat.multiply(oro);
 }
 
 

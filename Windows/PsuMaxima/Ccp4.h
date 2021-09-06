@@ -15,45 +15,45 @@ using namespace std;
 class Ccp4
 {
 private:
-	const double PI = 3.14159265;
-	bool _loaded = false;
-	string _pdbCode = "";
-	double _resolution = 0.0;
+	double PI;
+	bool _loaded;
+	string _pdbCode;
+	double _resolution;
 	//SETINGS
-	string _directory = "";
+	string _directory;
 
 	//THE "WORDS" from the Ccp4 file
-	int _w01_NX = 0;
-	int _w02_NY = 0;
-	int _w03_NZ = 0;
-	int _w05_NXSTART = 0;
-	int _w06_NYSTART = 0;
-	int _w07_NZSTART = 0;
-	int _w08_MX = 0;
-	int _w09_MY = 0;
-	int _w10_MZ = 0;
-	float _w14_CELLB_X = 0.0;
-	float _w15_CELLB_Y = 0.0;
-	float _w16_CELLB_Z = 0.0;
-	int _w17_MAPC = 0;
-	int _w18_MAPR = 0;
-	int _w19_MAPS = 0;
-	
+	int _w01_NX;
+	int _w02_NY;
+	int _w03_NZ;
+	int _w05_NXSTART;
+	int _w06_NYSTART;
+	int _w07_NZSTART;
+	int _w08_MX;
+	int _w09_MY;
+	int _w10_MZ;
+	float _w14_CELLB_X;
+	float _w15_CELLB_Y;
+	float _w16_CELLB_Z;
+	int _w17_MAPC;
+	int _w18_MAPR;
+	int _w19_MAPS;
+
 
 	//Calculation data
 	MatrixThreeThree _orthoMat;
 	MatrixThreeThree _deOrthoMat;
-	vector<int> _map2xyz;		
-	vector<int> _map2crs;		
+	vector<int> _map2xyz;
+	vector<int> _map2crs;
 	vector<float>_cellDims;
-	vector<int> _axisSampling;		
-	vector<int> _crsStart;		
+	vector<int> _axisSampling;
+	vector<int> _crsStart;
 	vector<int> _dimOrder;
 	VectorThree _origin;
-	
+
 	//The matrix data
 	vector<float> _matrix;
-	vector<pair<float,int> > _matrixPeaks;
+	vector<pair<float, int> > _matrixPeaks;
 
 	//Helper functioms
 	int getPosition(int C, int R, int S);

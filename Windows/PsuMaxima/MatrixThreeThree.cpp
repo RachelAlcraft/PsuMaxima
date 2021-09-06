@@ -23,7 +23,7 @@ MatrixThreeThree::MatrixThreeThree(vector<double> vals)
 }
 
 MatrixThreeThree MatrixThreeThree::getInverse()
-{    
+{
     double detWhole = getDeterminant();
     vector<double> transp;
     transp.push_back(_matrix[0]);
@@ -38,21 +38,21 @@ MatrixThreeThree MatrixThreeThree::getInverse()
 
     MatrixThreeThree transpose(transp);
     MatrixThreeThree matinverse;
-            
+
     int factor = 1;
 
     for (int i = 0; i < 3; ++i)
     {
         for (int j = 0; j < 3; ++j)
         {
-            double thisValue = transpose.getValue(i, j);            
-            double detReduced = transpose.getInnerDeterminant(i,j);            
-            matinverse.putValue(detReduced * factor / detWhole,i,j);
+            double thisValue = transpose.getValue(i, j);
+            double detReduced = transpose.getInnerDeterminant(i, j);
+            matinverse.putValue(detReduced * factor / detWhole, i, j);
             factor *= -1;
         }
     }
     return matinverse;
-    
+
 }
 
 double MatrixThreeThree::getDeterminant()
@@ -62,8 +62,8 @@ double MatrixThreeThree::getDeterminant()
     for (int i = 0; i < 3; ++i)
     {
         factor = factor * -1;
-        double row_val = _matrix[3*i];        
-        double newdet = getInnerDeterminant(i,0);
+        double row_val = _matrix[3 * i];
+        double newdet = getInnerDeterminant(i, 0);
         det = det + (factor * row_val * newdet);
     }
     return det;
@@ -75,7 +75,7 @@ double MatrixThreeThree::getInnerDeterminant(int col, int row)
     if (col == 0)
     {
         if (row != 0)
-        {        
+        {
             smallMat.push_back(_matrix[1]);
             smallMat.push_back(_matrix[2]);
         }
@@ -88,7 +88,7 @@ double MatrixThreeThree::getInnerDeterminant(int col, int row)
         {
             smallMat.push_back(_matrix[7]);
             smallMat.push_back(_matrix[8]);
-        }        
+        }
     }
     else if (col == 1)
     {
@@ -106,7 +106,7 @@ double MatrixThreeThree::getInnerDeterminant(int col, int row)
         {
             smallMat.push_back(_matrix[6]);
             smallMat.push_back(_matrix[8]);
-        }        
+        }
     }
     else// (col == 1)
     {
@@ -124,7 +124,7 @@ double MatrixThreeThree::getInnerDeterminant(int col, int row)
         {
             smallMat.push_back(_matrix[6]);
             smallMat.push_back(_matrix[7]);
-        }        
+        }
     }
 
     double n11 = smallMat[0];
@@ -144,7 +144,7 @@ double MatrixThreeThree::getValue(int col, int row)
 void MatrixThreeThree::putValue(double val, int col, int row)
 {
     int pos = row * 3 + col;
-    _matrix[pos] = val;    
+    _matrix[pos] = val;
 }
 
 VectorThree MatrixThreeThree::multiply(VectorThree col)
@@ -166,10 +166,10 @@ VectorThree MatrixThreeThree::multiply(VectorThree col)
     s0 += col2 * _matrix[2];
     s1 += col2 * _matrix[5];
     s2 += col2 * _matrix[8];
-    
-    scaled.putByIndex(0,s0);
+
+    scaled.putByIndex(0, s0);
     scaled.putByIndex(1, s1);
     scaled.putByIndex(2, s2);
-    
+
     return scaled;
 }
