@@ -141,13 +141,17 @@
   <ItemGroup>
     <ClCompile Include="Atom.cpp" />
     <ClCompile Include="Ccp4.cpp" />
+    <ClCompile Include="MatrixThreeThree.cpp" />
     <ClCompile Include="PdbFile.cpp" />
     <ClCompile Include="PsuMaxima.cpp" />
+    <ClCompile Include="VectorThree.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Atom.h" />
     <ClInclude Include="Ccp4.h" />
+    <ClInclude Include="MatrixThreeThree.h" />
     <ClInclude Include="PdbFile.h" />
+    <ClInclude Include="VectorThree.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

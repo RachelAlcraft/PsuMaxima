@@ -16,6 +16,9 @@ private:
 	double _x = 0.0;
 	double _y = 0.0;
 	double _z = 0.0;
+	
+	// HELPER FUNCTIONS
+	string trim(string string_to_trim);
 
 public:
 	Atom(string line);
