@@ -45,3 +45,6 @@ Cpp/PsuMaxima/out/build/x64-Release/
 *.iobj
 *.tlog
 *.tlog
+*.iobj
+*.ipdb
+*.tlog

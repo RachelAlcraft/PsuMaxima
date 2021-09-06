@@ -21,13 +21,15 @@ Ccp4::Ccp4(string pdbCode, string directory)
     PI = 3.14159265;
     _loaded = false;
     _resolution = 0.0;
+    _endian = isBigEndian();
 
     _pdbCode = pdbCode;
     _resolution = 0.78;
     _directory = directory;
     //Load the binary data
-    std::ifstream input((_directory + pdbCode + ".ccp4").c_str(), std::ios::binary);
-    std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(input), {});
+    
+    //std::ifstream input((_directory + pdbCode + ".ccp4").c_str(), std::ios::binary);
+    //std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(input), {});
     
     ifstream infile;
     infile.open((_directory + pdbCode + ".ccp4").c_str(), ios::binary | ios::in);    
@@ -85,12 +87,11 @@ Ccp4::Ccp4(string pdbCode, string directory)
     vector<float> tmpData;
     float bulk = 0.0;
 
-
     unsigned char temp[sizeof(float)];
     while (infile.read(reinterpret_cast<char*>(temp), sizeof(float)))
-        //while (infile.read((char*)&bulk, sizeof(float)))
+    //while (infile.read((char*)&bulk, sizeof(float)))
     {
-        if (false)
+        if (false) // big endian method???
         {
             unsigned char t = temp[0];
             temp[0] = temp[3];
@@ -400,6 +401,17 @@ void Ccp4::calculateOrigin(int w05_NXSTART, int w06_NYSTART, int w07_NZSTART, in
     oro.putByIndex(1, oro.getByIndex(1) / _w09_MY);
     oro.putByIndex(2, oro.getByIndex(2) / _w10_MZ);
     _origin = _orthoMat.multiply(oro);
+}
+
+bool Ccp4::isBigEndian()
+{
+    union
+    {
+        int  i;
+        char b[sizeof(int)];
+    } u;
+    u.i = 1;
+    return (u.b[0] == 1) ? true : false;
 }
 
 

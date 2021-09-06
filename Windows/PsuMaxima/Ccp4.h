@@ -15,6 +15,7 @@ using namespace std;
 class Ccp4
 {
 private:
+	bool _endian;
 	double PI;
 	bool _loaded;
 	string _pdbCode;
@@ -60,6 +61,7 @@ private:
 	vector<int> getCRS(int position);
 	void calculateOrthoMat(float w11_CELLA_X, float w12_CELLA_Y, float w13_CELLA_Z, float w14_CELLB_X, float w15_CELLB_Y, float w16_CELLB_Z);
 	void calculateOrigin(int w05_NXSTART, int w06_NYSTART, int w07_NZSTART, int w17_MAPC, int w18_MAPR, int w19_MAPS);
+	bool isBigEndian();
 
 public:
 	Ccp4(string pdbCode, string directory);
