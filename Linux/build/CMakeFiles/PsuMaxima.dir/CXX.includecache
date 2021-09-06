@@ -6,6 +6,20 @@
 
 #IncludeRegexTransform: 
 
+/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/Ccp4.cpp
+iostream
+-
+fstream
+-
+vector
+-
+algorithm
+-
+sstream
+-
+Ccp4.h
+/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/Ccp4.h
+
 /d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/Ccp4.h
 string
 -
