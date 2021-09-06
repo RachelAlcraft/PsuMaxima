@@ -15,6 +15,7 @@ using namespace std;
 class Ccp4
 {
 private:
+	bool _endian;
 	double PI;
 	bool _loaded;
 	string _pdbCode;
@@ -38,28 +39,29 @@ private:
 	int _w17_MAPC;
 	int _w18_MAPR;
 	int _w19_MAPS;
-	
+
 
 	//Calculation data
 	MatrixThreeThree _orthoMat;
 	MatrixThreeThree _deOrthoMat;
-	vector<int> _map2xyz;		
-	vector<int> _map2crs;		
+	vector<int> _map2xyz;
+	vector<int> _map2crs;
 	vector<float>_cellDims;
-	vector<int> _axisSampling;		
-	vector<int> _crsStart;		
+	vector<int> _axisSampling;
+	vector<int> _crsStart;
 	vector<int> _dimOrder;
 	VectorThree _origin;
-	
+
 	//The matrix data
 	vector<float> _matrix;
-	vector<pair<float,int> > _matrixPeaks;
+	vector<pair<float, int> > _matrixPeaks;
 
 	//Helper functioms
 	int getPosition(int C, int R, int S);
 	vector<int> getCRS(int position);
 	void calculateOrthoMat(float w11_CELLA_X, float w12_CELLA_Y, float w13_CELLA_Z, float w14_CELLB_X, float w15_CELLB_Y, float w16_CELLB_Z);
 	void calculateOrigin(int w05_NXSTART, int w06_NYSTART, int w07_NZSTART, int w17_MAPC, int w18_MAPR, int w19_MAPS);
+	bool isBigEndian();
 
 public:
 	Ccp4(string pdbCode, string directory);
