@@ -1,1 +1,1 @@
-/usr/bin/x86_64-redhat-linux-g++  -O3 -DNDEBUG  -rdynamic CMakeFiles/PsuMaxima.dir/main.cpp.o CMakeFiles/PsuMaxima.dir/Ccp4.cpp.o CMakeFiles/PsuMaxima.dir/PdbFile.cpp.o CMakeFiles/PsuMaxima.dir/Atom.cpp.o  -o PsuMaxima 
+/usr/bin/x86_64-redhat-linux-g++  -g  -rdynamic CMakeFiles/PsuMaxima.dir/main.cpp.o CMakeFiles/PsuMaxima.dir/Ccp4.cpp.o CMakeFiles/PsuMaxima.dir/PdbFile.cpp.o CMakeFiles/PsuMaxima.dir/Atom.cpp.o CMakeFiles/PsuMaxima.dir/MatrixThreeThree.cpp.o CMakeFiles/PsuMaxima.dir/VectorThree.cpp.o  -o PsuMaxima 

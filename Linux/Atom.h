@@ -12,14 +12,20 @@ using namespace std;
 class Atom
 {
 private:
-	string _line = "";
-	double _x = 0.0;
-	double _y = 0.0;
-	double _z = 0.0;
+	string _line;
+	double _x;
+	double _y;
+	double _z;
+	
+	// HELPER FUNCTIONS
+	string trim(string string_to_trim);
 
-public:
-	Atom(string line);
+public:	
+    Atom(string line);
 	double distance(double x, double y, double z);
 	string getLine();
+
+    //Lazy public access functions
+    string Element;
 };
 

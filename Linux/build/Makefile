@@ -591,6 +591,33 @@ Ccp4.cpp.s:
 	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/Ccp4.cpp.s
 .PHONY : Ccp4.cpp.s
 
+MatrixThreeThree.o: MatrixThreeThree.cpp.o
+
+.PHONY : MatrixThreeThree.o
+
+# target to build an object file
+MatrixThreeThree.cpp.o:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/MatrixThreeThree.cpp.o
+.PHONY : MatrixThreeThree.cpp.o
+
+MatrixThreeThree.i: MatrixThreeThree.cpp.i
+
+.PHONY : MatrixThreeThree.i
+
+# target to preprocess a source file
+MatrixThreeThree.cpp.i:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/MatrixThreeThree.cpp.i
+.PHONY : MatrixThreeThree.cpp.i
+
+MatrixThreeThree.s: MatrixThreeThree.cpp.s
+
+.PHONY : MatrixThreeThree.s
+
+# target to generate assembly for a file
+MatrixThreeThree.cpp.s:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/MatrixThreeThree.cpp.s
+.PHONY : MatrixThreeThree.cpp.s
+
 PdbFile.o: PdbFile.cpp.o
 
 .PHONY : PdbFile.o
@@ -617,6 +644,33 @@ PdbFile.s: PdbFile.cpp.s
 PdbFile.cpp.s:
 	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/PdbFile.cpp.s
 .PHONY : PdbFile.cpp.s
+
+VectorThree.o: VectorThree.cpp.o
+
+.PHONY : VectorThree.o
+
+# target to build an object file
+VectorThree.cpp.o:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/VectorThree.cpp.o
+.PHONY : VectorThree.cpp.o
+
+VectorThree.i: VectorThree.cpp.i
+
+.PHONY : VectorThree.i
+
+# target to preprocess a source file
+VectorThree.cpp.i:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/VectorThree.cpp.i
+.PHONY : VectorThree.cpp.i
+
+VectorThree.s: VectorThree.cpp.s
+
+.PHONY : VectorThree.s
+
+# target to generate assembly for a file
+VectorThree.cpp.s:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/VectorThree.cpp.s
+.PHONY : VectorThree.cpp.s
 
 main.o: main.cpp.o
 
@@ -691,9 +745,15 @@ help:
 	@echo "... Ccp4.o"
 	@echo "... Ccp4.i"
 	@echo "... Ccp4.s"
+	@echo "... MatrixThreeThree.o"
+	@echo "... MatrixThreeThree.i"
+	@echo "... MatrixThreeThree.s"
 	@echo "... PdbFile.o"
 	@echo "... PdbFile.i"
 	@echo "... PdbFile.s"
+	@echo "... VectorThree.o"
+	@echo "... VectorThree.i"
+	@echo "... VectorThree.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
