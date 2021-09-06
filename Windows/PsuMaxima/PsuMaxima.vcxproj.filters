@@ -21,9 +21,21 @@
     <ClCompile Include="Ccp4.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PdbFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Atom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ccp4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PdbFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Atom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

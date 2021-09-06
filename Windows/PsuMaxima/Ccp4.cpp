@@ -10,6 +10,7 @@
 #include <sstream>
 
 #include "Ccp4.h"
+
 using namespace std;
 
 
@@ -116,21 +117,30 @@ string Ccp4::getPdbCode()
 
 
 
-void Ccp4::makePeaks()
-{    
+void Ccp4::makePeaks(PdbFile* pdbFile)
+{
     unsigned int maxdensity = 500;
     if (_matrixPeaks.size() < maxdensity)
         maxdensity = _matrixPeaks.size();
 
-    cout << _pdbCode << ",Density,C,R,S,X,Y,Z,NearestAtom,Distance\n";
+    cout << "Density,C,R,S,X,Y,Z,NearestAtom,Distance\n";
 
 
     for (unsigned int i = 1; i <= maxdensity; ++i)
     {
-        int pos = _matrixPeaks[_matrixPeaks.size()-i].second;
+        int pos = _matrixPeaks[_matrixPeaks.size() - i].second;
         vector<int> coords = getCRS(pos);
-        float density = _matrixPeaks[_matrixPeaks.size()-i].first;
-        cout << "-," << density << "," << coords[0] << "," << coords[1] << "," << coords[2] << "," << "-,-,-,-,-" "\n";
+        float density = _matrixPeaks[_matrixPeaks.size() - i].first;
+        double distance = 0;
+        string line = "";
+        if (pdbFile->isLoaded())
+        {
+            Atom* atm = pdbFile->getNearest(0, 0, 0);
+            line = atm->getLine();
+            distance = atm->distance(0, 0, 0);
+        }
+            
+        cout << "" << density << "," << coords[0] << "," << coords[1] << "," << coords[2] << "," << "-,-,-," << line << "," << distance << "\n";
     }
 
 

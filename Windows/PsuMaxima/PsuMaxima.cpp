@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include "Ccp4.h"
+#include "PdbFile.h"
 
 int main()
 {
@@ -12,11 +13,13 @@ int main()
     /***************************************************/
     /******   WINDOWS SPECIFIC SETTINGS  ***************/
     string ccp4directory = "C:/Dev/Github/ProteinDataFiles/ccp4_data/";
+    string pdbdirectory = "C:/Dev/Github/ProteinDataFiles/pdb_data/";
     /***************************************************/
     Ccp4 myCcp4(pdb, ccp4directory);
+    PdbFile myPdb(pdb, pdbdirectory);
     if (COMMAND == "PEAKS")
     {
-        myCcp4.makePeaks();
+        myCcp4.makePeaks(&myPdb);
     }
     
 
