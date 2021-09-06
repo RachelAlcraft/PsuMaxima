@@ -8,11 +8,12 @@ int main()
 {
     /******   COMMAND LINE INPUTS  ***************/
     string COMMAND = "PEAKS";
+    string pdb = "6eex";
     /***************************************************/
     /******   WINDOWS SPECIFIC SETTINGS  ***************/
     string ccp4directory = "C:/Dev/Github/ProteinDataFiles/ccp4_data/";
     /***************************************************/
-    Ccp4 myCcp4("1ejg", ccp4directory);
+    Ccp4 myCcp4(pdb, ccp4directory);
     if (COMMAND == "PEAKS")
     {
         myCcp4.makePeaks();

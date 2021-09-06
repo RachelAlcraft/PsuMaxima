@@ -1,6 +1,7 @@
 
 /************************************************************************
 * RSA 4.9.21
+* Because we are using this from CGI scripts in python, the return value is everything from cout
 ************************************************************************/
 #include <iostream>
 #include <fstream>
@@ -78,20 +79,24 @@ Ccp4::Ccp4(string pdbCode, string directory)
     infile.read((char*)&ORIGIN_X, sizeof(ORIGIN_Y));
     float ORIGIN_Z = 0.0;
     infile.read((char*)&ORIGIN_Z, sizeof(ORIGIN_Z));
-    //we don;t want any of the rest of this
+    //we don;t want any of the rest of this, but we want the last bit as long as the matrix is:
+    vector<float> tmpData;
     float bulk = 0.0;
-    for (int i = 0; i < 267; ++i)
-        infile.read((char*)&bulk, sizeof(bulk));
-
-    float mtx = 0.0;
+    while (infile.read((char*)&bulk, sizeof(float)))
+    {        
+        tmpData.push_back(bulk);
+    }
+    infile.close();
+    int len = _w01_NX * _w02_NY * _w03_NZ;        
+    int startBulk = tmpData.size() - len;
     int count = 0;
-    while (infile.read((char*)&mtx, sizeof(float)))
+    for (unsigned int i = startBulk; i < tmpData.size(); ++i)
     {
+        float mtx = tmpData[i];
         _matrix.push_back(mtx);
-        _matrixPeaks.push_back(pair<float, int>(mtx,count));
+        _matrixPeaks.push_back(pair<float, int>(mtx,count));        
         count++;
     }
-    infile.close();    
     sort(_matrixPeaks.begin(), _matrixPeaks.end());
 }
 double Ccp4::getResolution()
@@ -109,7 +114,7 @@ string Ccp4::getPdbCode()
     return _pdbCode;
 }
 
-//Weird but becuase we are returning via cmake to p[ython, we just print out the results
+
 
 void Ccp4::makePeaks()
 {    
@@ -117,14 +122,15 @@ void Ccp4::makePeaks()
     if (_matrixPeaks.size() < maxdensity)
         maxdensity = _matrixPeaks.size();
 
-    cout << "C,R,S,Density\n";
+    cout << _pdbCode << ",Density,C,R,S,X,Y,Z,NearestAtom,Distance\n";
 
 
     for (unsigned int i = 1; i <= maxdensity; ++i)
     {
-        int coords = _matrixPeaks[_matrixPeaks.size()-i].second;
+        int pos = _matrixPeaks[_matrixPeaks.size()-i].second;
+        vector<int> coords = getCRS(pos);
         float density = _matrixPeaks[_matrixPeaks.size()-i].first;
-        cout << coords << "," << density << "\n";
+        cout << "-," << density << "," << coords[0] << "," << coords[1] << "," << coords[2] << "," << "-,-,-,-,-" "\n";
     }
 
 
@@ -141,7 +147,27 @@ float Ccp4::getDensity(int C, int R, int S)
 
 
 
+/*******************************************************
+* ****** PRIVATE HELPER INTERFACE *********************
+*******************************************************/
+int Ccp4::getPosition(int C, int R, int S)
+{
+    return 0;
+}
 
+vector<int> Ccp4::getCRS(int position)
+{
+    int sliceSize = _w01_NX * _w02_NY;
+    int i = position / sliceSize;
+    int remainder = position % sliceSize;
+    int j = remainder / _w01_NX;
+    int k = remainder % _w01_NX;
+    vector<int> CRS;
+    CRS.push_back(i);
+    CRS.push_back(j);
+    CRS.push_back(k);
+    return CRS;
+}
 
 
 

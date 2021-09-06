@@ -27,6 +27,10 @@ private:
 	vector<float> _matrix;
 	vector<pair<float,int> > _matrixPeaks;
 
+	//Helper functioms
+	int getPosition(int C, int R, int S);
+	vector<int> getCRS(int position);
+
 public:
 	Ccp4(string pdbCode, string directory);
 	double getResolution();
