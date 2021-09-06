@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include "PdbFile.h"
 using namespace std;
 
 class Ccp4
@@ -36,7 +37,7 @@ public:
 	double getResolution();
 	bool isLoaded();
 	string getPdbCode();
-	void makePeaks();
+	void makePeaks(PdbFile* pdbFile);
 	float getDensity(int C, int R, int S);
 };
 

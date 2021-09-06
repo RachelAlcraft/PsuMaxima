@@ -1,5 +1,7 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/PsuMaxima.dir/Atom.cpp.o"
   "CMakeFiles/PsuMaxima.dir/Ccp4.cpp.o"
+  "CMakeFiles/PsuMaxima.dir/PdbFile.cpp.o"
   "CMakeFiles/PsuMaxima.dir/main.cpp.o"
   "PsuMaxima"
   "PsuMaxima.pdb"

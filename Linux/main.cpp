@@ -16,13 +16,15 @@ int main(int argc, char* argv[])
 
     /******   OP SPECIFIC SETTINGS  ***************/
     string ccp4directory = "/d/projects/u/ab002/Thesis/PhD/Data/Ccp4/";
+    string pdbdirectory = "/d/projects/u/ab002/Thesis/PhD/Data/Pdb/";
     /***************************************************/
     
     if (COMMAND == "PEAKS")
     {
         //std::cout << userInput << "\n";        
         Ccp4 myCcp4(userInput,ccp4directory);
-        myCcp4.makePeaks();
+        PdbFile myPdb(userInput, pdbdirectory);
+        myCcp4.makePeaks(&myPdb);
     }
     else
     {

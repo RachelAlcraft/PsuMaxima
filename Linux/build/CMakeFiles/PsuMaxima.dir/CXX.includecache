@@ -6,6 +6,12 @@
 
 #IncludeRegexTransform: 
 
+/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/Atom.h
+string
+-
+vector
+-
+
 /d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/Ccp4.cpp
 iostream
 -
@@ -27,6 +33,16 @@ vector
 -
 map
 -
+PdbFile.h
+/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/PdbFile.h
+
+/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/PdbFile.h
+string
+-
+vector
+-
+Atom.h
+/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/Atom.h
 
 /d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/main.cpp
 iostream

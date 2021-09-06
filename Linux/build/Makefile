@@ -537,6 +537,33 @@ ContinuousUpdate/fast:
 	$(MAKE) -f CMakeFiles/ContinuousUpdate.dir/build.make CMakeFiles/ContinuousUpdate.dir/build
 .PHONY : ContinuousUpdate/fast
 
+Atom.o: Atom.cpp.o
+
+.PHONY : Atom.o
+
+# target to build an object file
+Atom.cpp.o:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/Atom.cpp.o
+.PHONY : Atom.cpp.o
+
+Atom.i: Atom.cpp.i
+
+.PHONY : Atom.i
+
+# target to preprocess a source file
+Atom.cpp.i:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/Atom.cpp.i
+.PHONY : Atom.cpp.i
+
+Atom.s: Atom.cpp.s
+
+.PHONY : Atom.s
+
+# target to generate assembly for a file
+Atom.cpp.s:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/Atom.cpp.s
+.PHONY : Atom.cpp.s
+
 Ccp4.o: Ccp4.cpp.o
 
 .PHONY : Ccp4.o
@@ -563,6 +590,33 @@ Ccp4.s: Ccp4.cpp.s
 Ccp4.cpp.s:
 	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/Ccp4.cpp.s
 .PHONY : Ccp4.cpp.s
+
+PdbFile.o: PdbFile.cpp.o
+
+.PHONY : PdbFile.o
+
+# target to build an object file
+PdbFile.cpp.o:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/PdbFile.cpp.o
+.PHONY : PdbFile.cpp.o
+
+PdbFile.i: PdbFile.cpp.i
+
+.PHONY : PdbFile.i
+
+# target to preprocess a source file
+PdbFile.cpp.i:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/PdbFile.cpp.i
+.PHONY : PdbFile.cpp.i
+
+PdbFile.s: PdbFile.cpp.s
+
+.PHONY : PdbFile.s
+
+# target to generate assembly for a file
+PdbFile.cpp.s:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/PdbFile.cpp.s
+.PHONY : PdbFile.cpp.s
 
 main.o: main.cpp.o
 
@@ -631,9 +685,15 @@ help:
 	@echo "... NightlyTest"
 	@echo "... NightlyUpdate"
 	@echo "... PsuMaxima"
+	@echo "... Atom.o"
+	@echo "... Atom.i"
+	@echo "... Atom.s"
 	@echo "... Ccp4.o"
 	@echo "... Ccp4.i"
 	@echo "... Ccp4.s"
+	@echo "... PdbFile.o"
+	@echo "... PdbFile.i"
+	@echo "... PdbFile.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
