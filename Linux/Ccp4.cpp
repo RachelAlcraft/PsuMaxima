@@ -9,11 +9,14 @@
 #include <algorithm>
 #include <sstream>
 #include <cmath>
+#include <cstring> // memcpy
 
 #include "Ccp4.h"
 #include "VectorThree.h"
 
 using namespace std;
+
+typedef unsigned char uchar;
 
 
 Ccp4::Ccp4(string pdbCode, string directory)
@@ -63,12 +66,49 @@ Ccp4::Ccp4(string pdbCode, string directory)
     _w17_MAPC -= 1;
     _w18_MAPR -= 1;
     _w19_MAPS -= 1;
-    float w20_DMIN = 0.0;
-    infile.read((char*)&w20_DMIN, sizeof(w20_DMIN));
+    
+    //https://www.microchip.com/forums/m590535.aspx
+    //float x = *(float *)&vBuffer;
+
+    float w20_DMIN; 
+    float w20_DMIN_1; 
+    int w20_DMIN_2; 
+    //infile.read((char*)&w20_DMIN, sizeof(float));
+
+    unsigned char vBuffer[sizeof(float)];     
+    unsigned char vBuffer2[sizeof(float)];     
+    infile.read(reinterpret_cast<char*>(vBuffer), sizeof(float));
+    
+    w20_DMIN = *(float *)&vBuffer;
+    w20_DMIN_2 = *(int *)&vBuffer;
+
+    vBuffer2[0] = (unsigned char)vBuffer[3];
+    vBuffer2[1] = (unsigned char)vBuffer[2];
+    vBuffer2[2] = (unsigned char)vBuffer[1];
+    vBuffer2[3] = (unsigned char)vBuffer[0];
+
+    w20_DMIN_1 = reinterpret_cast<float&>(vBuffer2);
+    
+    
+    
+    //uchar b[] = {vBuffer[0], vBuffer[1], vBuffer[2], vBuffer[3]};
+    //memcpy(&w20_DMIN, &b, sizeof(w20_DMIN));
+    
+
+    //uchar b2[] = {vBuffer[3], vBuffer[2], vBuffer[1], vBuffer[0]};
+    //memcpy(&w20_DMIN_1, &b2, sizeof(w20_DMIN_1));
+
+    //uchar b3[] = {vBuffer[0], vBuffer[1], vBuffer[2], vBuffer[3]};
+    //memcpy(&w20_DMIN_2, &b3, sizeof(w20_DMIN_2));
+
+        
     float w21_DMAX = 0.0;
     infile.read((char*)&w21_DMAX, sizeof(w21_DMAX));
+    
     float w22_DMEAN = 0.0;
     infile.read((char*)&w22_DMEAN, sizeof(w22_DMEAN));
+    
+    
     int ISPG = 0;
     infile.read((char*)&ISPG, sizeof(ISPG));
     int NYSYMBT = 0;
@@ -203,7 +243,7 @@ void Ccp4::makePeaks(PdbFile* pdbFile)
     {
         int pos = _matrixPeaks[i].second;
         vector<int> coords = getCRS(pos);
-        VectorThree XYZ = getXYZ(coords[0], coords[1], coords[2]);
+        VectorThree XYZ = getXYZ(coords[2], coords[1], coords[0]);
         float density = _matrixPeaks[i].first;
         double distance = 0;
         string line = "-";
@@ -217,9 +257,9 @@ void Ccp4::makePeaks(PdbFile* pdbFile)
             }
         }
         if (line == "-")
-            cout << "" << density << "," << coords[0] << "," << coords[1] << "," << coords[2] << "," << XYZ.A << "," << XYZ.B << "," << XYZ.C << "," << line << ",-" << "\n";
+            cout << "" << density << "," << coords[2] << "," << coords[1] << "," << coords[0] << "," << XYZ.A << "," << XYZ.B << "," << XYZ.C << "," << line << ",-" << "\n";
         else
-            cout << "" << density << "," << coords[0] << "," << coords[1] << "," << coords[2] << "," << XYZ.A << "," << XYZ.B << "," << XYZ.C << "," << line << "," << distance << "\n";
+            cout << "" << density << "," << coords[2] << "," << coords[1] << "," << coords[0] << "," << XYZ.A << "," << XYZ.B << "," << XYZ.C << "," << line << "," << distance << "\n";
     }
 
 

@@ -12,7 +12,7 @@ string
 vector
 -
 
-/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/Ccp4.cpp
+/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/PdbFile.cpp
 iostream
 -
 fstream
@@ -23,34 +23,8 @@ algorithm
 -
 sstream
 -
-cmath
--
-Ccp4.h
-/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/Ccp4.h
-VectorThree.h
-/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/VectorThree.h
-
-/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/Ccp4.h
-string
--
-vector
--
-map
--
 PdbFile.h
 /d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/PdbFile.h
-MatrixThreeThree.h
-/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/MatrixThreeThree.h
-VectorThree.h
-/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/VectorThree.h
-
-/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/MatrixThreeThree.h
-string
--
-vector
--
-VectorThree.h
-/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/VectorThree.h
 
 /d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/PdbFile.h
 string
@@ -59,12 +33,4 @@ vector
 -
 Atom.h
 /d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/Atom.h
-
-/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/VectorThree.h
-
-/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/main.cpp
-iostream
--
-Ccp4.h
-/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/Ccp4.h
 

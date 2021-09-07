@@ -67,7 +67,7 @@ Atom* PdbFile::getNearest(double x, double y, double z)
 	}
 
 
-	if (neardistance < 5)
+	if (neardistance < 1.1)
 		return nearest;
 	else
 		return NULL;
