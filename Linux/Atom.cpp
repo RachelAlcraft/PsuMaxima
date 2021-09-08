@@ -55,6 +55,15 @@ string Atom::getLine()
 	return _line;
 }
 
+VectorThree Atom::getXYZ()
+{
+    VectorThree xyz;
+    xyz.A = _x;
+    xyz.B = _y;
+    xyz.C = _z;
+    return xyz;
+}
+
 string Atom::trim(string string_to_trim)
 {
 	string string_trimmed = string_to_trim;

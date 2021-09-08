@@ -4,7 +4,7 @@
 int main(int argc, char* argv[]) 
 {
     /******   INPUTS  ***************/
-    string userInput = "1ejg";
+    string userInput = "6eex";
     string COMMAND= "PEAKS";
     if (argc >= 2)
     {

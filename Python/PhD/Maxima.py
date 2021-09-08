@@ -37,8 +37,8 @@ def doWeHaveAllFiles(pdbCode):
 
   if not os.path.isfile(ccp4File):
     #print('getting ccp4 files from pdb</br>')    
-    getFile(ccp4File,'https://www.ebi.ac.uk/pdbe/coordinates/files/' + pdbCode + '_diff.ccp4')
-    getFile(ccp4Diff,'https://www.ebi.ac.uk/pdbe/coordinates/files/' + pdbCode +'.ccp4')
+    getFile(ccp4File,'https://www.ebi.ac.uk/pdbe/coordinates/files/' + pdbCode + '.ccp4')
+    getFile(ccp4Diff,'https://www.ebi.ac.uk/pdbe/coordinates/files/' + pdbCode +'_diff.ccp4')
 
   # Files to calculate
   adjPdb = directory + 'Adjusted/pdb' + pdbCode + '.ent'
@@ -54,13 +54,25 @@ def runCppModule(dataText):
     #####################################################
     result = pig.communicate(input=b"This is sample text.\n")
     exe_result = str(result[0],'utf-8')
-    exe_data = sio(exe_result)
-    df = pd.read_csv(exe_data)
+    atmPeaks = exe_result.find("ATOMPEAKS");
+    atmDen = exe_result.find("ATOMDENSITY");
+
+
+    exe_result1 = exe_result[8:atmPeaks]    
+    exe_data1 = sio(exe_result1)
+    df1 = pd.read_csv(exe_data1)
+
+    exe_result2 = exe_result[atmPeaks+9:atmDen]    
+    exe_data2 = sio(exe_result2)
+    df2 = pd.read_csv(exe_data2)
+
+    exe_result3 = exe_result[atmDen+11:]    
+    exe_data3 = sio(exe_result3)
+    df3 = pd.read_csv(exe_data3)
     #print(df)
-    return df
+    return [df1,df2,df3]
     
 #tst code for the dataframe
 #exe_result = str(runCppModule("hi!"),'utf-8')    
 #exe_data = sio(exe_result)
 #df = pd.read_csv(exe_data)
-
