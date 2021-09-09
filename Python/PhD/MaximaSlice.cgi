@@ -58,7 +58,7 @@ done = Maxima.doWeHaveAllFiles(pdb)
 data = Maxima.runCppModule(pdb)
 
 html = pwb.getHeader()
-html += pwb.getBodyA(pdb,asCSV,"","")
+html += pwb.getBodyA(pdb,asCSV,"","",cX,cY,cZ,lX,lY,lZ,pX,pY,pZ)
 html += pwb.getBodyB(pdb,data,asCSV)
 html += pwb.getBodyC(pdb,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ)
 html += pwb.getBodyD(pdb,data,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ)

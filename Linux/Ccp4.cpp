@@ -237,7 +237,7 @@ void Ccp4::makePeaks(PdbFile* pdbFile)
 
     
 
-    cout << "ALLPEAKS\n";
+    cout << "BEGIN_ALLPEAKS\n";
     cout << "Density,C,R,S,X,Y,Z,NearestAtom,Distance\n";
 
 
@@ -263,8 +263,9 @@ void Ccp4::makePeaks(PdbFile* pdbFile)
         else
             cout << "" << density << "," << coords.C << "," << coords.B << "," << coords.A << "," << XYZ.A << "," << XYZ.B << "," << XYZ.C << "," << line << "," << distance << "\n";
     }
+    cout << "END_ALLPEAKS\n";
 
-    cout << "ATOMPEAKS\n";
+    cout << "BEGIN_ATOMPEAKS\n";
     cout << "Density,C,R,S,X,Y,Z,NearestAtom,Distance\n";
     for (unsigned int i = 0; i < maxdensity; ++i)
     {
@@ -286,9 +287,10 @@ void Ccp4::makePeaks(PdbFile* pdbFile)
         if (line != "-")                    
             cout << "" << density << "," << coords.C << "," << coords.B << "," << coords.A << "," << XYZ.A << "," << XYZ.B << "," << XYZ.C << "," << line << "," << distance << "\n";
     }
+    cout << "END_ATOMPEAKS\n";
 
-    cout << "ATOMDENSITY\n";
-    cout << "Density,X,Y,Z,AtomLine\n";
+    cout << "BEGIN_ATOMDENSITY\n";
+    cout << "Density,X,Y,Z,AtomNo,AtomLine\n";
     if (pdbFile->isLoaded())
     {
         for (unsigned int i = 0; i < pdbFile->Atoms.size(); ++i)
@@ -296,10 +298,12 @@ void Ccp4::makePeaks(PdbFile* pdbFile)
             Atom atm = pdbFile->Atoms[i];
             VectorThree XYZ = atm.getXYZ();        
             float density = getDensity(XYZ);    
-            string line = atm.getLine();                                                                                        
-            cout << "" << density << "," << XYZ.A << "," << XYZ.B << "," << XYZ.C << "," << line << "\n";
+            string line = atm.getLine();     
+            int atmNo = atm.AtomNo;                                                                                   
+            cout << "" << density << "," << XYZ.A << "," << XYZ.B << "," << XYZ.C << "," << atmNo << "," << line << "\n";
         }
     }
+    cout << "END_ATOMDENSITY\n";
 
 
 
@@ -318,7 +322,19 @@ float Ccp4::getDensity(VectorThree XYZ)
     int c = crs.A;
     int r = crs.B;
     int s = crs.C;    
-    float density = getDensity(s,r,c);
+
+    float density = 0;
+    try
+    {
+        density = getDensity(s,r,c);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        density = 0;
+    }
+    
+    
     return density;
 
 }
@@ -380,6 +396,7 @@ void Ccp4::calculateOrthoMat(float w11_CELLA_X, float w12_CELLA_Y, float w13_CEL
     _orthoMat.putValue(0, 2, 1);
     _orthoMat.putValue(w13_CELLA_Z * temp / sin(gamma), 2, 2);
     _deOrthoMat = _orthoMat.getInverse();
+    //VectorThree XYZ = getXYZFromCRS(10,10,10); DEBUG CODE
 }
 
 
@@ -405,7 +422,7 @@ VectorThree Ccp4::getCRSFromXYZ(double x, double y, double z)
     }
     else // they are not orthogonal
     {
-        VectorThree vFraction = _deOrthoMat.multiply(vXYZIn);
+        VectorThree vFraction = _deOrthoMat.multiply(vXYZIn,true);
         for (int i = 0; i < 3; ++i)
         {
             double val = vFraction.getByIndex(i) * _axisSampling[i] - _crsStart[_map2xyz[i]];
@@ -459,7 +476,7 @@ VectorThree Ccp4::getXYZFromCRS(double c, double r, double s)
         vCRS.putByIndex(0, vCRS.getByIndex(0) / _w08_MX);
         vCRS.putByIndex(1, vCRS.getByIndex(1) / _w09_MY);
         vCRS.putByIndex(2, vCRS.getByIndex(2) / _w10_MZ);
-        vXYZ = _orthoMat.multiply(vCRS);
+        vXYZ = _orthoMat.multiply(vCRS, false);
     }
     return vXYZ;
 }
@@ -493,7 +510,7 @@ void Ccp4::calculateOrigin(int w05_NXSTART, int w06_NYSTART, int w07_NZSTART, in
     oro.putByIndex(0, oro.getByIndex(0) / _w08_MX);
     oro.putByIndex(1, oro.getByIndex(1) / _w09_MY);
     oro.putByIndex(2, oro.getByIndex(2) / _w10_MZ);
-    _origin = _orthoMat.multiply(oro);
+    _origin = _orthoMat.multiply(oro,true);
 }
 
 bool Ccp4::isBigEndian()
@@ -505,6 +522,61 @@ bool Ccp4::isBigEndian()
     } u;
     u.i = 1;
     return (u.b[0] == 1) ? true : false;
+}
+
+
+void Ccp4::makeSlices(VectorThree central, VectorThree linear, VectorThree planar)
+{
+    //dummy use of slice function
+    cout << "BEGIN_DENSITYSLICE\n";
+    double gap = 0.1;
+    double width = 5;
+    int length = width / gap;
+    int halfLength = length/2;
+    cout << "i,j,Density\n";
+    for (int i = -1*halfLength; i <= halfLength; ++i)
+    {
+        for (int j = -1*halfLength; j <= halfLength; ++j)
+        {
+            double x = central.A + (i*gap);
+            double y = central.B + (j*gap);
+            double z = central.C;
+            double density = getDensity(VectorThree(x,y,z));
+            cout << i+halfLength << "," << j+halfLength << "," << density << "\n";
+            //cout << i << "," << j << "," << density << "\n";
+        }        
+    }
+    cout << "END_DENSITYSLICE\n";
+
+    cout << "BEGIN_RADIANTSLICE\n";    
+    cout << "i,j,Radiant\n";
+    for (int i = -1*halfLength; i <= halfLength; ++i)
+    {
+        for (int j = -1*halfLength; j <= halfLength; ++j)
+        {
+            double x = central.A + (i*gap);
+            double y = central.B + (j*gap);
+            double z = central.C;
+            double density = getDensity(VectorThree(x,y,z));
+            cout << i+halfLength << "," << j+halfLength << "," << density << "\n";
+        }        
+    }
+    cout << "END_RADIANTSLICE\n";
+
+    cout << "BEGIN_LAPLACIANSLICE\n";    
+    cout << "i,j,Laplacian\n";
+    for (int i = -1*halfLength; i <= halfLength; ++i)
+    {
+        for (int j = -1*halfLength; j <= halfLength; ++j)
+        {
+            double x = central.A + (i*gap);
+            double y = central.B + (j*gap);
+            double z = central.C;
+            double density = getDensity(VectorThree(x,y,z));
+            cout << i+halfLength << "," << j+halfLength << "," << density << "\n";
+        }        
+    }
+    cout << "END_LAPLACIANSLICE\n";
 }
 
 

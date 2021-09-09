@@ -35,9 +35,19 @@ MatrixThreeThree MatrixThreeThree::getInverse()
     transp.push_back(_matrix[2]);
     transp.push_back(_matrix[5]);
     transp.push_back(_matrix[8]);
+    /*transp.push_back(_matrix[0]);
+    transp.push_back(_matrix[1]);
+    transp.push_back(_matrix[2]);
+    transp.push_back(_matrix[3]);
+    transp.push_back(_matrix[4]);
+    transp.push_back(_matrix[5]);
+    transp.push_back(_matrix[6]);
+    transp.push_back(_matrix[7]);
+    transp.push_back(_matrix[8]);*/
 
     MatrixThreeThree transpose(transp);
     MatrixThreeThree matinverse;
+    MatrixThreeThree matinverseSwitch;
             
     int factor = 1;
 
@@ -51,6 +61,19 @@ MatrixThreeThree MatrixThreeThree::getInverse()
             factor *= -1;
         }
     }
+    //I think I have the rows and columns mixed up, so I am going to switch them round just in case    
+    /*MatrixThreeThree transpose2;
+    transpose2.putValue(matinverse.getValue(0,0),0,0);
+    transpose2.putValue(matinverse.getValue(0,1),1,0);
+    transpose2.putValue(matinverse.getValue(0,2),2,0);
+    transpose2.putValue(matinverse.getValue(1,0),0,1);
+    transpose2.putValue(matinverse.getValue(1,1),1,1);
+    transpose2.putValue(matinverse.getValue(1,2),2,1);
+    transpose2.putValue(matinverse.getValue(2,0),0,2);
+    transpose2.putValue(matinverse.getValue(2,1),1,2);
+    transpose2.putValue(matinverse.getValue(2,2),2,2);
+    return transpose2;*/
+        
     return matinverse;
     
 }
@@ -135,19 +158,19 @@ double MatrixThreeThree::getInnerDeterminant(int col, int row)
     return n11 * n22 - n12 * n21;
 }
 
-double MatrixThreeThree::getValue(int col, int row)
+double MatrixThreeThree::getValue(int row, int col)
 {
     int pos = row * 3 + col;
     return _matrix[pos];
 }
 
-void MatrixThreeThree::putValue(double val, int col, int row)
+void MatrixThreeThree::putValue(double val, int row, int col)
 {
     int pos = row * 3 + col;
     _matrix[pos] = val;    
 }
 
-VectorThree MatrixThreeThree::multiply(VectorThree col)
+VectorThree MatrixThreeThree::multiply(VectorThree col, bool byRow)
 {
     //So, this is by row not by column, or,,, anyway which is which...
     double col0 = col.A;
@@ -156,17 +179,17 @@ VectorThree MatrixThreeThree::multiply(VectorThree col)
 
     VectorThree scaled;
 
-    double s0 = col0 * _matrix[0];
-    double s1 = col0 * _matrix[1];
-    double s2 = col0 * _matrix[2];
+    double s0 = col0 * _matrix[byRow?0:0];
+    double s1 = col0 * _matrix[byRow?1:3];
+    double s2 = col0 * _matrix[byRow?2:6];
 
-    s0 += col1 * _matrix[3];
-    s1 += col1 * _matrix[4];
-    s2 += col1 * _matrix[5];
+    s0 += col1 * _matrix[byRow?3:1];
+    s1 += col1 * _matrix[byRow?4:4];
+    s2 += col1 * _matrix[byRow?5:7];
 
-    s0 += col2 * _matrix[6];
-    s1 += col2 * _matrix[7];
-    s2 += col2 * _matrix[8];
+    s0 += col2 * _matrix[byRow?6:2];
+    s1 += col2 * _matrix[byRow?7:5];
+    s2 += col2 * _matrix[byRow?8:8];
     
     scaled.putByIndex(0,s0);
     scaled.putByIndex(1, s1);

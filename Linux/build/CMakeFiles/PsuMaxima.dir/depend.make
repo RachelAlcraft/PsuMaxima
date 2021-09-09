@@ -24,10 +24,14 @@ CMakeFiles/PsuMaxima.dir/PdbFile.cpp.o: ../VectorThree.h
 CMakeFiles/PsuMaxima.dir/VectorThree.cpp.o: ../VectorThree.cpp
 CMakeFiles/PsuMaxima.dir/VectorThree.cpp.o: ../VectorThree.h
 
+CMakeFiles/PsuMaxima.dir/helper.cpp.o: ../helper.cpp
+CMakeFiles/PsuMaxima.dir/helper.cpp.o: ../helper.h
+
 CMakeFiles/PsuMaxima.dir/main.cpp.o: ../Atom.h
 CMakeFiles/PsuMaxima.dir/main.cpp.o: ../Ccp4.h
 CMakeFiles/PsuMaxima.dir/main.cpp.o: ../MatrixThreeThree.h
 CMakeFiles/PsuMaxima.dir/main.cpp.o: ../PdbFile.h
 CMakeFiles/PsuMaxima.dir/main.cpp.o: ../VectorThree.h
+CMakeFiles/PsuMaxima.dir/main.cpp.o: ../helper.h
 CMakeFiles/PsuMaxima.dir/main.cpp.o: ../main.cpp
 

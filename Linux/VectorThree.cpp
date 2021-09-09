@@ -7,6 +7,14 @@ VectorThree::VectorThree()
     C = 0;
 }
 
+
+VectorThree::VectorThree(double a, double b, double c)
+{
+    A = a;
+    B = b;
+    C = c;
+}
+
 double VectorThree::getByIndex(int idx)
 {
     if (idx == 0)

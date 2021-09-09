@@ -20,7 +20,18 @@ def getFile(filename, url):
   import urllib.request
   urllib.request.urlretrieve(url,filename)
 
-
+def getCsvFromCppResults(cppResults,ID):
+  startPos = cppResults.find('BEGIN_' + ID) + len('BEGIN_' + ID)
+  endPos = cppResults.find('END_' + ID)
+  if endPos > startPos:
+    exe_result = cppResults[startPos:endPos]    
+    exe_data = sio(exe_result)
+    df = pd.read_csv(exe_data)
+    return df
+  else:
+    #print(startPos,endPos)
+    return pd.DataFrame()
+  
 def doWeHaveAllFiles(pdbCode):
   done = True
   import os
@@ -47,32 +58,51 @@ def doWeHaveAllFiles(pdbCode):
 
   return done
 
-def runCppModule(dataText):
-    ######### CHOOSE THE EXECUTABLE HERE #############
-    #pig = sub.Popen(["F://Code//BioComputing2//BioComputing2//cgi-biocomp2//cpp//DummyCpp_Windows.exe", dataText], stdout=sub.PIPE)
-    pig = sub.Popen(["/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima", dataText], stdout=sub.PIPE)
-    #####################################################
-    result = pig.communicate(input=b"This is sample text.\n")
-    exe_result = str(result[0],'utf-8')
-    atmPeaks = exe_result.find("ATOMPEAKS");
-    atmDen = exe_result.find("ATOMDENSITY");
+def runCppModule(pdb, cX,cY,cZ,lX,lY,lZ,pX,pY,pZ):    
+    commandlinePeaks = "PEAKS|" + pdb + "|"
+    commandlinePeaks += str(cX) + "_" + str(cY) + "_" + str(cZ) + "|"
+    commandlinePeaks += str(lX) + "_" + str(lY) + "_" + str(lZ) + "|"
+    commandlinePeaks += str(pX) + "_" + str(pY) + "_" + str(pZ)
 
-
-    exe_result1 = exe_result[8:atmPeaks]    
-    exe_data1 = sio(exe_result1)
-    df1 = pd.read_csv(exe_data1)
-
-    exe_result2 = exe_result[atmPeaks+9:atmDen]    
-    exe_data2 = sio(exe_result2)
-    df2 = pd.read_csv(exe_data2)
-
-    exe_result3 = exe_result[atmDen+11:]    
-    exe_data3 = sio(exe_result3)
-    df3 = pd.read_csv(exe_data3)
-    #print(df)
-    return [df1,df2,df3]
+    commandlineDensity = "DENSITY|" + pdb + "|"
+    #Baffling, 6jvv only fails if I add more into the command line
+    #commandlineDensity += str(cX) + "|" + str(cY) + "|" + str(cZ) + "|
+    #commandlineDensity += str(lX) + "-" + str(lY) + "-" + str(lZ) + "|"
+    #commandlineDensity += str(pX) + "-" + str(pY) + "-" + str(pZ)
     
-#tst code for the dataframe
-#exe_result = str(runCppModule("hi!"),'utf-8')    
-#exe_data = sio(exe_result)
-#df = pd.read_csv(exe_data)
+    #try:
+    if True:
+      ### CALL PEAKS ###
+      pig =  sub.Popen(["/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima", commandlinePeaks], stdout=sub.PIPE)
+      result = pig.communicate(input=b"This is sample text.\n")
+      exe_result = str(result[0],'utf-8')
+      pig.kill()
+      #####################################################
+      #print(exe_result)
+      dfInputs = getCsvFromCppResults(exe_result, 'USERINPUTS')
+      #print(dfInputs)
+      df1 = getCsvFromCppResults(exe_result, 'ALLPEAKS')
+      if len(df1) == 0:
+        print("results from exe=",result)
+        return []      
+      df2 = getCsvFromCppResults(exe_result, 'ATOMPEAKS')
+      df3 = getCsvFromCppResults(exe_result, 'ATOMDENSITY')
+
+      ### CALL DENSITY AND SLICES ###
+      
+      pigD = sub.Popen(["/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima", commandlineDensity], stdout=sub.PIPE)            
+      resultD = pigD.communicate(input=b"This is sample text.\n")
+      exe_resultD = str(resultD[0],'utf-8')
+      pigD.kill()
+      #print("exe",exe_resultD)
+      #####################################################
+      df4 = getCsvFromCppResults(exe_resultD, 'DENSITYSLICE')
+      df5 = getCsvFromCppResults(exe_resultD, 'RADIANTSLICE')
+      df6 = getCsvFromCppResults(exe_resultD, 'LAPLACIANSLICE')      
+      return [df1,df2,df3,df4,df5,df6]
+    #except:
+      #print("results from exe=",result)
+      #return []
+
+    
+

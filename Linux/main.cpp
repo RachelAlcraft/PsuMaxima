@@ -1,14 +1,26 @@
 #include <iostream>
 #include "Ccp4.h"
+#include "helper.h"
 
 int main(int argc, char* argv[]) 
 {
     /******   INPUTS  ***************/
-    string userInput = "6eex";
-    string COMMAND= "PEAKS";
+    cout << "Started..." << "\n";
+    string pdb = "6jvv";
+    string COMMAND= "DENSITY";
     if (argc >= 2)
-    {
-        userInput = argv[1];
+    {                
+        vector<string> inputs = helper::stringToVector(argv[1],"|");
+        cout << "BEGIN_USERINPUTS\n";    
+        cout <<  argv[1] << "\n";   
+        cout << "User Input" << "\n";
+        for (unsigned int i = 0; i < inputs.size(); ++ i)
+            cout << (string)inputs[i] << "\n";
+
+        COMMAND = (string)inputs[0];
+        pdb = (string)inputs[1];
+        cout << "pdb=" << pdb << "\n";
+        cout << "END_USERINPUTS\n";                
     }
     argv[1];
     //std::cout << userInput << "\n";
@@ -20,14 +32,21 @@ int main(int argc, char* argv[])
     /***************************************************/
     
     if (COMMAND == "PEAKS")
-    {
-        //std::cout << userInput << "\n";        
-        Ccp4 myCcp4(userInput,ccp4directory);
-        PdbFile myPdb(userInput, pdbdirectory);
-        myCcp4.makePeaks(&myPdb);
+    {        
+        Ccp4 myCcp4(pdb,ccp4directory);
+        PdbFile myPdb(pdb, pdbdirectory);
+        myCcp4.makePeaks(&myPdb);                
     }
-    else
+    else if (COMMAND == "DENSITY")
     {
-        //std::cout << myCcp4.getPdbCode() << " " << myCcp4.getResolution() << " " << myCcp4.isLoaded() << "\n";
+        Ccp4 myCcp4(pdb,ccp4directory);
+        PdbFile myPdb(pdb, pdbdirectory);        
+        VectorThree central(0,0,0);
+        VectorThree linear(0,0,0);
+        VectorThree planar(0,0,0);
+        myCcp4.makeSlices(central,linear,planar);
     }
+
+    cout << "Finished with no errros";
 }
+

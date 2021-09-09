@@ -29,6 +29,7 @@ public:
 
     //Lazy public access functions
     string Element;
+    int AtomNo;
     
 };
 

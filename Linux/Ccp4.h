@@ -69,6 +69,7 @@ public:
 	bool isLoaded();
 	string getPdbCode();
 	void makePeaks(PdbFile* pdbFile);
+    void makeSlices(VectorThree central, VectorThree linear, VectorThree planar);
 	float getDensity(int C, int R, int S);
     float getDensity(VectorThree XYZ);
 	VectorThree getCRSFromXYZ(double x, double y, double z);

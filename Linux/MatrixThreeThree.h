@@ -27,7 +27,7 @@ public:
 	double getInnerDeterminant(int col, int row);
 	double getValue(int col, int row);
 	void putValue(double val, int col, int row);
-	VectorThree multiply(VectorThree col);
+	VectorThree multiply(VectorThree col, bool byRow);
 
 };
 

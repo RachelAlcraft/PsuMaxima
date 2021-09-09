@@ -10,7 +10,7 @@ Atom::Atom(string line)
 	_line = line;
 
 	// 7 - 11        Integer       serial       Atom  serial number.
-	int atomNo = atol(trim(line.substr(6, 5)).c_str());
+	AtomNo = atol(trim(line.substr(6, 5)).c_str());
 	//13 - 16        Atom          name         Atom name.
 	string elementName = trim(line.substr(12, 4));
 	//16 - 17        The accupancy code if there is one

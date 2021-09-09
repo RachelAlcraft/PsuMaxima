@@ -31,8 +31,11 @@ PdbFile::PdbFile(string pdbCode, string directory)
 
 			if (posHET == 0 || posATM == 0 || posHOH == 0)
 				Atoms.push_back(Atom(line));
+            //else
+            //    cout << line << "\n";
 		}
 		myfile.close();
+        cout << "Atoms size=" << Atoms.size() << "\n";
 		_loaded = true;
 	}
 

@@ -43,7 +43,8 @@ def getHeader():
     string += 'body {text-align:left;background-color:LightSteelBlue;margin-left: 52px;}\n'
     string += 'img {width:85%;border:1px solid MistyRose; }\n'
     #string += 'table {font-size:0.8vw;width:95%;table-layout:fixed;display:table;margin:0 auto;background-color:LightSteelBlue ;}\n'
-    string += 'table {table-layout:fixed; text-align: center; border: 0.5px solid MistyRose; background: AliceBlue; padding: 0px; max-height:450px; overflow-y: scroll;  display: block;table-layout:fixed;}\n'
+    #string += 'table {table-layout:fixed; text-align: center; border: 0.5px solid MistyRose; background: LightSteelBlue; padding: 0px; max-height:450px; overflow-y: scroll;  display: block;table-layout:fixed;}\n'
+    string += 'table {table-layout:fixed; text-align: center; border: 0.5px solid MistyRose; background: LightSteelBlue; padding: 0px;display: block;table-layout:fixed;}\n'
     string += 'td {padding:2px;border:0.5px solid rgb(180, 180, 280,0.75);background-color:AliceBlue;}\n' 
     #string += '.verdtable {table-layout:fixed; text-align: left; border: 3px solid RebeccaPurple; background: MistyRose; padding: 0px; max-height: 250px; overflow-y: scroll;  display: block;}'
     #string += '.verdinnerheader td {border: 3px solid RebeccaPurple;background: RebeccaPurple;padding: 0px; color: Chartreuse;}'
@@ -65,7 +66,7 @@ def getHeader():
 
 
 
-def getBodyA(pdb, dataAsCsv, username, password):    
+def getBodyA(pdb, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ):    
     string = '<hr/>\n'
     string += '<h1>\n'
     string += '<font color="DC143C">Psu</font>Max<font color="DC143C">ima</font>\n'
@@ -73,91 +74,42 @@ def getBodyA(pdb, dataAsCsv, username, password):
     string += '<p>\n'
     string += '<h3>PhD project: <font color="DC143C">Psu</font>Max<font color="DC143C">ima</font></h3>\n'
     string += '</p>\n'
+
     string += '<p>\n'
-    string += 'This webpage interfaces with a C++ executable which calculates density maxima in ccp4 files from the PDBe. Enter the pdb code for the results.\n'
-    string += '</p>\n'
+    string += 'This webpage interfaces with a C++ executable which calculates density maxima in ccp4 files from the PDBe. \n'
+    string += '<i>Only valid for structures with ccp4 files stored on the ebi cloud. </i>\n'
+    string += 'The results include:\n'
+    string += '<li>Visualisation of projected density peaks in 3 planes: XY, YZ and ZX</li>\n'
+    string += '<li>The density peaks in sorted order, including CRS and XYZ coordinates, with nearest atoms</li>\n'
+    string += '<li>Another visualisation of peaks, but this time only those with a nearby atom (unit cell)</li>\n'
+    string += '<li>Another density unit cell visualisation, this time the density of all the atoms (peak or not)</li>\n'
+    string += '<li>All the atoms with a hue of AtomNo, to assist with mental disentangling of the chains</li>\n'
+    string += '<li><font color=grey>For 3 given points, the planar slices of density, radiant and laplacian (not yet...)</font></li>\n'
+    string += ' </p>\n'
+
     string += '<hr/>\n'
-
     string += '<form method="post" action="/cgi-bin/cgiwrap/ab002/PhD/Maxima.cgi" accept-charset="UTF-8">\n'
-
+    #Access Credentials
     string += '~~ Application access credentials ~~'
     string += '<br/><i>You must enter a valid email address to access this software. Passwords will be forthcoming.</i>'
     string += "<br/>Email address: <input type='text' name='email' value='" + username + "' />"
     string += " Password: <input type='text' name='password' value='not used' />"
     string += '<hr/>'
+    #PDB code
     string +='<h3>Electron Density Analysis</h3>'
-
-
-
     string += 'Enter 4 digit pdb code: <input type="text" name="dataInput" value=' + pdb + ' />\n'    
     string += '<br/>Choose data format: \n'
-
+    #Data return format
     csv = 'checked'
     grid = ''
     if not dataAsCsv:
         csv = ''
         grid = 'checked'
-
     string += '<input type="radio" id="asCsv" name="format" value="asCsv" ' + csv +' ><label for="asCsv">As csv file</label>'
     string += '<input type="radio" id="asGrid" name="format" value="asGrid" '+ grid +' ><label for="asGrid">As grid</label>'
-        
-    string += '<br/><input type="Submit" value="Analyse"/>\n'
-    string += '</form>\n'
-    string += '</div>\n'
-    return string
-
-def getBodyB(pdb, dataABC, asCsv):
-
-    dataA = dataABC[0]
-    dataB = dataABC[1]
-    dataC = dataABC[2]
-
-    string = '<hr/>\n'
-    string += '<p>EBI Link <a href="https://www.ebi.ac.uk/pdbe/entry/pdb/' + pdb + '" title="EBI link" target="_blank">Open protein pdb ebi link</a></p>'
-
-    string += '<hr/>\n'
-    string += '<h3>MAXIMA RESULTS</h3>'
-
-    string += '<p>' + pdb + ': Peaks projections</p>'
-    string += dataFrameToImages(dataA)
-
-    string += '<p>' + pdb + ': Atom only peaks projections</p>'
-    string += dataFrameToImages(dataB)
-
-    string += '<p>' + pdb + ': Pdb atoms density projections</p>'
-    string += dataFrameToImages(dataC)
-
-    if not asCsv:
-        string += '<p>' + pdb + ': Peaks grid </p>'
-        string += dataFrameToGrid(dataA)
-    else:
-        string += '<p>' + pdb + ': Peaks csv file </p>'
-        string += dataFrameToText(dataA)
-    
-    
-    return string
-    
-    
-def dataFrameToImages(data):    
-    mtx = createDummyMatrix()
-    #string = matrixToImage(mtx)
-    html = '<table><tr>'
-    html += scatterToImage(data,'Density','X','Y')
-    html += scatterToImage(data,'Density','Y','Z')
-    html += scatterToImage(data,'Density','Z','X')
-    html += '</tr></table>'
-    
-    return html
-    
-def getBodyC(pdb,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ):
-    string = '<hr/><h3>Visualise Electron Density</h3>\n'
-    string += '<p>Three points are needed for a plane. Enter three points to get a density contour slice from the elctron density.'
+    #Coordinates for the slice
+    string += '<p>Three points are needed for a plane. Enter three points to get a density contour slice from the electron density.'
     string += '<br/> !!! Results are currently dummy !!!</p>\n'
-
-
-
-    string += '<form method="post" action="/cgi-bin/cgiwrap/ab002/PhD/MaximaSlice.cgi" accept-charset="UTF-8">\n'
-    string += '<p>PdbCode<input type="text" name="dataInput" value=' + pdb + ' />\n'
 
     string += '<table><tr><td>Central: X=<input type="text" name="CX" value=' + str(cX) + ' />\n'
     string += ' Y=<input type="text" name="CY" value=' + str(cY) + ' />\n'
@@ -171,15 +123,110 @@ def getBodyC(pdb,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ):
     string += ' Y=<input type="text" name="PY" value=' + str(pY) + ' />\n'
     string += ' Z=<input type="text" name="PZ" value=' + str(pZ) + ' /></td></tr></table>\n'
 
-    
-    string += '<br/><input type="Submit" value="Visualise Density"/></p>\n'
+    string += '<br/><input type="Submit" value="Analyse"/>\n'
     string += '</form>\n'
+    string += '</div>\n'
+    return string
+
+def getBodyB(pdb, dataABC, asCsv):
+
+    if len(dataABC) > 0:
+        dataA = dataABC[0]
+        dataB = dataABC[1]
+        dataC = dataABC[2]
+
+        string = '<hr/>\n'
+        string += '<p>EBI Link <a href="https://www.ebi.ac.uk/pdbe/entry/pdb/' + pdb + '" title="EBI link" target="_blank">Open protein pdb ebi link</a></p>'
+
+        string += '<hr/>\n'
+        string += '<h3>MAXIMA RESULTS</h3>'
+
+        string += '<p>' + pdb + ': Peaks projections</p>'
+        string += dataFrameToImages(pdb,dataA,"X","Y","Z","Density","cubehelix_r")
+
+        if not asCsv:
+            string += '<p>' + pdb + ': Peaks grid </p>'
+            string += dataFrameToGrid(dataA)
+        else:
+            string += '<p>' + pdb + ': Peaks csv file </p>'
+            string += dataFrameToText(dataA)
+
+        string += '<p>' + pdb + ': Atom only peaks projections</p>'
+        string += dataFrameToImages(pdb,dataB,"X","Y","Z","Density","cubehelix_r")
+
+        string += '<p>' + pdb + ': Pdb atoms density projections</p>'
+        string += dataFrameToImages(pdb,dataC,"X","Y","Z","Density","cubehelix_r")
+
+        string += '<p>' + pdb + ': Pdb atoms on atom no</p>'
+        string += dataFrameToImages(pdb,dataC,"X","Y","Z","AtomNo","jet")
+    else:
+        string = '<font color="DC143C"><h1>Exe failed to create data</h1></font>'
+
+
+    
+    
+    
+    return string
+    
+    
+def dataFrameToImages(pdb,data,geoA,geoB,geoC,hue,palette):    
+    mtx = createDummyMatrix()
+    #string = matrixToImage(mtx)
+    html = '<table><tr>'
+    html += scatterToImage(pdb,data,hue,geoA,geoB,palette)
+    html += scatterToImage(pdb,data,hue,geoB,geoC,palette)
+    html += scatterToImage(pdb,data,hue,geoC,geoA,palette)
+    html += '</tr></table>'
+    
+    return html
+    
+
+def scatterToMatrix(data,length,hue):
+    try:
+        mtx = data[hue].values.reshape(length+1,length+1)
+        return mtx
+    except:
+        return np.zeros([3,3])
+            
+    
+
+def getBodyC(pdb,dataABC):
+    
+    if len(dataABC) > 0:
+        dataA = dataABC[3]
+        dataB = dataABC[4]
+        dataC = dataABC[5]
+
+        string = '<hr/>\n'
+        string = '<hr/><h3>Visualised Electron Density</h3>\n'
+        string += '<h3>SLICE RESULTS</h3>'
+        
+        string += '<table><tr>'
+        string += '<td>Density</td><td>Radiant</td><td>Laplacian</td></tr><tr>'
+
+        mtxD = scatterToMatrix(dataA,50,'Density')
+        mtxR = scatterToMatrix(dataB,50,'Radiant')
+        mtxL = scatterToMatrix(dataC,50,'Laplacian')        
+        string += matrixToImage(pdb,mtxD)
+        string += matrixToImage(pdb,mtxR)
+        string += matrixToImage(pdb,mtxL)
+
+        #string += scatterToImage(pdb,dataA,"Density","i","j","inferno")
+        #string += scatterToImage(pdb,dataB,"Radiant","i","j","inferno")
+        #string += scatterToImage(pdb,dataC,"Laplacian","i","j","inferno")
+        
+        
+        string += '</tr></table>'
+
+    else:
+        string = '<font color="DC143C"><h1>Exe failed to create data</h1></font>'
 
     
     return string
 
-def getBodyD(pdb,data,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ):    
-    string = '<hr/><h3>SLICE RESULTS</h3>'
+def getBodyD(pdb,data,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ):
+    string = '<hr/><h3>Visualised Electron Density</h3>\n'
+    string += '<h3>SLICE RESULTS</h3>'
     mtx = createDummyMatrix()
     string += matrixToImage(mtx)
     return string
@@ -204,7 +251,7 @@ def dataFrameToGrid(df):
     """
     cols = len(df.columns)
     rows = len(df.index)
-    html = "<table class='verdtable'>\n"
+    html = "<table style='max-height:450px;overflow-y: scroll;'>\n"
     html += "<tr class='verdinnerheader'>\n"
     for col in df.columns:
         html += "<td>" + col + "</td>\n"
@@ -262,31 +309,30 @@ def getPlotImage(fig, ax):
     plt.close('all')    
     return encoded
     
-def matrixToImage(mtx):
+def matrixToImage(pdb,mtx):
     fig, ax = plt.subplots()
-    image = plt.imshow(mtx, cmap='cubehelix_r', interpolation='nearest', origin='lower', aspect='equal',alpha=1)        
+    image = plt.imshow(mtx, cmap='inferno', interpolation='nearest', origin='lower', aspect='equal',alpha=1)        
     image = plt.contour(mtx, colors='SlateGray', alpha=0.55, linewidths=0.3, levels=12)
-    plt.axis('off')
+    plt.axis('off')    
     encoded = getPlotImage(fig,ax)
     imstring = '<img width=10% src="data:image/png;base64, {}">'.format(encoded.decode('utf-8')) + '\n'
-    #html = imstring
-    html = '<table><tr>'
-    html += '<td>DUMMY DATA</td>'
-    html += '<td>' + '<p>' + imstring + '</p></td></tr></table>\n'
+    #html = imstring        
+    html = '<td><p>' + pdb + '</p><p>' + imstring + '</p></td>\n'
     return html
 
 
-def scatterToImage(df, hue, xaxis,yaxis):
+def scatterToImage(pdb, df, hue, xaxis,yaxis,pal):
     fig, ax = plt.subplots()
-
-    pal = 'cubehelix_r'
+    
     df = df.sort_values(by=hue, ascending=True)
+    count = len(df)
     
     g = ax.scatter(df[xaxis], df[yaxis], c=df[hue], cmap=pal,edgecolor='AliceBlue', alpha=0.7,linewidth=0.8,s=20)
     cb = fig.colorbar(g)
     ax.set_xlabel(xaxis)
     ax.set_ylabel(yaxis)
     cb.set_label(hue)
+    plt.title(pdb + ' Count=' + str(count))
 
     encoded = getPlotImage(fig,ax)
     imstring = '<img width=10% src="data:image/png;base64, {}">'.format(encoded.decode('utf-8')) + '\n'

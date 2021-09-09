@@ -672,6 +672,33 @@ VectorThree.cpp.s:
 	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/VectorThree.cpp.s
 .PHONY : VectorThree.cpp.s
 
+helper.o: helper.cpp.o
+
+.PHONY : helper.o
+
+# target to build an object file
+helper.cpp.o:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/helper.cpp.o
+.PHONY : helper.cpp.o
+
+helper.i: helper.cpp.i
+
+.PHONY : helper.i
+
+# target to preprocess a source file
+helper.cpp.i:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/helper.cpp.i
+.PHONY : helper.cpp.i
+
+helper.s: helper.cpp.s
+
+.PHONY : helper.s
+
+# target to generate assembly for a file
+helper.cpp.s:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/helper.cpp.s
+.PHONY : helper.cpp.s
+
 main.o: main.cpp.o
 
 .PHONY : main.o
@@ -754,6 +781,9 @@ help:
 	@echo "... VectorThree.o"
 	@echo "... VectorThree.i"
 	@echo "... VectorThree.s"
+	@echo "... helper.o"
+	@echo "... helper.i"
+	@echo "... helper.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
