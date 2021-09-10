@@ -591,6 +591,33 @@ Ccp4.cpp.s:
 	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/Ccp4.cpp.s
 .PHONY : Ccp4.cpp.s
 
+CoutReports.o: CoutReports.cpp.o
+
+.PHONY : CoutReports.o
+
+# target to build an object file
+CoutReports.cpp.o:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/CoutReports.cpp.o
+.PHONY : CoutReports.cpp.o
+
+CoutReports.i: CoutReports.cpp.i
+
+.PHONY : CoutReports.i
+
+# target to preprocess a source file
+CoutReports.cpp.i:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/CoutReports.cpp.i
+.PHONY : CoutReports.cpp.i
+
+CoutReports.s: CoutReports.cpp.s
+
+.PHONY : CoutReports.s
+
+# target to generate assembly for a file
+CoutReports.cpp.s:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/CoutReports.cpp.s
+.PHONY : CoutReports.cpp.s
+
 MatrixThreeThree.o: MatrixThreeThree.cpp.o
 
 .PHONY : MatrixThreeThree.o
@@ -644,6 +671,33 @@ PdbFile.s: PdbFile.cpp.s
 PdbFile.cpp.s:
 	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/PdbFile.cpp.s
 .PHONY : PdbFile.cpp.s
+
+SpaceTransformation.o: SpaceTransformation.cpp.o
+
+.PHONY : SpaceTransformation.o
+
+# target to build an object file
+SpaceTransformation.cpp.o:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/SpaceTransformation.cpp.o
+.PHONY : SpaceTransformation.cpp.o
+
+SpaceTransformation.i: SpaceTransformation.cpp.i
+
+.PHONY : SpaceTransformation.i
+
+# target to preprocess a source file
+SpaceTransformation.cpp.i:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/SpaceTransformation.cpp.i
+.PHONY : SpaceTransformation.cpp.i
+
+SpaceTransformation.s: SpaceTransformation.cpp.s
+
+.PHONY : SpaceTransformation.s
+
+# target to generate assembly for a file
+SpaceTransformation.cpp.s:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/SpaceTransformation.cpp.s
+.PHONY : SpaceTransformation.cpp.s
 
 VectorThree.o: VectorThree.cpp.o
 
@@ -772,12 +826,18 @@ help:
 	@echo "... Ccp4.o"
 	@echo "... Ccp4.i"
 	@echo "... Ccp4.s"
+	@echo "... CoutReports.o"
+	@echo "... CoutReports.i"
+	@echo "... CoutReports.s"
 	@echo "... MatrixThreeThree.o"
 	@echo "... MatrixThreeThree.i"
 	@echo "... MatrixThreeThree.s"
 	@echo "... PdbFile.o"
 	@echo "... PdbFile.i"
 	@echo "... PdbFile.s"
+	@echo "... SpaceTransformation.o"
+	@echo "... SpaceTransformation.i"
+	@echo "... SpaceTransformation.s"
 	@echo "... VectorThree.o"
 	@echo "... VectorThree.i"
 	@echo "... VectorThree.s"

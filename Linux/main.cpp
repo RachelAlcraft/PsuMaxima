@@ -1,13 +1,28 @@
 #include <iostream>
+#include <cstdlib>
+
 #include "Ccp4.h"
 #include "helper.h"
+#include "CoutReports.h"
 
 int main(int argc, char* argv[]) 
 {
     /******   INPUTS  ***************/
     cout << "Started..." << "\n";
-    string pdb = "6jvv";
-    string COMMAND= "DENSITY";
+    string pdb = "1ejg";
+    string COMMAND= "SLICES";
+    double cX = 5;
+    double cY = 5;
+    double cZ = 5;
+    double lX = 6;
+    double lY = 6;
+    double lZ = 6;
+    double pX = 2;
+    double pY = 2;
+    double pZ = 13;
+    double width = 5.0;
+    double gap = 0.1;
+
     if (argc >= 2)
     {                
         vector<string> inputs = helper::stringToVector(argv[1],"|");
@@ -20,7 +35,37 @@ int main(int argc, char* argv[])
         COMMAND = (string)inputs[0];
         pdb = (string)inputs[1];
         cout << "pdb=" << pdb << "\n";
-        cout << "END_USERINPUTS\n";                
+                      
+
+        if (COMMAND == "SLICES")
+        {
+            string central = inputs[2];
+            string linear = inputs[3];
+            string planar = inputs[4];
+            string image_size = inputs[5];
+            vector<string> cCoords = helper::stringToVector(central,"-");
+            vector<string> lCoords = helper::stringToVector(linear,"-");
+            vector<string> pCoords = helper::stringToVector(planar,"-");
+            vector<string> imSize = helper::stringToVector(image_size,"-");
+            cX = atof(cCoords[0].c_str());
+            cY = atof(cCoords[1].c_str());
+            cZ = atof(cCoords[2].c_str());
+            lX = atof(lCoords[0].c_str());
+            lY = atof(lCoords[1].c_str());
+            lZ = atof(lCoords[2].c_str());
+            pX = atof(pCoords[0].c_str());
+            pY = atof(pCoords[1].c_str());
+            pZ = atof(pCoords[2].c_str());
+            width = atof(imSize[0].c_str());
+            gap = atof(imSize[1].c_str());
+
+            cout << "(" << cX << "-" << cY << "-" << cZ << ")\n";
+            cout << "(" << lX << "-" << lY << "-" << lZ << ")\n";
+            cout << "(" << pX << "-" << pY << "-" << pZ << ")\n";
+            cout << "(" << width << "-" << gap << ")\n";
+        }
+
+        cout << "END_USERINPUTS\n";  
     }
     argv[1];
     //std::cout << userInput << "\n";
@@ -35,16 +80,22 @@ int main(int argc, char* argv[])
     {        
         Ccp4 myCcp4(pdb,ccp4directory);
         PdbFile myPdb(pdb, pdbdirectory);
-        myCcp4.makePeaks(&myPdb);                
+        CoutReports::coutPeaks(&myCcp4,&myPdb);                
     }
-    else if (COMMAND == "DENSITY")
+    else if (COMMAND == "ATOMS")
+    {        
+        Ccp4 myCcp4(pdb,ccp4directory);
+        PdbFile myPdb(pdb, pdbdirectory);
+        CoutReports::coutAtoms(&myCcp4,&myPdb);                
+    }
+    else if (COMMAND == "SLICES")
     {
         Ccp4 myCcp4(pdb,ccp4directory);
         PdbFile myPdb(pdb, pdbdirectory);        
-        VectorThree central(0,0,0);
-        VectorThree linear(0,0,0);
-        VectorThree planar(0,0,0);
-        myCcp4.makeSlices(central,linear,planar);
+        VectorThree central(cX,cY,cZ);
+        VectorThree linear(lX,lY,lZ);
+        VectorThree planar(pX,pY,pZ);
+        CoutReports::coutSlices(&myCcp4,&myPdb,central,linear,planar,width,gap);
     }
 
     cout << "Finished with no errros";

@@ -58,47 +58,57 @@ def doWeHaveAllFiles(pdbCode):
 
   return done
 
-def runCppModule(pdb, cX,cY,cZ,lX,lY,lZ,pX,pY,pZ):    
-    commandlinePeaks = "PEAKS|" + pdb + "|"
-    commandlinePeaks += str(cX) + "_" + str(cY) + "_" + str(cZ) + "|"
-    commandlinePeaks += str(lX) + "_" + str(lY) + "_" + str(lZ) + "|"
-    commandlinePeaks += str(pX) + "_" + str(pY) + "_" + str(pZ)
-
-    commandlineDensity = "DENSITY|" + pdb + "|"
-    #Baffling, 6jvv only fails if I add more into the command line
-    #commandlineDensity += str(cX) + "|" + str(cY) + "|" + str(cZ) + "|
-    #commandlineDensity += str(lX) + "-" + str(lY) + "-" + str(lZ) + "|"
-    #commandlineDensity += str(pX) + "-" + str(pY) + "-" + str(pZ)
-    
+def runCppModule(pdb, cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,D4,D5,D6,D7):        
     #try:
+    df1,df2,df3,df4,df5,df6 = pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame()
     if True:
-      ### CALL PEAKS ###
-      pig =  sub.Popen(["/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima", commandlinePeaks], stdout=sub.PIPE)
-      result = pig.communicate(input=b"This is sample text.\n")
-      exe_result = str(result[0],'utf-8')
-      pig.kill()
-      #####################################################
-      #print(exe_result)
-      dfInputs = getCsvFromCppResults(exe_result, 'USERINPUTS')
-      #print(dfInputs)
-      df1 = getCsvFromCppResults(exe_result, 'ALLPEAKS')
-      if len(df1) == 0:
-        print("results from exe=",result)
-        return []      
-      df2 = getCsvFromCppResults(exe_result, 'ATOMPEAKS')
-      df3 = getCsvFromCppResults(exe_result, 'ATOMDENSITY')
-
-      ### CALL DENSITY AND SLICES ###
+      ### CALL PEAKS ######################################
+      if D1 or D2 or D3 or D4:
+        commandlinePeaks = "PEAKS|" + pdb + "|"
+        #------------------------------------------------
+        pigP =  sub.Popen(["/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima", commandlinePeaks], stdout=sub.PIPE)
+        resultP = pigP.communicate(input=b"This is sample text.\n")
+        exe_resultP = str(resultP[0],'utf-8')
+        pigP.kill()
+        #------------------------------------------------
+        dfInputs = getCsvFromCppResults(exe_resultP, 'USERINPUTS')      
+        df1 = getCsvFromCppResults(exe_resultP, 'ALLPEAKS')
+        if len(df1) == 0:
+          print("results from exe=",result)
+          return []      
+        df2 = getCsvFromCppResults(exe_resultP, 'ATOMPEAKS')
       
-      pigD = sub.Popen(["/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima", commandlineDensity], stdout=sub.PIPE)            
-      resultD = pigD.communicate(input=b"This is sample text.\n")
-      exe_resultD = str(resultD[0],'utf-8')
-      pigD.kill()
-      #print("exe",exe_resultD)
-      #####################################################
-      df4 = getCsvFromCppResults(exe_resultD, 'DENSITYSLICE')
-      df5 = getCsvFromCppResults(exe_resultD, 'RADIANTSLICE')
-      df6 = getCsvFromCppResults(exe_resultD, 'LAPLACIANSLICE')      
+      ### CALL ATOMS ######################################
+      if D5 or D6:
+        commandlineAtoms = "ATOMS|" + pdb + "|"
+        #------------------------------------------------
+        pigA = sub.Popen(["/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima", commandlineAtoms], stdout=sub.PIPE)            
+        resultA = pigA.communicate(input=b"This is sample text.\n")
+        exe_resultA = str(resultA[0],'utf-8')
+        pigA.kill()      
+        #------------------------------------------------
+        df3 = getCsvFromCppResults(exe_resultA, 'ATOMDENSITY')
+
+      ### CALL SLICES #######################################
+      if D7:
+        commandlineSlices = "SLICES|" + pdb + "|"
+        #Baffling, 6jvv only fails if I add more into the command line
+        commandlineSlices += str(cX) + "-" + str(cY) + "-" + str(cZ) + "|"
+        commandlineSlices += str(lX) + "-" + str(lY) + "-" + str(lZ) + "|"
+        commandlineSlices += str(pX) + "-" + str(pY) + "-" + str(pZ) + "|"
+        commandlineSlices += str(width) + "-" + str(gran)
+        #------------------------------------------------
+        pigS = sub.Popen(["/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima", commandlineSlices], stdout=sub.PIPE)            
+        resultS = pigS.communicate(input=b"This is sample text.\n")
+        exe_resultS = str(resultS[0],'utf-8')
+        pigS.kill()      
+        #------------------------------------------------
+        #dfI = getCsvFromCppResults(exe_resultS, 'USERINPUTS')
+        #print(dfI)
+        df4 = getCsvFromCppResults(exe_resultS, 'DENSITYSLICE')
+        df5 = getCsvFromCppResults(exe_resultS, 'RADIANTSLICE')
+        df6 = getCsvFromCppResults(exe_resultS, 'LAPLACIANSLICE')      
+
       return [df1,df2,df3,df4,df5,df6]
     #except:
       #print("results from exe=",result)

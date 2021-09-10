@@ -122,10 +122,10 @@ Ccp4::Ccp4(string pdbCode, string directory)
     for (unsigned int i = startBulk; i < tmpData.size(); ++i)
     {
         float mtx = tmpData[i];
-        _matrix.push_back(mtx);
+        Matrix.push_back(mtx);
         //lets not bother to add it to the peaks if it is smaller than the mean
         if (mtx > w22_DMEAN)
-            _matrixPeaks.push_back(pair<float, int>(mtx, count));
+            MatrixPeaks.push_back(pair<float, int>(mtx, count));
 
         
         count++;
@@ -190,130 +190,10 @@ string Ccp4::getPdbCode()
     return _pdbCode;
 }
 
-
-
-void Ccp4::makePeaks(PdbFile* pdbFile)
-{    
-    sort(_matrixPeaks.rbegin(), _matrixPeaks.rend());
-    vector<pair<float, int> > tmpMatrixPeaks;
-
-    //All the data in the list is near neighbours. So we can go through it
-    //TO DO HERE
-    for (unsigned int i = 0;  i< _matrixPeaks.size(); ++i)
-    {
-        double peak = _matrixPeaks[i].first;
-        int position = _matrixPeaks[i].second;
-        VectorThree CRS = getCRS(position);
-        bool are_any_bigger = false;
-        for (int a = -1; a < 2; ++ a)
-        {
-            for (int b = -1; b < 2; ++ b)
-            {
-                for (int c = -1; c < 2; ++ c)
-                {                    
-                    int tmpPos = getPosition(a + CRS.A, b + CRS.B, c + CRS.C);
-                    if (tmpPos > 0 && tmpPos < _matrix.size())
-                    {
-                        double tmpPeak = _matrix[tmpPos];
-                        if (tmpPeak > peak)
-                            are_any_bigger = true;
-                    }
-            
-                }            
-            }
-        }
-        if (!are_any_bigger)
-        {
-            tmpMatrixPeaks.push_back(pair<float,int>(peak,position));
-        }
-
-    }
-
-    _matrixPeaks = tmpMatrixPeaks;
-
-    unsigned int maxdensity = 10000;
-    if (_matrixPeaks.size() < maxdensity)
-        maxdensity = _matrixPeaks.size();
-
-    
-
-    cout << "BEGIN_ALLPEAKS\n";
-    cout << "Density,C,R,S,X,Y,Z,NearestAtom,Distance\n";
-
-
-    for (unsigned int i = 0; i < maxdensity; ++i)
-    {
-        int pos = _matrixPeaks[i].second;
-        VectorThree coords = getCRS(pos);
-        VectorThree XYZ = getXYZFromCRS(coords.C, coords.B, coords.A);
-        float density = _matrixPeaks[i].first;
-        double distance = 0;
-        string line = "-";
-        if (pdbFile->isLoaded())
-        {
-            Atom* atm = pdbFile->getNearest(XYZ.A, XYZ.B, XYZ.C);
-            if (atm != NULL)
-            {
-                line = atm->getLine();
-                distance = atm->distance(XYZ.A, XYZ.B, XYZ.C);
-            }
-        }
-        if (line == "-")
-            cout << "" << density << "," << coords.C << "," << coords.B << "," << coords.A << "," << XYZ.A << "," << XYZ.B << "," << XYZ.C << "," << line << ",-" << "\n";
-        else
-            cout << "" << density << "," << coords.C << "," << coords.B << "," << coords.A << "," << XYZ.A << "," << XYZ.B << "," << XYZ.C << "," << line << "," << distance << "\n";
-    }
-    cout << "END_ALLPEAKS\n";
-
-    cout << "BEGIN_ATOMPEAKS\n";
-    cout << "Density,C,R,S,X,Y,Z,NearestAtom,Distance\n";
-    for (unsigned int i = 0; i < maxdensity; ++i)
-    {
-        int pos = _matrixPeaks[i].second;
-        VectorThree coords = getCRS(pos);
-        VectorThree XYZ = getXYZFromCRS(coords.C, coords.B, coords.A);
-        float density = _matrixPeaks[i].first;
-        double distance = 0;
-        string line = "-";
-        if (pdbFile->isLoaded())
-        {
-            Atom* atm = pdbFile->getNearest(XYZ.A, XYZ.B, XYZ.C);
-            if (atm != NULL)
-            {
-                line = atm->getLine();
-                distance = atm->distance(XYZ.A, XYZ.B, XYZ.C);
-            }
-        }
-        if (line != "-")                    
-            cout << "" << density << "," << coords.C << "," << coords.B << "," << coords.A << "," << XYZ.A << "," << XYZ.B << "," << XYZ.C << "," << line << "," << distance << "\n";
-    }
-    cout << "END_ATOMPEAKS\n";
-
-    cout << "BEGIN_ATOMDENSITY\n";
-    cout << "Density,X,Y,Z,AtomNo,AtomLine\n";
-    if (pdbFile->isLoaded())
-    {
-        for (unsigned int i = 0; i < pdbFile->Atoms.size(); ++i)
-        {
-            Atom atm = pdbFile->Atoms[i];
-            VectorThree XYZ = atm.getXYZ();        
-            float density = getDensity(XYZ);    
-            string line = atm.getLine();     
-            int atmNo = atm.AtomNo;                                                                                   
-            cout << "" << density << "," << XYZ.A << "," << XYZ.B << "," << XYZ.C << "," << atmNo << "," << line << "\n";
-        }
-    }
-    cout << "END_ATOMDENSITY\n";
-
-
-
-
-}
-
 float Ccp4::getDensity(int C, int R, int S)
 {
     int pos = getPosition(C,R,S);    
-    return _matrix[pos];
+    return Matrix[pos];
 }
 
 float Ccp4::getDensity(VectorThree XYZ)
@@ -337,6 +217,54 @@ float Ccp4::getDensity(VectorThree XYZ)
     
     return density;
 
+}
+
+float Ccp4::getRadiant(VectorThree XYZ)
+{
+    double h = 0.01;
+    double x = XYZ.A;
+    double y = XYZ.B;
+    double z = XYZ.C;
+    double val = getDensity(VectorThree(x, y, z));
+    double dx = (getDensity(VectorThree(x+h, y, z)) - val)/h;
+    double dy = (getDensity(VectorThree(x, y+h, z)) - val)/ h;
+    double dz = (getDensity(VectorThree(x, y, z+h)) - val)/ h;
+    double radiant = (abs(dx) + abs(dy) + abs(dz)) / 3;    
+    return radiant;
+}
+
+float Ccp4::getLaplacian(VectorThree XYZ)
+{    
+    double val = getDensity(XYZ);
+    double xx = getDxDx(XYZ.A, XYZ.B, XYZ.C, val);
+    double yy = getDyDy(XYZ.A, XYZ.B, XYZ.C, val);
+    double zz = getDzDz(XYZ.A, XYZ.B, XYZ.C, val);
+    return xx + yy + zz;
+}
+
+double Ccp4::getDxDx(double x, double y, double z, double val)
+{
+    double h = 0.01;
+    double va = getDensity(VectorThree(x - h, y,z));
+    double vb = getDensity(VectorThree(x + h, y,z));
+    double dd = (va + vb - 2 * val) / (h * h);
+    return dd;
+}
+double Ccp4::getDyDy(double x, double y, double z, double val)
+{
+    double h = 0.01;
+    double va = getDensity(VectorThree(x,y - h, z));
+    double vb = getDensity(VectorThree(x,y + h, z));
+    double dd = (va + vb - 2 * val) / (h * h);
+    return dd;
+}
+double Ccp4::getDzDz(double x, double y, double z, double val)
+{
+    double h = 0.01;
+    double va = getDensity(VectorThree(x, y, z - h));
+    double vb = getDensity(VectorThree(x, y, z + h));
+    double dd = (va + vb - 2 * val) / (h * h);
+    return dd;
 }
 
 
@@ -525,59 +453,7 @@ bool Ccp4::isBigEndian()
 }
 
 
-void Ccp4::makeSlices(VectorThree central, VectorThree linear, VectorThree planar)
-{
-    //dummy use of slice function
-    cout << "BEGIN_DENSITYSLICE\n";
-    double gap = 0.1;
-    double width = 5;
-    int length = width / gap;
-    int halfLength = length/2;
-    cout << "i,j,Density\n";
-    for (int i = -1*halfLength; i <= halfLength; ++i)
-    {
-        for (int j = -1*halfLength; j <= halfLength; ++j)
-        {
-            double x = central.A + (i*gap);
-            double y = central.B + (j*gap);
-            double z = central.C;
-            double density = getDensity(VectorThree(x,y,z));
-            cout << i+halfLength << "," << j+halfLength << "," << density << "\n";
-            //cout << i << "," << j << "," << density << "\n";
-        }        
-    }
-    cout << "END_DENSITYSLICE\n";
 
-    cout << "BEGIN_RADIANTSLICE\n";    
-    cout << "i,j,Radiant\n";
-    for (int i = -1*halfLength; i <= halfLength; ++i)
-    {
-        for (int j = -1*halfLength; j <= halfLength; ++j)
-        {
-            double x = central.A + (i*gap);
-            double y = central.B + (j*gap);
-            double z = central.C;
-            double density = getDensity(VectorThree(x,y,z));
-            cout << i+halfLength << "," << j+halfLength << "," << density << "\n";
-        }        
-    }
-    cout << "END_RADIANTSLICE\n";
-
-    cout << "BEGIN_LAPLACIANSLICE\n";    
-    cout << "i,j,Laplacian\n";
-    for (int i = -1*halfLength; i <= halfLength; ++i)
-    {
-        for (int j = -1*halfLength; j <= halfLength; ++j)
-        {
-            double x = central.A + (i*gap);
-            double y = central.B + (j*gap);
-            double z = central.C;
-            double density = getDensity(VectorThree(x,y,z));
-            cout << i+halfLength << "," << j+halfLength << "," << density << "\n";
-        }        
-    }
-    cout << "END_LAPLACIANSLICE\n";
-}
 
 
 

@@ -3,11 +3,23 @@
 <head>
 <link rel="icon" href="img/atom.ico"><title>PsuMaxima</title>
 <style> 
-body {text-align:left;background-color:LightSteelBlue;margin-left: 52px;} 
-img {width:95% }table {font-size:0.8vw;width:95%;table-layout:fixed;display:table;margin:0 auto;background-color:LightSteelBlue ;} 
-td {border:1px solid MistyRose;background-color:AliceBlue;}</style></head>
+body {text-align:left;background-color:LightSteelBlue;margin-left: 52px;}
+img {width:85%;border:1px solid MistyRose; }
+table {table-layout:fixed; text-align: center; border: 0.5px solid MistyRose; background: LightSteelBlue; padding: 0px;display: block;table-layout:fixed;}
+td {padding:2px;border:0.5px solid rgb(180, 180, 280,0.75);background-color:AliceBlue;}
+a:link{color:MistyRose;}
+a:visited {color:MistyRose;}
+a:hover {color:white;}
+</style></head>
 </head>
 <body>
+
+<hr/>
+<p style="background-color:Crimson;margin:5px;padding:5px;color:AliceBlue;">
+   <a href='Maxima.html' title='Home' target='_self'>PhD Home</a>
+~ <a href='index.html' title='Student' target='_blank'>Student home</a>
+~ <a href='https://www.bbk.ac.uk/departments/biology/' title='Birkbeck' target='_blank'>Birkbeck Biology</a>
+</p>
 
 <hr/>
 
@@ -18,19 +30,59 @@ td {border:1px solid MistyRose;background-color:AliceBlue;}</style></head>
 <h3>PhD project: <font color="DC143C">Psu</font>Max<font color="DC143C">ima</font></h3>
 </p>
 <p>
-This webpage interfaces with a C++ executable which calculates density maxima in ccp4 files from the PdbE. Enter the pdb code for the results.
+This webpage interfaces with a C++ executable which calculates density maxima in ccp4 files from the PDBe. 
+<i>Only valid for structures with ccp4 files stored on the ebi cloud. </i>
 </p>
 
+
 <hr/>
-<div class="middle">
-<p>
-Enter 4 digit pdb code:
-</p>
+
+ <div>
 <form method="post" action="/cgi-bin/cgiwrap/ab002/PhD/Maxima.cgi" accept-charset="UTF-8">
-<p><input type='text' name='dataInput'/>
-<input type='Submit' value='Analyse' />
+<b>~~ Application access credentials ~~</b>
+<br/><i>You must enter a valid email address to access this software. Passwords will be forthcoming.</i>
+<br/>Email address: <input type='text' name='email' value="" />
+  Password: <input type='text' name='password' value="not used" />
+<hr/>
+<h3>Electron Density Analysis</h3>
+
+Enter 4 digit pdb code: <input type='text' name='dataInput' value="1ejg" /><br/><br/>
+
+<table><tr><td style="background-color:Crimson;color:AliceBlue">~~ Choose results to display ~~</td><td style="background-color:Crimson;color:AliceBlue"">~~ 3-point coordinates for plane ~~</td></tr><tr>
+<td>
+<table style="text-align: left;">
+<tr><td><label for="D1">1) Peaks visual projection to 3 planes</label></td><td><input type="checkbox" id="Data1" name="Data1" value="1" checked="checked"></td></tr>
+<tr><td><label for="D2">2) Peaks data as CSV file</label></td><td><input type="checkbox" id="Data2" name="Data2" value="1" checked=checked"></td></tr>
+<tr><td><label for="D3">3) Peaks data as html grid</label></td><td><input type="checkbox" id="Data3" name="Data3" value="1"></td></tr>
+<tr><td><label for="D4">4) Peaks visual projection, atoms only (unit cell)</label></td><td><input type="checkbox" id="Data4" name="Data4" value="1"></td></tr>
+<tr><td><label for="D5">5) Density visual projection, all atoms</label></td><td><input type="checkbox" id="Data5" name="Data5" value="1" checked="checked"></td></tr>
+<tr><td><label for="D6">6) Atoms visualised on AtomNo</label></td><td><input type="checkbox" id="Data6" name="Data6" value="1"></td></tr>
+<tr><td><label for="D7">7) Visualised electron density planes</label></td><td><input type="checkbox" id="Data7" name="Data7" value="1" checked="checked"></td></tr>
+</table>
+</td><td>
+<div style="text-align: left;"><b>Enter three points to get a density contour slice from the electron density.</b></div>
+<table style="background-color:AliceBlue"><tr><td>Central: X=<input type="text" name="CX" value=9.373 />
+ Y=<input type="text" name="CY" value=7.688 />
+ Z=<input type="text" name="CZ" value=15.546 /></td></tr>
+<tr><td>Linear: X=<input type="text" name="LX" value=9.5 />
+ Y=<input type="text" name="LY" value=9.079 />
+ Z=<input type="text" name="LZ" value=14.937 /></td></tr>
+<tr><td>Planar: X=<input type="text" name="PX" value=9.64 />
+ Y=<input type="text" name="PY" value=7.542 />
+ Z=<input type="text" name="PZ" value=16.748 /></td></tr></table>
+
+<div style="text-align: left;"><b>Settings for image size</b></div>
+<table style="background-color:AliceBlue">
+<tr>
+<td>Width(Å)=<input type="text" name="Width" value=5 /> Granularity(Å)=<input type="text" name="Gran" value=0.1 /></td>
+</tr>
+</table>
+</td></tr></table>
+
+<br/><input type='Submit' value='Analyse Electron Density' />
 </form>
 </div>
+
 <hr/>
 <div id="bottom">
 <p>

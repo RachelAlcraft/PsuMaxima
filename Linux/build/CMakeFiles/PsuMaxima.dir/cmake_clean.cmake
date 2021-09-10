@@ -1,8 +1,10 @@
 file(REMOVE_RECURSE
   "CMakeFiles/PsuMaxima.dir/Atom.cpp.o"
   "CMakeFiles/PsuMaxima.dir/Ccp4.cpp.o"
+  "CMakeFiles/PsuMaxima.dir/CoutReports.cpp.o"
   "CMakeFiles/PsuMaxima.dir/MatrixThreeThree.cpp.o"
   "CMakeFiles/PsuMaxima.dir/PdbFile.cpp.o"
+  "CMakeFiles/PsuMaxima.dir/SpaceTransformation.cpp.o"
   "CMakeFiles/PsuMaxima.dir/VectorThree.cpp.o"
   "CMakeFiles/PsuMaxima.dir/helper.cpp.o"
   "CMakeFiles/PsuMaxima.dir/main.cpp.o"

@@ -66,7 +66,7 @@ def getHeader():
 
 
 
-def getBodyA(pdb, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ):    
+def getBodyA(pdb, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,D4,D5,D6,D7):    
     string = '<hr/>\n'
     string += '<h1>\n'
     string += '<font color="DC143C">Psu</font>Max<font color="DC143C">ima</font>\n'
@@ -77,20 +77,14 @@ def getBodyA(pdb, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ):
 
     string += '<p>\n'
     string += 'This webpage interfaces with a C++ executable which calculates density maxima in ccp4 files from the PDBe. \n'
-    string += '<i>Only valid for structures with ccp4 files stored on the ebi cloud. </i>\n'
-    string += 'The results include:\n'
-    string += '<li>Visualisation of projected density peaks in 3 planes: XY, YZ and ZX</li>\n'
-    string += '<li>The density peaks in sorted order, including CRS and XYZ coordinates, with nearest atoms</li>\n'
-    string += '<li>Another visualisation of peaks, but this time only those with a nearby atom (unit cell)</li>\n'
-    string += '<li>Another density unit cell visualisation, this time the density of all the atoms (peak or not)</li>\n'
-    string += '<li>All the atoms with a hue of AtomNo, to assist with mental disentangling of the chains</li>\n'
-    string += '<li><font color=grey>For 3 given points, the planar slices of density, radiant and laplacian (not yet...)</font></li>\n'
+    string += '<i>Only valid for structures with ccp4 files stored on the ebi cloud. </i>\n'    
     string += ' </p>\n'
 
     string += '<hr/>\n'
+    ############  BEGIN FORM ############################
     string += '<form method="post" action="/cgi-bin/cgiwrap/ab002/PhD/Maxima.cgi" accept-charset="UTF-8">\n'
     #Access Credentials
-    string += '~~ Application access credentials ~~'
+    string += '<b>~~ Application access credentials ~~</b>'
     string += '<br/><i>You must enter a valid email address to access this software. Passwords will be forthcoming.</i>'
     string += "<br/>Email address: <input type='text' name='email' value='" + username + "' />"
     string += " Password: <input type='text' name='password' value='not used' />"
@@ -98,67 +92,110 @@ def getBodyA(pdb, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ):
     #PDB code
     string +='<h3>Electron Density Analysis</h3>'
     string += 'Enter 4 digit pdb code: <input type="text" name="dataInput" value=' + pdb + ' />\n'    
-    string += '<br/>Choose data format: \n'
+    string += '<br/><br/>\n'
     #Data return format
-    csv = 'checked'
-    grid = ''
-    if not dataAsCsv:
-        csv = ''
-        grid = 'checked'
-    string += '<input type="radio" id="asCsv" name="format" value="asCsv" ' + csv +' ><label for="asCsv">As csv file</label>'
-    string += '<input type="radio" id="asGrid" name="format" value="asGrid" '+ grid +' ><label for="asGrid">As grid</label>'
-    #Coordinates for the slice
-    string += '<p>Three points are needed for a plane. Enter three points to get a density contour slice from the electron density.'
-    string += '<br/> !!! Results are currently dummy !!!</p>\n'
+    r1,r2,r3,r4,r5,r6,r7 = '','','','','','',''
+    if D1:
+        r1 = 'checked="checked"'
+    if D2:
+        r2 = 'checked="checked"'
+    if D3:
+        r3 = 'checked="checked"'
+    if D4:
+        r4 = 'checked="checked"'
+    if D5:
+        r5 = 'checked="checked"'
+    if D6:
+        r6 = 'checked="checked"'
+    if D7:
+        r7 = 'checked="checked"'
 
-    string += '<table><tr><td>Central: X=<input type="text" name="CX" value=' + str(cX) + ' />\n'
-    string += ' Y=<input type="text" name="CY" value=' + str(cY) + ' />\n'
-    string += ' Z=<input type="text" name="CZ" value=' + str(cZ) + ' /></td></tr>\n'
 
+    string += '<table><tr><td style="background-color:Crimson;color:AliceBlue">~~ Choose results to display ~~</td><td style="background-color:Crimson;color:AliceBlue"">~~ 3-point coordinates for plane ~~</td></tr><tr>\n'
+    string += '<td>\n'
+    string += '<table style="text-align: left;">\n'
+    string += '<tr><td><label for="D1">1) Peaks visual projection to 3 planes</label></td><td><input type="checkbox" id="Data1" name="Data1" value="1" ' + r1 + '"></td></tr>\n'
+    string += '<tr><td><label for="D2">2) Peaks data as CSV file</label></td><td><input type="checkbox" id="Data2" name="Data2" value="1" ' + r2 + '"></td></tr>\n'
+    string += '<tr><td><label for="D3">3) Peaks data as html grid</label></td><td><input type="checkbox" id="Data3" name="Data3" value="1" ' + r3 + '"></td></tr>\n'
+    string += '<tr><td><label for="D4">4) Peaks visual projection, atoms only (unit cell)</label></td><td><input type="checkbox" id="Data4" name="Data4" value="1" ' + r4 + '"></td></tr>\n'
+    string += '<tr><td><label for="D5">5) Density visual projection, all atoms</label></td><td><input type="checkbox" id="Data5" name="Data5" value="1" ' + r5 + '"></td></tr>\n'
+    string += '<tr><td><label for="D6">6) Atoms visualised on AtomNo</label></td><td><input type="checkbox" id="Data6" name="Data6" value="1" ' + r6 + '"></td></tr>\n'
+    string += '<tr><td><label for="D7">7) Visualised electron density planes</label></td><td><input type="checkbox" id="Data7" name="Data7" value="1" ' + r7 + '"></td></tr>\n'
+    string += '</table>\n'
+    string += '</td><td>\n'
+    string += '<div style="text-align: left;"><b>Enter three points to get a density contour slice from the electron density.</b></div>\n'    
+    string += '<table style="background-color:AliceBlue;text-align:left;"><tr><td>Central: X=<input type="text" name="CX" value=' + str(cX) + ' />\n'
+    string += 'Y=<input type="text" name="CY" value=' + str(cY) + ' />\n'
+    string += 'Z=<input type="text" name="CZ" value=' + str(cZ) + ' /></td></tr>\n'
     string += '<tr><td>Linear: X=<input type="text" name="LX" value=' + str(lX) + ' />\n'
-    string += ' Y=<input type="text" name="LY" value=' + str(lY) + ' />\n'
-    string += ' Z=<input type="text" name="LZ" value=' + str(lZ) + ' /></td></tr>\n'
-
+    string += 'Y=<input type="text" name="LY" value=' + str(lY) + ' />\n'
+    string += 'Z=<input type="text" name="LZ" value=' + str(lZ) + ' /></td></tr>\n'
     string += '<tr><td>Planar: X=<input type="text" name="PX" value=' + str(pX) + ' />\n'
-    string += ' Y=<input type="text" name="PY" value=' + str(pY) + ' />\n'
-    string += ' Z=<input type="text" name="PZ" value=' + str(pZ) + ' /></td></tr></table>\n'
+    string += 'Y=<input type="text" name="PY" value=' + str(pY) + ' />\n'
+    string += 'Z=<input type="text" name="PZ" value=' + str(pZ) + ' /></td></tr></table>\n'
 
-    string += '<br/><input type="Submit" value="Analyse"/>\n'
+    string += '<div style="text-align: left;"><b>Settings for image size</b></div>\n'
+    string += '<table style="background-color:AliceBlue">\n'
+    string += '<tr>\n'
+    string += '<td>Width(&#8491;)=<input type="text" name="Width" value=' + str(width) + ' /> Granularity(&#8491;)=<input type="text" name="Gran" value=' + str(gran) + ' /></td>\n'
+    string += '</tr>\n'
+    string += '</table>\n'
+
+    string += '</td></tr></table>\n'
+
+    string += '<br/><input type="Submit" value="Analyse"/>\n'    
+    ############  END FORM ############################
     string += '</form>\n'
     string += '</div>\n'
     return string
 
-def getBodyB(pdb, dataABC, asCsv):
+def getBodyB(pdb, dataABC, asCsv,D1,D2,D3,D4,D5,D6,D7):
 
     if len(dataABC) > 0:
         dataA = dataABC[0]
         dataB = dataABC[1]
         dataC = dataABC[2]
-
+        
         string = '<hr/>\n'
+        string += '<h3>MAXIMA RESULTS: ' + pdb + '</h3>'
+        
         string += '<p>EBI Link <a href="https://www.ebi.ac.uk/pdbe/entry/pdb/' + pdb + '" title="EBI link" target="_blank">Open protein pdb ebi link</a></p>'
 
-        string += '<hr/>\n'
-        string += '<h3>MAXIMA RESULTS</h3>'
+        ### DATA 1 Peaks projection visualised #################################
+        if D1:
+            string += '<hr/>\n'
+            string += '<h4>1) Peaks visual projection to 3 planes</h4>'
+            string += dataFrameToImages(pdb,dataA,"X","Y","Z","Density","cubehelix_r")
 
-        string += '<p>' + pdb + ': Peaks projections</p>'
-        string += dataFrameToImages(pdb,dataA,"X","Y","Z","Density","cubehelix_r")
-
-        if not asCsv:
-            string += '<p>' + pdb + ': Peaks grid </p>'
-            string += dataFrameToGrid(dataA)
-        else:
-            string += '<p>' + pdb + ': Peaks csv file </p>'
+        ### DATA 2 Peaks data as CSV #################################
+        if D2:
+            string += '<hr/>\n'
+            string += '<h4>2) Peaks data as CSV file</h4>'
             string += dataFrameToText(dataA)
 
-        string += '<p>' + pdb + ': Atom only peaks projections</p>'
-        string += dataFrameToImages(pdb,dataB,"X","Y","Z","Density","cubehelix_r")
+        ### DATA 3 Peaks data as html grid #################################
+        if D3:
+            string += '<hr/>\n'
+            string += '<h4>3) Peaks data as html grid</h4>'
+            string += dataFrameToGrid(dataA)
 
-        string += '<p>' + pdb + ': Pdb atoms density projections</p>'
-        string += dataFrameToImages(pdb,dataC,"X","Y","Z","Density","cubehelix_r")
+        ### DATA 4 Peaks projection atoms only #################################
+        if D4:
+            string += '<hr/>\n'
+            string += '<h4>4) Peaks visual projection, atoms only (unit cell)</h4>'
+            string += dataFrameToImages(pdb,dataB,"X","Y","Z","Density","cubehelix_r")
 
-        string += '<p>' + pdb + ': Pdb atoms on atom no</p>'
-        string += dataFrameToImages(pdb,dataC,"X","Y","Z","AtomNo","jet")
+        ### DATA 5 Density projection, all atoms #################################
+        if D5:
+            string += '<hr/>\n'
+            string += '<h4>5) Density visual projection, all atoms</h4>'
+            string += dataFrameToImages(pdb,dataC,"X","Y","Z","Density","cubehelix_r")
+
+        ### DATA 6 Atom scatter plot, all atoms #################################
+        if D6:
+            string += '<hr/>\n'
+            string += '<h4>6) Atoms visualised on AtomNo</h4>'
+            string += dataFrameToImages(pdb,dataC,"X","Y","Z","AtomNo","jet")                    
     else:
         string = '<font color="DC143C"><h1>Exe failed to create data</h1></font>'
 
@@ -190,36 +227,40 @@ def scatterToMatrix(data,length,hue):
             
     
 
-def getBodyC(pdb,dataABC):
-    
-    if len(dataABC) > 0:
-        dataA = dataABC[3]
-        dataB = dataABC[4]
-        dataC = dataABC[5]
+def getBodyC(pdb,dataABC,width,gran,D1,D2,D3,D4,D5,D6,D7):
+    ### DATA 6 Atom scatter plot, all atoms #################################
+    string = ''
+    if D7:
+        length = (int)((float)(width)/(float)(gran))
+        string += '<hr/>\n'
+        string += '<h4>7) Visualised electron density planes</h4>'
+        string += '<p>Width=' + str(width) + '&#8491; Granularity=' + str(gran) + '&#8491;'
+        string += ' Sample data points =  ' + str(length+1) + 'x' + str(length+1) + '=' + str((length+1)*(length+1)) + '</p>'  
+        if len(dataABC) > 0:
+            dataA = dataABC[3]
+            dataB = dataABC[4]
+            dataC = dataABC[5]
+            
+            
+            string += '<table><tr>'
+            string += '<td>Density</td><td>Radiant</td><td>Laplacian</td></tr><tr>'
 
-        string = '<hr/>\n'
-        string = '<hr/><h3>Visualised Electron Density</h3>\n'
-        string += '<h3>SLICE RESULTS</h3>'
-        
-        string += '<table><tr>'
-        string += '<td>Density</td><td>Radiant</td><td>Laplacian</td></tr><tr>'
+            mtxD = scatterToMatrix(dataA,length,'Density')
+            mtxR = scatterToMatrix(dataB,length,'Radiant')
+            mtxL = scatterToMatrix(dataC,length,'Laplacian')        
+            string += matrixToImage(pdb,mtxD,'inferno')
+            string += matrixToImage(pdb,mtxR,'bone')
+            string += matrixToImage(pdb,mtxL,'inferno_r')
 
-        mtxD = scatterToMatrix(dataA,50,'Density')
-        mtxR = scatterToMatrix(dataB,50,'Radiant')
-        mtxL = scatterToMatrix(dataC,50,'Laplacian')        
-        string += matrixToImage(pdb,mtxD)
-        string += matrixToImage(pdb,mtxR)
-        string += matrixToImage(pdb,mtxL)
+            #string += scatterToImage(pdb,dataA,"Density","i","j","inferno")
+            #string += scatterToImage(pdb,dataB,"Radiant","i","j","inferno")
+            #string += scatterToImage(pdb,dataC,"Laplacian","i","j","inferno")
+            
+            
+            string += '</tr></table>'
 
-        #string += scatterToImage(pdb,dataA,"Density","i","j","inferno")
-        #string += scatterToImage(pdb,dataB,"Radiant","i","j","inferno")
-        #string += scatterToImage(pdb,dataC,"Laplacian","i","j","inferno")
-        
-        
-        string += '</tr></table>'
-
-    else:
-        string = '<font color="DC143C"><h1>Exe failed to create data</h1></font>'
+        else:
+            string = '<font color="DC143C"><h1>Exe failed to create data</h1></font>'
 
     
     return string
@@ -309,9 +350,9 @@ def getPlotImage(fig, ax):
     plt.close('all')    
     return encoded
     
-def matrixToImage(pdb,mtx):
+def matrixToImage(pdb,mtx,pal):
     fig, ax = plt.subplots()
-    image = plt.imshow(mtx, cmap='inferno', interpolation='nearest', origin='lower', aspect='equal',alpha=1)        
+    image = plt.imshow(mtx, cmap=pal, interpolation='nearest', origin='lower', aspect='equal',alpha=1)        
     image = plt.contour(mtx, colors='SlateGray', alpha=0.55, linewidths=0.3, levels=12)
     plt.axis('off')    
     encoded = getPlotImage(fig,ax)

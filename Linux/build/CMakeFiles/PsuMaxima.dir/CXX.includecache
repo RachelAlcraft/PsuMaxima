@@ -14,26 +14,6 @@ vector
 VectorThree.h
 /d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/VectorThree.h
 
-/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/Ccp4.cpp
-iostream
--
-fstream
--
-vector
--
-algorithm
--
-sstream
--
-cmath
--
-cstring
--
-Ccp4.h
-/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/Ccp4.h
-VectorThree.h
-/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/VectorThree.h
-
 /d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/Ccp4.h
 string
 -
@@ -47,6 +27,32 @@ MatrixThreeThree.h
 /d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/MatrixThreeThree.h
 VectorThree.h
 /d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/VectorThree.h
+
+/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/CoutReports.cpp
+string
+-
+vector
+-
+iostream
+-
+algorithm
+-
+VectorThree.h
+/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/VectorThree.h
+SpaceTransformation.h
+/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/SpaceTransformation.h
+CoutReports.h
+/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/CoutReports.h
+
+/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/CoutReports.h
+string
+-
+vector
+-
+Ccp4.h
+/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/Ccp4.h
+PdbFile.h
+/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/PdbFile.h
 
 /d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/MatrixThreeThree.h
 string
@@ -63,6 +69,14 @@ vector
 -
 Atom.h
 /d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/Atom.h
+
+/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/SpaceTransformation.h
+string
+-
+vector
+-
+VectorThree.h
+/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/VectorThree.h
 
 /d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/VectorThree.h
 

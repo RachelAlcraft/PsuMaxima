@@ -52,28 +52,33 @@ private:
 	vector<int> _dimOrder;
 	VectorThree _origin;
 
-	//The matrix data
-	vector<float> _matrix;
-	vector<pair<float, int> > _matrixPeaks;
-
-	//Helper functioms
-	int getPosition(int C, int R, int S);
-	VectorThree getCRS(int position);
+	
+	//Helper functioms	
 	void calculateOrthoMat(float w11_CELLA_X, float w12_CELLA_Y, float w13_CELLA_Z, float w14_CELLB_X, float w15_CELLB_Y, float w16_CELLB_Z);
 	void calculateOrigin(int w05_NXSTART, int w06_NYSTART, int w07_NZSTART, int w17_MAPC, int w18_MAPR, int w19_MAPS);
 	bool isBigEndian();
+    double getDxDx(double x, double y, double z, double val);
+    double getDyDy(double x, double y, double z, double val);
+    double getDzDz(double x, double y, double z, double val);
+
+public:
+    //The matrix data lazily as a public accessor
+	vector<float> Matrix;
+	vector<pair<float, int> > MatrixPeaks;
 
 public:
 	Ccp4(string pdbCode, string directory);
 	double getResolution();
 	bool isLoaded();
-	string getPdbCode();
-	void makePeaks(PdbFile* pdbFile);
-    void makeSlices(VectorThree central, VectorThree linear, VectorThree planar);
+	string getPdbCode();	
 	float getDensity(int C, int R, int S);
     float getDensity(VectorThree XYZ);
+    float getRadiant(VectorThree XYZ);
+    float getLaplacian(VectorThree XYZ);
 	VectorThree getCRSFromXYZ(double x, double y, double z);
 	VectorThree getXYZFromCRS(double c, double r, double s);
+    int getPosition(int C, int R, int S);
+	VectorThree getCRS(int position);
 };
 
 
