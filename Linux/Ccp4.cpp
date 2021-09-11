@@ -196,7 +196,7 @@ float Ccp4::getDensity(int C, int R, int S)
     return Matrix[pos];
 }
 
-float Ccp4::getDensity(VectorThree XYZ)
+/*float Ccp4::getDensity(VectorThree XYZ)
 {
     VectorThree crs = getCRSFromXYZ(XYZ);
     int c = crs.A;
@@ -217,9 +217,9 @@ float Ccp4::getDensity(VectorThree XYZ)
     
     return density;
 
-}
+}*/
 
-float Ccp4::getRadiant(VectorThree XYZ)
+/*float Ccp4::getRadiant(VectorThree XYZ)
 {
     double h = 0.01;
     double x = XYZ.A;
@@ -265,7 +265,7 @@ double Ccp4::getDzDz(double x, double y, double z, double val)
     double vb = getDensity(VectorThree(x, y, z + h));
     double dd = (va + vb - 2 * val) / (h * h);
     return dd;
-}
+}*/
 
 
 

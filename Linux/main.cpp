@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
         PdbFile myPdb(pdb, pdbdirectory);
         Interpolator* interp;
         interp = new Nearest(myCcp4.Matrix, myCcp4.W01_NX, myCcp4.W02_NY, myCcp4.W03_NZ);
-        CoutReports::coutAtoms(&myCcp4,&myPdb);                
+        CoutReports::coutAtoms(&myCcp4,&myPdb,interp);                
     }
     else if (COMMAND == "SLICES")
     {
