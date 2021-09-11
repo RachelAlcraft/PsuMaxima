@@ -37,9 +37,9 @@ Ccp4::Ccp4(string pdbCode, string directory)
     ifstream infile;
     infile.open((_directory + pdbCode + ".ccp4").c_str(), ios::binary | ios::in);    
     //This opens the WORDS in the ccp4	    
-    infile.read((char*)&_w01_NX, sizeof(_w01_NX));
-    infile.read((char*)&_w02_NY, sizeof(_w02_NY));
-    infile.read((char*)&_w03_NZ, sizeof(_w03_NZ));
+    infile.read((char*)&W01_NX, sizeof(W01_NX));
+    infile.read((char*)&W02_NY, sizeof(W02_NY));
+    infile.read((char*)&W03_NZ, sizeof(W03_NZ));
     int MODE = 0;
     infile.read((char*)&MODE, sizeof(MODE));
     infile.read((char*)&_w05_NXSTART, sizeof(_w05_NXSTART));
@@ -116,7 +116,7 @@ Ccp4::Ccp4(string pdbCode, string directory)
     infile.close();
     _loaded = true;
 
-    int len = _w01_NX * _w02_NY * _w03_NZ;
+    int len = W01_NX * W02_NY * W03_NZ;
     int startBulk = tmpData.size() - len;
     int count = 0;
     for (unsigned int i = startBulk; i < tmpData.size(); ++i)
@@ -171,9 +171,9 @@ Ccp4::Ccp4(string pdbCode, string directory)
     _dimOrder.push_back(0);
     _dimOrder.push_back(0);
     _dimOrder.push_back(0);
-    _dimOrder[0] = _w01_NX;
-    _dimOrder[1] = _w02_NY;
-    _dimOrder[2] = _w03_NZ;
+    _dimOrder[0] = W01_NX;
+    _dimOrder[1] = W02_NY;
+    _dimOrder[2] = W03_NZ;
 }
 double Ccp4::getResolution()
 {
@@ -198,7 +198,7 @@ float Ccp4::getDensity(int C, int R, int S)
 
 float Ccp4::getDensity(VectorThree XYZ)
 {
-    VectorThree crs = getCRSFromXYZ(XYZ.A,XYZ.B,XYZ.C);
+    VectorThree crs = getCRSFromXYZ(XYZ);
     int c = crs.A;
     int r = crs.B;
     int s = crs.C;    
@@ -274,20 +274,20 @@ double Ccp4::getDzDz(double x, double y, double z, double val)
 *******************************************************/
 int Ccp4::getPosition(int C, int R, int S)
 {
-    int sliceSize = _w01_NX * _w02_NY;
+    int sliceSize = W01_NX * W02_NY;
     int pos = C * sliceSize;
-    pos += _w01_NX * R;
+    pos += W01_NX * R;
     pos += S;    
     return pos;
 }
 
 VectorThree Ccp4::getCRS(int position)
 {
-    int sliceSize = _w01_NX * _w02_NY;
+    int sliceSize = W01_NX * W02_NY;
     int i = position / sliceSize;
     int remainder = position % sliceSize;
-    int j = remainder / _w01_NX;
-    int k = remainder % _w01_NX;
+    int j = remainder / W01_NX;
+    int k = remainder % W01_NX;
     VectorThree CRS;
     CRS.A = i;
     CRS.B = j;
@@ -328,21 +328,15 @@ void Ccp4::calculateOrthoMat(float w11_CELLA_X, float w12_CELLA_Y, float w13_CEL
 }
 
 
-VectorThree Ccp4::getCRSFromXYZ(double x, double y, double z)
-{
-    VectorThree vXYZIn;
+VectorThree Ccp4::getCRSFromXYZ(VectorThree XYZ)
+{    
     VectorThree vCRS;
-
-    vXYZIn.A = x;
-    vXYZIn.B = y;
-    vXYZIn.C = z;
-
     //If the axes are all orthogonal            
     if (_w14_CELLB_X == 90 && _w15_CELLB_Y == 90 && _w16_CELLB_Z == 90)
     {
         for (int i = 0; i < 3; ++i)
         {
-            double startVal = vXYZIn.getByIndex(i) - _origin.getByIndex(i);
+            double startVal = XYZ.getByIndex(i) - _origin.getByIndex(i);
             startVal /= _cellDims[i] / _axisSampling[i];
             //vCRS[i] = startVal;
             vCRS.putByIndex(i, startVal);
@@ -350,7 +344,7 @@ VectorThree Ccp4::getCRSFromXYZ(double x, double y, double z)
     }
     else // they are not orthogonal
     {
-        VectorThree vFraction = _deOrthoMat.multiply(vXYZIn,true);
+        VectorThree vFraction = _deOrthoMat.multiply(XYZ,true);
         for (int i = 0; i < 3; ++i)
         {
             double val = vFraction.getByIndex(i) * _axisSampling[i] - _crsStart[_map2xyz[i]];

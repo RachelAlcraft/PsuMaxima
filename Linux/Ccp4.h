@@ -23,10 +23,12 @@ private:
 	//SETINGS
 	string _directory;
 
-	//THE "WORDS" from the Ccp4 file
-	int _w01_NX;
-	int _w02_NY;
-	int _w03_NZ;
+	//THE "WORDS" from the Ccp4 file	
+public:
+	int W01_NX;
+	int W02_NY;
+	int W03_NZ;
+private:
 	int _w05_NXSTART;
 	int _w06_NYSTART;
 	int _w07_NZSTART;
@@ -75,7 +77,7 @@ public:
     float getDensity(VectorThree XYZ);
     float getRadiant(VectorThree XYZ);
     float getLaplacian(VectorThree XYZ);
-	VectorThree getCRSFromXYZ(double x, double y, double z);
+	VectorThree getCRSFromXYZ(VectorThree XYZ);
 	VectorThree getXYZFromCRS(double c, double r, double s);
     int getPosition(int C, int R, int S);
 	VectorThree getCRS(int position);

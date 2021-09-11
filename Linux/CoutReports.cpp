@@ -136,7 +136,7 @@ void CoutReports::coutAtoms(Ccp4* ccp4, PdbFile* pdb)
 
 }
 
-void CoutReports::coutSlices(Ccp4* ccp4, PdbFile* pdb,VectorThree central, VectorThree linear, VectorThree planar,double width,double gap)
+void CoutReports::coutSlices(Ccp4* ccp4, PdbFile* pdb,Interpolator* interp, VectorThree central, VectorThree linear, VectorThree planar,double width,double gap)
 {
     SpaceTransformation space(central,linear,planar);
     //dummy use of slice function
@@ -160,7 +160,9 @@ void CoutReports::coutSlices(Ccp4* ccp4, PdbFile* pdb,VectorThree central, Vecto
             double y0 = (j*gap);
             double z0 = 0;            
             VectorThree transformed = space.applyTransformation(VectorThree(x0,y0,z0));            
-            double density = ccp4->getDensity(transformed);
+            double density2 = ccp4->getDensity(transformed);
+            VectorThree crs = ccp4->getCRSFromXYZ(transformed);
+            double density = interp->getValue(crs.A, crs.B, crs.C);
             cout << i+halfLength << "," << j+halfLength << "," << density << "\n";            
         }        
     }
@@ -176,7 +178,9 @@ void CoutReports::coutSlices(Ccp4* ccp4, PdbFile* pdb,VectorThree central, Vecto
             double y0 = (j*gap);
             double z0 = 0;            
             VectorThree transformed = space.applyTransformation(VectorThree(x0,y0,z0));            
-            double radiant = ccp4->getRadiant(transformed);
+            double radiant2 = ccp4->getRadiant(transformed);
+            VectorThree crs = ccp4->getCRSFromXYZ(transformed);
+            double radiant = interp->getRadiant(crs.A, crs.B, crs.C);
             cout << i+halfLength << "," << j+halfLength << "," << radiant << "\n";
         }        
     }
@@ -192,7 +196,9 @@ void CoutReports::coutSlices(Ccp4* ccp4, PdbFile* pdb,VectorThree central, Vecto
             double y0 = (j*gap);
             double z0 = 0;            
             VectorThree transformed = space.applyTransformation(VectorThree(x0,y0,z0));            
-            double laplacian = ccp4->getLaplacian(transformed);
+            double laplacian1 = ccp4->getLaplacian(transformed);
+            VectorThree crs = ccp4->getCRSFromXYZ(transformed);
+            double laplacian = interp->getLaplacian(crs.A, crs.B, crs.C);
             cout << i+halfLength << "," << j+halfLength << "," << laplacian << "\n";
         }        
     }

@@ -4,9 +4,18 @@
 #include "Ccp4.h"
 #include "helper.h"
 #include "CoutReports.h"
+#include "Interpolator.h"
 
 int main(int argc, char* argv[]) 
 {
+    /******   OP SPECIFIC SETTINGS  ***************/
+    // **** LINUX PANDORA **** //
+    string ccp4directory = "/d/projects/u/ab002/Thesis/PhD/Data/Ccp4/";
+    string pdbdirectory = "/d/projects/u/ab002/Thesis/PhD/Data/Pdb/";
+    // **** Windows laptop rachel  **** //
+    /***************************************************/
+    //string ccp4directory = "C:/Dev/Github/ProteinDataFiles/ccp4_data/";
+    //string pdbdirectory = "C:/Dev/Github/ProteinDataFiles/pdb_data/";
     /******   INPUTS  ***************/
     cout << "Started..." << "\n";
     string pdb = "1ejg";
@@ -67,15 +76,8 @@ int main(int argc, char* argv[])
 
         cout << "END_USERINPUTS\n";  
     }
-    argv[1];
-    //std::cout << userInput << "\n";
-    /***************************************************/
-
-    /******   OP SPECIFIC SETTINGS  ***************/
-    string ccp4directory = "/d/projects/u/ab002/Thesis/PhD/Data/Ccp4/";
-    string pdbdirectory = "/d/projects/u/ab002/Thesis/PhD/Data/Pdb/";
-    /***************************************************/
-    
+        
+    /***************************************************/        
     if (COMMAND == "PEAKS")
     {        
         Ccp4 myCcp4(pdb,ccp4directory);
@@ -86,6 +88,8 @@ int main(int argc, char* argv[])
     {        
         Ccp4 myCcp4(pdb,ccp4directory);
         PdbFile myPdb(pdb, pdbdirectory);
+        Interpolator* interp;
+        interp = new Nearest(myCcp4.Matrix, myCcp4.W01_NX, myCcp4.W02_NY, myCcp4.W03_NZ);
         CoutReports::coutAtoms(&myCcp4,&myPdb);                
     }
     else if (COMMAND == "SLICES")
@@ -95,7 +99,9 @@ int main(int argc, char* argv[])
         VectorThree central(cX,cY,cZ);
         VectorThree linear(lX,lY,lZ);
         VectorThree planar(pX,pY,pZ);
-        CoutReports::coutSlices(&myCcp4,&myPdb,central,linear,planar,width,gap);
+        Interpolator* interp;
+        interp = new Nearest(myCcp4.Matrix, myCcp4.W01_NX, myCcp4.W02_NY, myCcp4.W03_NZ);
+        CoutReports::coutSlices(&myCcp4,&myPdb,interp,central,linear,planar,width,gap);
     }
 
     cout << "Finished with no errros";

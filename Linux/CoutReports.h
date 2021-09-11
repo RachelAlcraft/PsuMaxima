@@ -8,6 +8,7 @@
 
 #include "Ccp4.h"
 #include "PdbFile.h"
+#include "Interpolator.h"
 
 using namespace std;
 
@@ -18,5 +19,5 @@ private:
 public:		
     static void coutPeaks(Ccp4* ccp4, PdbFile* pdb);
     static void coutAtoms(Ccp4* ccp4, PdbFile* pdb);
-    static void coutSlices(Ccp4* ccp4, PdbFile* pdb,VectorThree central, VectorThree linear, VectorThree planar,double width,double gap);
+    static void coutSlices(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, VectorThree central, VectorThree linear, VectorThree planar,double width,double gap);
 };
