@@ -1,4 +1,5 @@
 #include "Interpolator.h"
+#include <cmath>
 
 // ****** ABSTRACT CLASS ****************************************
 Interpolator::Interpolator(vector<float> matrix, int x, int y, int z)
@@ -78,7 +79,7 @@ double Nearest::getValue(double x, double y, double z)
 // ****** Nearest Neighbour Implementation ****************************************
 
 // ****** Thevenaz Spline Convolution Implementation ****************************************
-// Thévenaz, Philippe, Thierry Blu, and Michael Unser. ‘Image Interpolation and Resampling’, n.d., 39.
+// Thï¿½venaz, Philippe, Thierry Blu, and Michael Unser. ï¿½Image Interpolation and Resamplingï¿½, n.d., 39.
 //   http://bigwww.epfl.ch/thevenaz/interpolation/
 // *******************************************************************************
 Thevenaz::Thevenaz(vector<float> matrix, int x, int y, int z):Interpolator(matrix, x, y, z)
