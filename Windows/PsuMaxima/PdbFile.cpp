@@ -30,9 +30,12 @@ PdbFile::PdbFile(string pdbCode, string directory)
 			int posHOH = line.find("HOH");
 
 			if (posHET == 0 || posATM == 0 || posHOH == 0)
-				_atoms.push_back(Atom(line));
+				Atoms.push_back(Atom(line));
+			else
+				cout << line << "\n";
 		}
 		myfile.close();
+		cout << "Atoms = " << Atoms.size() << "\n";
 		_loaded = true;
 	}
 
@@ -50,11 +53,11 @@ string PdbFile::getPdbCode()
 
 Atom* PdbFile::getNearest(double x, double y, double z)
 {
-	Atom* nearest = &_atoms[0];
+	Atom* nearest = &Atoms[0];
 	double neardistance = nearest->distance(x, y, z);
-	for (unsigned int i = 1; i < _atoms.size(); ++i)
+	for (unsigned int i = 1; i < Atoms.size(); ++i)
 	{
-		Atom* atm = &_atoms[i];
+		Atom* atm = &Atoms[i];
 		if (atm->Element != "H")
 		{
 			double distance = atm->distance(x, y, z);
@@ -67,7 +70,7 @@ Atom* PdbFile::getNearest(double x, double y, double z)
 	}
 
 
-	if (neardistance < 5)
+	if (neardistance < 1.1)
 		return nearest;
 	else
 		return NULL;

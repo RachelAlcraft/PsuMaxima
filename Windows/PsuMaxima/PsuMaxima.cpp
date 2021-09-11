@@ -9,7 +9,7 @@ int main()
 {
     /******   COMMAND LINE INPUTS  ***************/
     string COMMAND = "PEAKS";
-    string pdb = "1ejg";
+    string pdb = "6jvv";
     /***************************************************/
     /******   WINDOWS SPECIFIC SETTINGS  ***************/
     string ccp4directory = "C:/Dev/Github/ProteinDataFiles/ccp4_data/";

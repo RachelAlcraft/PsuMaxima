@@ -15,11 +15,14 @@ class PdbFile
 private:
 	bool _loaded;
 	string _pdbCode;
-	vector<Atom> _atoms;
+
 	//SETINGS
 	string _directory;
 
 public:
+	//Useful to loop outside, bad code
+	vector<Atom> Atoms;
+
 	PdbFile(string pdbCode, string directory);
 	bool isLoaded();
 	string getPdbCode();

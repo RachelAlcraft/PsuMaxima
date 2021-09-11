@@ -9,11 +9,14 @@
 #include <algorithm>
 #include <sstream>
 #include <cmath>
+#include <cstring> // memcpy
 
 #include "Ccp4.h"
 #include "VectorThree.h"
 
 using namespace std;
+
+typedef unsigned char uchar;
 
 
 Ccp4::Ccp4(string pdbCode, string directory)
@@ -27,12 +30,12 @@ Ccp4::Ccp4(string pdbCode, string directory)
     _resolution = 0.78;
     _directory = directory;
     //Load the binary data
-    
+
     //std::ifstream input((_directory + pdbCode + ".ccp4").c_str(), std::ios::binary);
     //std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(input), {});
-    
+
     ifstream infile;
-    infile.open((_directory + pdbCode + ".ccp4").c_str(), ios::binary | ios::in);    
+    infile.open((_directory + pdbCode + ".ccp4").c_str(), ios::binary | ios::in);
     //This opens the WORDS in the ccp4	    
     infile.read((char*)&_w01_NX, sizeof(_w01_NX));
     infile.read((char*)&_w02_NY, sizeof(_w02_NY));
@@ -63,12 +66,14 @@ Ccp4::Ccp4(string pdbCode, string directory)
     _w17_MAPC -= 1;
     _w18_MAPR -= 1;
     _w19_MAPS -= 1;
+
     float w20_DMIN = 0.0;
     infile.read((char*)&w20_DMIN, sizeof(w20_DMIN));
     float w21_DMAX = 0.0;
     infile.read((char*)&w21_DMAX, sizeof(w21_DMAX));
     float w22_DMEAN = 0.0;
     infile.read((char*)&w22_DMEAN, sizeof(w22_DMEAN));
+
     int ISPG = 0;
     infile.read((char*)&ISPG, sizeof(ISPG));
     int NYSYMBT = 0;
@@ -89,7 +94,7 @@ Ccp4::Ccp4(string pdbCode, string directory)
 
     unsigned char temp[sizeof(float)];
     while (infile.read(reinterpret_cast<char*>(temp), sizeof(float)))
-    //while (infile.read((char*)&bulk, sizeof(float)))
+        //while (infile.read((char*)&bulk, sizeof(float)))
     {
         if (false) // big endian method???
         {
@@ -118,12 +123,11 @@ Ccp4::Ccp4(string pdbCode, string directory)
     {
         float mtx = tmpData[i];
         _matrix.push_back(mtx);
-        _matrixPeaks.push_back(pair<float, int>(mtx, count));
-        if (i == 28484)
-        {
-            int bp = 0;
-            ++bp;
-        }
+        //lets not bother to add it to the peaks if it is smaller than the mean
+        if (mtx > w22_DMEAN)
+            _matrixPeaks.push_back(pair<float, int>(mtx, count));
+
+
         count++;
     }
     calculateOrthoMat(w11_CELLA_X, w12_CELLA_Y, w13_CELLA_Z, _w14_CELLB_X, _w15_CELLB_Y, _w16_CELLB_Z);
@@ -191,19 +195,57 @@ string Ccp4::getPdbCode()
 void Ccp4::makePeaks(PdbFile* pdbFile)
 {
     sort(_matrixPeaks.rbegin(), _matrixPeaks.rend());
+    vector<pair<float, int> > tmpMatrixPeaks;
 
-    unsigned int maxdensity = 500;
+    //All the data in the list is near neighbours. So we can go through it
+    //TO DO HERE
+    for (unsigned int i = 0; i < _matrixPeaks.size(); ++i)
+    {
+        double peak = _matrixPeaks[i].first;
+        int position = _matrixPeaks[i].second;
+        VectorThree CRS = getCRS(position);
+        bool are_any_bigger = false;
+        for (int a = -1; a < 2; ++a)
+        {
+            for (int b = -1; b < 2; ++b)
+            {
+                for (int c = -1; c < 2; ++c)
+                {
+                    int tmpPos = getPosition(a + CRS.A, b + CRS.B, c + CRS.C);
+                    if (tmpPos > 0 && tmpPos < _matrix.size())
+                    {
+                        double tmpPeak = _matrix[tmpPos];
+                        if (tmpPeak > peak)
+                            are_any_bigger = true;
+                    }
+
+                }
+            }
+        }
+        if (!are_any_bigger)
+        {
+            tmpMatrixPeaks.push_back(pair<float, int>(peak, position));
+        }
+
+    }
+
+    _matrixPeaks = tmpMatrixPeaks;
+
+    unsigned int maxdensity = 10000;
     if (_matrixPeaks.size() < maxdensity)
         maxdensity = _matrixPeaks.size();
 
+
+
+    cout << "BEGIN_ALLPEAKS\n";
     cout << "Density,C,R,S,X,Y,Z,NearestAtom,Distance\n";
 
 
     for (unsigned int i = 0; i < maxdensity; ++i)
     {
         int pos = _matrixPeaks[i].second;
-        vector<int> coords = getCRS(pos);
-        VectorThree XYZ = getXYZ(coords[0], coords[1], coords[2]);
+        VectorThree coords = getCRS(pos);
+        VectorThree XYZ = getXYZFromCRS(coords.C, coords.B, coords.A);
         float density = _matrixPeaks[i].first;
         double distance = 0;
         string line = "-";
@@ -217,10 +259,51 @@ void Ccp4::makePeaks(PdbFile* pdbFile)
             }
         }
         if (line == "-")
-            cout << "" << density << "," << coords[0] << "," << coords[1] << "," << coords[2] << "," << XYZ.A << "," << XYZ.B << "," << XYZ.C << "," << line << ",-" << "\n";
+            cout << "" << density << "," << coords.C << "," << coords.B << "," << coords.A << "," << XYZ.A << "," << XYZ.B << "," << XYZ.C << "," << line << ",-" << "\n";
         else
-            cout << "" << density << "," << coords[0] << "," << coords[1] << "," << coords[2] << "," << XYZ.A << "," << XYZ.B << "," << XYZ.C << "," << line << "," << distance << "\n";
+            cout << "" << density << "," << coords.C << "," << coords.B << "," << coords.A << "," << XYZ.A << "," << XYZ.B << "," << XYZ.C << "," << line << "," << distance << "\n";
     }
+    cout << "END_ALLPEAKS\n";
+
+    cout << "BEGIN_ATOMPEAKS\n";
+    cout << "Density,C,R,S,X,Y,Z,NearestAtom,Distance\n";
+    for (unsigned int i = 0; i < maxdensity; ++i)
+    {
+        int pos = _matrixPeaks[i].second;
+        VectorThree coords = getCRS(pos);
+        VectorThree XYZ = getXYZFromCRS(coords.C, coords.B, coords.A);
+        float density = _matrixPeaks[i].first;
+        double distance = 0;
+        string line = "-";
+        if (pdbFile->isLoaded())
+        {
+            Atom* atm = pdbFile->getNearest(XYZ.A, XYZ.B, XYZ.C);
+            if (atm != NULL)
+            {
+                line = atm->getLine();
+                distance = atm->distance(XYZ.A, XYZ.B, XYZ.C);
+            }
+        }
+        if (line != "-")
+            cout << "" << density << "," << coords.C << "," << coords.B << "," << coords.A << "," << XYZ.A << "," << XYZ.B << "," << XYZ.C << "," << line << "," << distance << "\n";
+    }
+    cout << "END_ATOMPEAKS\n";
+
+    cout << "BEGIN_ATOMDENSITY\n";
+    cout << "Density,X,Y,Z,AtomNo,AtomLine\n";
+    if (pdbFile->isLoaded())
+    {
+        for (unsigned int i = 0; i < pdbFile->Atoms.size(); ++i)
+        {
+            Atom atm = pdbFile->Atoms[i];
+            VectorThree XYZ = atm.getXYZ();
+            float density = getDensity(XYZ);
+            string line = atm.getLine();
+            int atmNo = atm.AtomNo;
+            cout << "" << density << "," << XYZ.A << "," << XYZ.B << "," << XYZ.C << "," << atmNo << "," << line << "\n";
+        }
+    }
+    cout << "END_ATOMDENSITY\n";
 
 
 
@@ -229,9 +312,19 @@ void Ccp4::makePeaks(PdbFile* pdbFile)
 
 float Ccp4::getDensity(int C, int R, int S)
 {
-    stringstream ss;
-    ss << C << "," << R << "," << S;
-    return 0.0;// _matrixMap[ss.str()];
+    int pos = getPosition(C, R, S);
+    return _matrix[pos];
+}
+
+float Ccp4::getDensity(VectorThree XYZ)
+{
+    VectorThree crs = getCRSFromXYZ(XYZ.A, XYZ.B, XYZ.C);
+    int c = crs.A;
+    int r = crs.B;
+    int s = crs.C;
+    float density = getDensity(s, r, c);
+    return density;
+
 }
 
 
@@ -241,20 +334,24 @@ float Ccp4::getDensity(int C, int R, int S)
 *******************************************************/
 int Ccp4::getPosition(int C, int R, int S)
 {
-    return 0;
+    int sliceSize = _w01_NX * _w02_NY;
+    int pos = C * sliceSize;
+    pos += _w01_NX * R;
+    pos += S;
+    return pos;
 }
 
-vector<int> Ccp4::getCRS(int position)
+VectorThree Ccp4::getCRS(int position)
 {
     int sliceSize = _w01_NX * _w02_NY;
     int i = position / sliceSize;
     int remainder = position % sliceSize;
     int j = remainder / _w01_NX;
     int k = remainder % _w01_NX;
-    vector<int> CRS;
-    CRS.push_back(i);
-    CRS.push_back(j);
-    CRS.push_back(k);
+    VectorThree CRS;
+    CRS.A = i;
+    CRS.B = j;
+    CRS.C = k;
     return CRS;
 }
 
@@ -290,7 +387,7 @@ void Ccp4::calculateOrthoMat(float w11_CELLA_X, float w12_CELLA_Y, float w13_CEL
 }
 
 
-VectorThree Ccp4::getCRS(double x, double y, double z)
+VectorThree Ccp4::getCRSFromXYZ(double x, double y, double z)
 {
     VectorThree vXYZIn;
     VectorThree vCRS;
@@ -330,7 +427,7 @@ VectorThree Ccp4::getCRS(double x, double y, double z)
     return CRS;
 
 }
-VectorThree Ccp4::getXYZ(double c, double r, double s)
+VectorThree Ccp4::getXYZFromCRS(double c, double r, double s)
 {
     VectorThree vXYZ;
     VectorThree vCRSIn;

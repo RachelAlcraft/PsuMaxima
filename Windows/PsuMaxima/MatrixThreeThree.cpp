@@ -149,6 +149,7 @@ void MatrixThreeThree::putValue(double val, int col, int row)
 
 VectorThree MatrixThreeThree::multiply(VectorThree col)
 {
+    //So, this is by row not by column, or,,, anyway which is which...
     double col0 = col.A;
     double col1 = col.B;
     double col2 = col.C;
@@ -156,15 +157,15 @@ VectorThree MatrixThreeThree::multiply(VectorThree col)
     VectorThree scaled;
 
     double s0 = col0 * _matrix[0];
-    double s1 = col0 * _matrix[3];
-    double s2 = col0 * _matrix[6];
+    double s1 = col0 * _matrix[1];
+    double s2 = col0 * _matrix[2];
 
-    s0 += col1 * _matrix[1];
+    s0 += col1 * _matrix[3];
     s1 += col1 * _matrix[4];
-    s2 += col1 * _matrix[7];
+    s2 += col1 * _matrix[5];
 
-    s0 += col2 * _matrix[2];
-    s1 += col2 * _matrix[5];
+    s0 += col2 * _matrix[6];
+    s1 += col2 * _matrix[7];
     s2 += col2 * _matrix[8];
 
     scaled.putByIndex(0, s0);

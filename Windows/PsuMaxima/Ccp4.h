@@ -58,7 +58,7 @@ private:
 
 	//Helper functioms
 	int getPosition(int C, int R, int S);
-	vector<int> getCRS(int position);
+	VectorThree getCRS(int position);
 	void calculateOrthoMat(float w11_CELLA_X, float w12_CELLA_Y, float w13_CELLA_Z, float w14_CELLB_X, float w15_CELLB_Y, float w16_CELLB_Z);
 	void calculateOrigin(int w05_NXSTART, int w06_NYSTART, int w07_NZSTART, int w17_MAPC, int w18_MAPR, int w19_MAPS);
 	bool isBigEndian();
@@ -70,8 +70,9 @@ public:
 	string getPdbCode();
 	void makePeaks(PdbFile* pdbFile);
 	float getDensity(int C, int R, int S);
-	VectorThree getCRS(double x, double y, double z);
-	VectorThree getXYZ(double c, double r, double s);
+	float getDensity(VectorThree XYZ);
+	VectorThree getCRSFromXYZ(double x, double y, double z);
+	VectorThree getXYZFromCRS(double c, double r, double s);
 };
 
 

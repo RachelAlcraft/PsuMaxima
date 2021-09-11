@@ -6,6 +6,7 @@
 
 #include <string>
 #include <vector>
+#include "VectorThree.h"
 
 using namespace std;
 
@@ -24,8 +25,11 @@ public:
 	Atom(string line);
 	double distance(double x, double y, double z);
 	string getLine();
+	VectorThree getXYZ();
 
 	//Lazy public access functions
 	string Element;
+	int AtomNo;
+
 };
 

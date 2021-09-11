@@ -1,0 +1,13 @@
+# ninja log v5
+13	796	6530602077588361	CMakeFiles/PsuMaxima.dir/helper.cpp.obj	2dbd1c078592e538
+17	924	6530602078876146	CMakeFiles/PsuMaxima.dir/MatrixThreeThree.cpp.obj	4040c3c8c72e1925
+28	847	6530602077803817	CMakeFiles/PsuMaxima.dir/SpaceTransformation.cpp.obj	af71f806c6aadead
+21	926	6530602078823756	CMakeFiles/PsuMaxima.dir/Atom.cpp.obj	8f4d5bec4bdbd7a3
+7	1262	6530602082338922	CMakeFiles/PsuMaxima.dir/main.cpp.obj	a6e1d66cd1eda9cb
+24	845	6530602077763556	CMakeFiles/PsuMaxima.dir/VectorThree.cpp.obj	fc14a6ff82459393
+0	1242	6530602082098621	CMakeFiles/PsuMaxima.dir/PdbFile.cpp.obj	213efc68398a4929
+31	1314	6530602082856076	CMakeFiles/PsuMaxima.dir/CoutReports.cpp.obj	5f2d4177d03174c1
+4	1395	6530602083690107	CMakeFiles/PsuMaxima.dir/Ccp4.cpp.obj	89fecdf81df66b51
+1395	1776	6530602087403021	PsuMaxima.exe	8d06eaf7957801c5
+1	683	6530703560431637	CMakeFiles/PsuMaxima.dir/Interpolator.cpp.obj	af94b1061358852e
+684	977	6530703562957162	PsuMaxima.exe	66e1c80f84a9b742
