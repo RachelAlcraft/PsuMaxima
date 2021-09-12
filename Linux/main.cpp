@@ -20,6 +20,7 @@ int main(int argc, char* argv[])
     cout << "Started..." << "\n";
     string pdb = "1ejg";
     string COMMAND= "SLICES";
+    string INTERP = "THEVENAZ";
     double cX = 5;
     double cY = 5;
     double cZ = 5;
@@ -67,7 +68,7 @@ int main(int argc, char* argv[])
             pZ = atof(pCoords[2].c_str());
             width = atof(imSize[0].c_str());
             gap = atof(imSize[1].c_str());
-
+                        
             cout << "(" << cX << "-" << cY << "-" << cZ << ")\n";
             cout << "(" << lX << "-" << lY << "-" << lZ << ")\n";
             cout << "(" << pX << "-" << pY << "-" << pZ << ")\n";
@@ -78,32 +79,21 @@ int main(int argc, char* argv[])
     }
         
     /***************************************************/        
-    if (COMMAND == "PEAKS")
-    {        
-        Ccp4 myCcp4(pdb,ccp4directory);
-        PdbFile myPdb(pdb, pdbdirectory);
-        CoutReports::coutPeaks(&myCcp4,&myPdb);                
-    }
-    else if (COMMAND == "ATOMS")
-    {        
-        Ccp4 myCcp4(pdb,ccp4directory);
-        PdbFile myPdb(pdb, pdbdirectory);
-        Interpolator* interp;
+    Ccp4 myCcp4(pdb, ccp4directory);
+    PdbFile myPdb(pdb, pdbdirectory);
+    Interpolator* interp;
+    if (INTERP == "NEAREST")
         interp = new Nearest(myCcp4.Matrix, myCcp4.W01_NX, myCcp4.W02_NY, myCcp4.W03_NZ);
-        CoutReports::coutAtoms(&myCcp4,&myPdb,interp);                
-    }
-    else if (COMMAND == "SLICES")
-    {
-        Ccp4 myCcp4(pdb,ccp4directory);
-        PdbFile myPdb(pdb, pdbdirectory);        
-        VectorThree central(cX,cY,cZ);
-        VectorThree linear(lX,lY,lZ);
-        VectorThree planar(pX,pY,pZ);
-        Interpolator* interp;
-        interp = new Nearest(myCcp4.Matrix, myCcp4.W01_NX, myCcp4.W02_NY, myCcp4.W03_NZ);
-        CoutReports::coutSlices(&myCcp4,&myPdb,interp,central,linear,planar,width,gap);
-    }
+    else
+        interp = new Thevenaz(myCcp4.Matrix, myCcp4.W01_NX, myCcp4.W02_NY, myCcp4.W03_NZ);
 
+    if (COMMAND == "PEAKS")    
+        CoutReports::coutPeaks(&myCcp4,&myPdb);                    
+    else if (COMMAND == "ATOMS")                         
+        CoutReports::coutAtoms(&myCcp4,&myPdb,interp);                    
+    else if (COMMAND == "SLICES")   
+        CoutReports::coutSlices(&myCcp4,&myPdb,interp, VectorThree(cX, cY, cZ), VectorThree(lX, lY, lZ), VectorThree(pX, pY, pZ),width,gap);
+    
     cout << "Finished with no errros";
 }
 
