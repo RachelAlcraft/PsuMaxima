@@ -14,6 +14,7 @@
 #include "Ccp4.h"
 #include "VectorThree.h"
 
+
 using namespace std;
 
 typedef unsigned char uchar;
@@ -196,76 +197,36 @@ float Ccp4::getDensity(int C, int R, int S)
     return Matrix[pos];
 }
 
-/*float Ccp4::getDensity(VectorThree XYZ)
+VectorThree Ccp4::getNearestPeak(VectorThree CRS, Interpolator* interp)
 {
-    VectorThree crs = getCRSFromXYZ(XYZ);
-    int c = crs.A;
-    int r = crs.B;
-    int s = crs.C;    
-
-    float density = 0;
-    try
+    float biggestDensity = getDensity(CRS.A, CRS.B, CRS.C);
+    VectorThree biggestCRS = CRS;
+    int chunks = 20;
+    for (int i = -1 * (chunks - 1); i < chunks; ++i)
     {
-        density = getDensity(s,r,c);
+        for (int j = -1 * (chunks - 1); j < chunks; ++j)
+        {
+            for (int k = -1 * (chunks - 1); k < chunks; ++k)
+            {
+                float c = CRS.A + float(i)/float(chunks);
+                float r = CRS.B + float(j)/float(chunks);
+                float s = CRS.C + float(k)/float(chunks);
+                double interpDensity  = interp->getValue(s, r, c);
+                if (interpDensity > biggestDensity)
+                {
+                    biggestCRS = VectorThree(c, r, s);
+                    biggestDensity = interpDensity;
+                }
+            }
+
+        }
     }
-    catch(const std::exception& e)
-    {
-        std::cerr << e.what() << '\n';
-        density = 0;
-    }
-    
-    
-    return density;
-
-}*/
-
-/*float Ccp4::getRadiant(VectorThree XYZ)
-{
-    double h = 0.01;
-    double x = XYZ.A;
-    double y = XYZ.B;
-    double z = XYZ.C;
-    double val = getDensity(VectorThree(x, y, z));
-    double dx = (getDensity(VectorThree(x+h, y, z)) - val)/h;
-    double dy = (getDensity(VectorThree(x, y+h, z)) - val)/ h;
-    double dz = (getDensity(VectorThree(x, y, z+h)) - val)/ h;
-    double radiant = (abs(dx) + abs(dy) + abs(dz)) / 3;    
-    return radiant;
+    return biggestCRS;
 }
 
-float Ccp4::getLaplacian(VectorThree XYZ)
-{    
-    double val = getDensity(XYZ);
-    double xx = getDxDx(XYZ.A, XYZ.B, XYZ.C, val);
-    double yy = getDyDy(XYZ.A, XYZ.B, XYZ.C, val);
-    double zz = getDzDz(XYZ.A, XYZ.B, XYZ.C, val);
-    return xx + yy + zz;
-}
 
-double Ccp4::getDxDx(double x, double y, double z, double val)
-{
-    double h = 0.01;
-    double va = getDensity(VectorThree(x - h, y,z));
-    double vb = getDensity(VectorThree(x + h, y,z));
-    double dd = (va + vb - 2 * val) / (h * h);
-    return dd;
-}
-double Ccp4::getDyDy(double x, double y, double z, double val)
-{
-    double h = 0.01;
-    double va = getDensity(VectorThree(x,y - h, z));
-    double vb = getDensity(VectorThree(x,y + h, z));
-    double dd = (va + vb - 2 * val) / (h * h);
-    return dd;
-}
-double Ccp4::getDzDz(double x, double y, double z, double val)
-{
-    double h = 0.01;
-    double va = getDensity(VectorThree(x, y, z - h));
-    double vb = getDensity(VectorThree(x, y, z + h));
-    double dd = (va + vb - 2 * val) / (h * h);
-    return dd;
-}*/
+
+
 
 
 

@@ -17,7 +17,7 @@ class CoutReports
 private:
 
 public:		
-    static void coutPeaks(Ccp4* ccp4, PdbFile* pdb);
+    static void coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp);
     static void coutAtoms(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp);
     static void coutSlices(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, VectorThree central, VectorThree linear, VectorThree planar,double width,double gap);
 };

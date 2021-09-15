@@ -10,6 +10,8 @@
 #include "PdbFile.h"
 #include "MatrixThreeThree.h"
 #include "VectorThree.h"
+#include "Interpolator.h"
+
 using namespace std;
 
 class Ccp4
@@ -59,9 +61,7 @@ private:
 	void calculateOrthoMat(float w11_CELLA_X, float w12_CELLA_Y, float w13_CELLA_Z, float w14_CELLB_X, float w15_CELLB_Y, float w16_CELLB_Z);
 	void calculateOrigin(int w05_NXSTART, int w06_NYSTART, int w07_NZSTART, int w17_MAPC, int w18_MAPR, int w19_MAPS);
 	bool isBigEndian();
-    //double getDxDx(double x, double y, double z, double val);
-    //double getDyDy(double x, double y, double z, double val);
-    //double getDzDz(double x, double y, double z, double val);
+
 
 public:
     //The matrix data lazily as a public accessor
@@ -74,9 +74,7 @@ public:
 	bool isLoaded();
 	string getPdbCode();	
 	float getDensity(int C, int R, int S);
-    //float getDensity(VectorThree XYZ);
-    //float getRadiant(VectorThree XYZ);
-    //float getLaplacian(VectorThree XYZ);
+	VectorThree getNearestPeak(VectorThree XYZ, Interpolator* interp);
 	VectorThree getCRSFromXYZ(VectorThree XYZ);
 	VectorThree getXYZFromCRS(double c, double r, double s);
     int getPosition(int C, int R, int S);

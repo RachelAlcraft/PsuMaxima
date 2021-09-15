@@ -10,16 +10,16 @@ int main(int argc, char* argv[])
 {
     /******   OP SPECIFIC SETTINGS  ***************/
     // **** LINUX PANDORA **** //
-    string ccp4directory = "/d/projects/u/ab002/Thesis/PhD/Data/Ccp4/";
-    string pdbdirectory = "/d/projects/u/ab002/Thesis/PhD/Data/Pdb/";
+    //string ccp4directory = "/d/projects/u/ab002/Thesis/PhD/Data/Ccp4/";
+    //string pdbdirectory = "/d/projects/u/ab002/Thesis/PhD/Data/Pdb/";
     // **** Windows laptop rachel  **** //
     /***************************************************/
-    //string ccp4directory = "C:/Dev/Github/ProteinDataFiles/ccp4_data/";
-    //string pdbdirectory = "C:/Dev/Github/ProteinDataFiles/pdb_data/";
+    string ccp4directory = "C:/Dev/Github/ProteinDataFiles/ccp4_data/";
+    string pdbdirectory = "C:/Dev/Github/ProteinDataFiles/pdb_data/";
     /******   INPUTS  ***************/
     cout << "Started..." << "\n";
     string pdb = "1ejg";
-    string COMMAND= "SLICES";
+    string COMMAND= "PEAKS";
     string INTERP = "THEVENAZ";
     double cX = 5;
     double cY = 5;
@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
         interp = new Thevenaz(myCcp4.Matrix, myCcp4.W01_NX, myCcp4.W02_NY, myCcp4.W03_NZ);
 
     if (COMMAND == "PEAKS")    
-        CoutReports::coutPeaks(&myCcp4,&myPdb);                    
+        CoutReports::coutPeaks(&myCcp4,&myPdb,interp);                    
     else if (COMMAND == "ATOMS")                         
         CoutReports::coutAtoms(&myCcp4,&myPdb,interp);                    
     else if (COMMAND == "SLICES")   

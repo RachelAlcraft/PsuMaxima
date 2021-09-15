@@ -17,7 +17,7 @@
 using namespace std;
 
 
-void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb)
+void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp)
 {
     sort(ccp4->MatrixPeaks.rbegin(), ccp4->MatrixPeaks.rend());
     vector<pair<float, int> > tmpMatrixPeaks;
@@ -48,7 +48,7 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb)
             }
         }
         if (!are_any_bigger)
-        {
+        {            
             tmpMatrixPeaks.push_back(pair<float,int>(peak,position));
         }
 
@@ -69,9 +69,15 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb)
     for (unsigned int i = 0; i < maxdensity; ++i)
     {
         int pos = ccp4->MatrixPeaks[i].second;
+        // FILE PEAKS
         VectorThree coords = ccp4->getCRS(pos);
-        VectorThree XYZ = ccp4->getXYZFromCRS(coords.C, coords.B, coords.A);
         float density = ccp4->MatrixPeaks[i].first;
+        VectorThree XYZ = ccp4->getXYZFromCRS(coords.C, coords.B, coords.A);
+        // INTERP peaks
+        coords = ccp4->getNearestPeak(coords, interp);
+        XYZ = ccp4->getXYZFromCRS(coords.C, coords.B, coords.A);
+        density = interp->getValue(coords.C, coords.B, coords.A);
+        
         double distance = 0;
         string line = "-";
         if (pdb->isLoaded())
