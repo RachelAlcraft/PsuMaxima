@@ -726,6 +726,33 @@ SpaceTransformation.cpp.s:
 	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/SpaceTransformation.cpp.s
 .PHONY : SpaceTransformation.cpp.s
 
+SyntheticDensity.o: SyntheticDensity.cpp.o
+
+.PHONY : SyntheticDensity.o
+
+# target to build an object file
+SyntheticDensity.cpp.o:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/SyntheticDensity.cpp.o
+.PHONY : SyntheticDensity.cpp.o
+
+SyntheticDensity.i: SyntheticDensity.cpp.i
+
+.PHONY : SyntheticDensity.i
+
+# target to preprocess a source file
+SyntheticDensity.cpp.i:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/SyntheticDensity.cpp.i
+.PHONY : SyntheticDensity.cpp.i
+
+SyntheticDensity.s: SyntheticDensity.cpp.s
+
+.PHONY : SyntheticDensity.s
+
+# target to generate assembly for a file
+SyntheticDensity.cpp.s:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/SyntheticDensity.cpp.s
+.PHONY : SyntheticDensity.cpp.s
+
 VectorThree.o: VectorThree.cpp.o
 
 .PHONY : VectorThree.o
@@ -868,6 +895,9 @@ help:
 	@echo "... SpaceTransformation.o"
 	@echo "... SpaceTransformation.i"
 	@echo "... SpaceTransformation.s"
+	@echo "... SyntheticDensity.o"
+	@echo "... SyntheticDensity.i"
+	@echo "... SyntheticDensity.s"
 	@echo "... VectorThree.o"
 	@echo "... VectorThree.i"
 	@echo "... VectorThree.s"

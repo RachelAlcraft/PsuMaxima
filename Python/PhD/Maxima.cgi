@@ -11,9 +11,17 @@ Description:
 #************************************************************************************************
 
 import cgi
+import sys
 import Maxima
 import PhdWebBuilder as pwb
+import time
 
+### HELPER FUNCTIONS ####################################################
+def getTimeDiff(start,end):
+    time_diff = end - start
+    timestring = str(int(time_diff/60)) + "m " + str(int(time_diff%60)) + "s"
+    return timestring
+############################################################################
 
 # Useful debugging output
 import cgitb
@@ -22,6 +30,11 @@ cgitb.enable()  # Send errors to browser
 
 # Print the HTML MIME-TYPE header
 print ("Content-Type: text/html\n")
+
+
+#we are creating 2 HTML files, the cgi script and the html document
+userstring = ""
+cgistring = ""
 
 pdb = '1ejg'
 asCSV = True
@@ -88,18 +101,104 @@ if form.getvalue('Data7'):
   
 access = pwb.userSuccess(username,password)
 html = pwb.getHeader()
-html += pwb.getBodyA(pdb,asCSV,username,password,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,D4,D5,D6,D7)
+userstring += html
+cgistring += html
+
+print(cgistring)
+sys.stdout.flush() # update the user interface
+cgistring = ""
+
+userstring += pwb.getBodyA(pdb,asCSV,username,password,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,D4,D5,D6,D7)
 if access:
-  done = Maxima.doWeHaveAllFiles(pdb)
-  data = Maxima.runCppModule(pdb,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,D4,D5,D6,D7)
-  html += pwb.getBodyB(pdb,data,asCSV,D1,D2,D3,D4,D5,D6,D7)
-  html += pwb.getBodyC(pdb,data,width,gran,D1,D2,D3,D4,D5,D6,D7)
-  #html += pwb.getBodyD(pdb,data,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ)
+  havepdb, haveed = Maxima.doWeHaveAllFiles(pdb)
+  userstring += pwb.getBodyRun0(pdb)
+
+  #print('Access granted')
+  #sys.stdout.flush() # update the user interface
+
+  totalRuns = 0
+  if D1 or D2 or D3:
+    totalRuns += 1
+  if D4 or D5 or D6:
+    totalRuns += 1
+  if D7:
+    totalRuns += 1
+
+  runNo = 0
+  
+
+  if havepdb and haveed:
+    # Peaks run
+    if D1 or D2 or D3:
+      runNo += 1
+      print('<p>' + str(runNo) + '/' + str(totalRuns) + ' Calculating peaks...(approx 10 seconds)...')      
+      sys.stdout.flush() # update the user interface      
+      start = time.time()
+      data = Maxima.runCppModule(pdb,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,False,False,False,False)
+      userstring += pwb.getBodyRun1(pdb,data,asCSV,D1,D2,D3)
+      end = time.time()
+      ts = getTimeDiff(start,end)
+      print('completed in')
+      print(ts)
+      print(' <p>')
+      sys.stdout.flush() # update the user interface
+      
+      
+    if D4 or D5 or D6:
+      runNo += 1
+      print('<p>' + str(runNo) + '/' + str(totalRuns) + ' Inspecting atoms...(approx 5 seconds)...')      
+      sys.stdout.flush() # update the user interface
+      start = time.time()
+      data = Maxima.runCppModule(pdb,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,False,False,False,D4,D5,D6,False)
+      userstring += pwb.getBodyRun2(pdb,data,D4,D5,D6)
+      end = time.time()
+      ts = getTimeDiff(start,end)
+      print('completed in')
+      print(ts)
+      print(' <p>')
+      sys.stdout.flush() # update the user interface
+      html = ""
+
+    if D7:
+      runNo += 1
+      print('<p>' + str(runNo) + '/' + str(totalRuns) + ' Visualising density...(approx 5 seconds)...')      
+      sys.stdout.flush() # update the user interface
+      start = time.time()
+      data = Maxima.runCppModule(pdb,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,False,False,False,False,False,False,D7)
+      userstring += pwb.getBodyRun3(pdb,data,width,gran,D7)
+      end = time.time()
+      ts = getTimeDiff(start,end)
+      print('completed in')
+      print(ts)
+      print(' <p>')
+      sys.stdout.flush() # update the user interface
+        
+      
+    #we now create the users own html page
+    userstring += pwb.getFooter()
+    results = pwb.userOwnWebPage(username,userstring)
+
+    #and inform the cgi script of the results
+    print(results)
+    sys.stdout.flush() # update the user interface
+    
+    
+  else:
+    if not havepdb:
+      cgistring += "<h2>!!! There is no pdb file named " + pdb + " !!!</h2>"
+    if not haveed:
+      cgistring += "<h2>!!! There is no electron density for " + pdb + " !!!</h2>"
+  
 else:
-  html += "<h2>!!No access!! Enter a valid email address.</h2>"
+  cgistring += "<h2>!!! No access !!! Enter a valid email address.</h2>"
 
-html += pwb.getFooter()
 
-print(html)
+#print out the options to the cgi
+
+cgistring += pwb.getBodyA(pdb,asCSV,username,password,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,D4,D5,D6,D7)
+cgistring += pwb.getFooter()
+
+
+print(cgistring)
 
 #************************************************************************************************

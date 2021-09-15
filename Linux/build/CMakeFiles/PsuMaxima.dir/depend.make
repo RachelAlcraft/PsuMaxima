@@ -38,6 +38,11 @@ CMakeFiles/PsuMaxima.dir/SpaceTransformation.cpp.o: ../SpaceTransformation.cpp
 CMakeFiles/PsuMaxima.dir/SpaceTransformation.cpp.o: ../SpaceTransformation.h
 CMakeFiles/PsuMaxima.dir/SpaceTransformation.cpp.o: ../VectorThree.h
 
+CMakeFiles/PsuMaxima.dir/SyntheticDensity.cpp.o: ../Atom.h
+CMakeFiles/PsuMaxima.dir/SyntheticDensity.cpp.o: ../SyntheticDensity.cpp
+CMakeFiles/PsuMaxima.dir/SyntheticDensity.cpp.o: ../SyntheticDensity.h
+CMakeFiles/PsuMaxima.dir/SyntheticDensity.cpp.o: ../VectorThree.h
+
 CMakeFiles/PsuMaxima.dir/VectorThree.cpp.o: ../VectorThree.cpp
 CMakeFiles/PsuMaxima.dir/VectorThree.cpp.o: ../VectorThree.h
 

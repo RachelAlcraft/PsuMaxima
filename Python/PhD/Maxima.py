@@ -33,7 +33,8 @@ def getCsvFromCppResults(cppResults,ID):
     return pd.DataFrame()
   
 def doWeHaveAllFiles(pdbCode):
-  done = True
+  haveED = False
+  havePDB = False
   import os
   directory = '/d/projects/u/ab002/Thesis/PhD/Data/'
   allFiles = True
@@ -42,21 +43,26 @@ def doWeHaveAllFiles(pdbCode):
   ccp4File = directory + 'Ccp4/' + pdbCode + '.ccp4'
   ccp4Diff = directory + 'Ccp4/' + pdbCode + '_diff.ccp4'
 
-  if not os.path.isfile(origPdb):
-    #print('getting pdb file from pdb</br>')    
-    getFile(origPdb,'https://www.ebi.ac.uk/pdbe/entry-files/download/pdb' + pdbCode + '.ent')
+  if os.path.isfile(origPdb):
+    havePDB = True
+  else:
+    try:
+      getFile(origPdb,'https://www.ebi.ac.uk/pdbe/entry-files/download/pdb' + pdbCode + '.ent')
+      havePDB = True
+    except:
+      havePDB = False
 
-  if not os.path.isfile(ccp4File):
-    #print('getting ccp4 files from pdb</br>')    
-    getFile(ccp4File,'https://www.ebi.ac.uk/pdbe/coordinates/files/' + pdbCode + '.ccp4')
-    getFile(ccp4Diff,'https://www.ebi.ac.uk/pdbe/coordinates/files/' + pdbCode +'_diff.ccp4')
-
-  # Files to calculate
-  adjPdb = directory + 'Adjusted/pdb' + pdbCode + '.ent'
-  peaksFile = directory + 'Peaks/' + pdbCode + '_Maxa.csv'
-  report =  directory + 'Report/MaximaDifferences_' + pdbCode + '.csv'
-
-  return done
+  if os.path.isfile(ccp4File):
+    haveED = True
+  else:
+    try:
+      getFile(ccp4File,'https://www.ebi.ac.uk/pdbe/coordinates/files/' + pdbCode + '.ccp4')
+      getFile(ccp4Diff,'https://www.ebi.ac.uk/pdbe/coordinates/files/' + pdbCode +'_diff.ccp4')
+      haveED = True
+    except:
+      haveED = False
+      
+  return havePDB,haveED
 
 def runCppModule(pdb, cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,D4,D5,D6,D7):        
     #try:

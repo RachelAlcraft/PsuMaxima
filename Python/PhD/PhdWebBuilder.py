@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import io
 import base64
+import os
 
 def userSuccess(email,password):
     isok = True
@@ -15,23 +16,47 @@ def userSuccess(email,password):
     if len(on_dot) <2:
         isok = False
 
-    if isok:
-        directory = '/d/projects/u/ab002/Thesis/PhD/Data/Users/'
-        filename = email
-        from datetime import datetime
-        dateTimeObj = datetime.now()
-        dateObj = dateTimeObj.date()
-        timestampStr = dateTimeObj.strftime("_%d_%b_%Y_%H_%M_%S_%f")
-        filename += timestampStr + ".txt"
-        f = open(directory+filename, "w")
-        f.write("")
-        f.close()
-        
-  
-  
-  
+    directory = '/d/projects/u/ab002/Thesis/PhD/Data/Users/'
+    filename = email
+    if not isok:
+        filename += '_FAILED'
+    
+    from datetime import datetime
+    dateTimeObj = datetime.now()
+    dateObj = dateTimeObj.date()
+    timestampStr = dateTimeObj.strftime("_%d_%b_%Y_%H_%M_%S_%f")
+    filename += timestampStr + ".txt"
+    f = open(directory+filename, "w")
+    f.write("")
+    f.close()
     
     return isok
+
+def userOwnWebPage(email,string):
+    isok = True
+    #Does the email address contaion an @ sign?
+    on_at = email.split('@')
+    pageName = email#on_at[0] + "_" + on_at[1]
+
+    directory = '/d/user6/ab002/WWW/Users/'
+    filename = directory + pageName + ".html"
+            
+    f = open(filename, "w")
+    f.write(string)
+    f.close()
+
+    res = ''
+    res += '<hr/>'
+    res += '<h3>Results ready for ' + pageName + '</h3>'
+    res += '<p><i>This is your private results page, further results will be copied here, it will not be stored on the server so save as needed<i><p>'
+    
+    pathname = 'https://student.cryst.bbk.ac.uk/~ab002/Users/' + pageName + '.html'
+    res += '<div style="background-color:SpringGreen;">'
+    res += '<p><b><br/>   Results: </b>'
+    res += '<a class="change_link_color" href="' + pathname + '" title="Results" target="_self">Link to your results</a>\n'
+    res += '<br/><br/></p></div>'
+    
+    return res
 
 def getHeader():
     string = '<!DOCTYPE html>\n'
@@ -50,7 +75,10 @@ def getHeader():
     #string += '.verdinnerheader td {border: 3px solid RebeccaPurple;background: RebeccaPurple;padding: 0px; color: Chartreuse;}'
     string += 'a:link{color:MistyRose;}\n'
     string += 'a:visited {color:MistyRose;}\n'
-    string += 'a:hover {color:white;}\n'    
+    string += 'a:hover {color:white;}\n'
+    string += 'a.change_link_color:link{color: black;}'
+    string += 'a.change_link_color:visited{color: DarkSlateBlue;}'
+    string += 'a.change_link_color:hover{color: Navy;}'
     string += '</style></head>\n'
 
     # header includes a bit of body, where we have the header...
@@ -58,7 +86,7 @@ def getHeader():
     string += '<hr/>'
     string += '<p style="background-color:Crimson;margin:5px;padding:5px;color:AliceBlue;">'
     string += '<a href="/../../~ab002/Maxima.html" title="Home" target="_self">PhD Home</a>'
-    string += "~ <a href='/../../~ab002/index.html' title='Student' target='_blank'>Student home</a>"
+    string += "~ <a href='/../../~ab002/index.html' title='Student' target='_blank'>Student Home</a>"
     string += "~ <a href='https://www.bbk.ac.uk/departments/biology/' title='Birkbeck' target='_blank'>Birkbeck Biology</a>"
     string += '</p>'
     
@@ -134,7 +162,7 @@ def getBodyA(pdb, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width
     string += 'Y=<input type="text" name="PY" value=' + str(pY) + ' />\n'
     string += 'Z=<input type="text" name="PZ" value=' + str(pZ) + ' /></td></tr></table>\n'
 
-    string += '<div style="text-align: left;"><b>Settings for image size</b></div>\n'
+    string += '<div style="text-align: left;padding:5px"><b>Settings for image size</b></div>\n'
     string += '<table style="background-color:AliceBlue">\n'
     string += '<tr>\n'
     string += '<td>Width(&#8491;)=<input type="text" name="Width" value=' + str(width) + ' /> Granularity(&#8491;)=<input type="text" name="Gran" value=' + str(gran) + ' /></td>\n'
@@ -143,42 +171,61 @@ def getBodyA(pdb, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width
 
     string += '</td></tr></table>\n'
 
-    string += '<br/><input type="Submit" value="Analyse"/>\n'    
+    string += '<br/><input type="Submit" value="Analyse Electron Density"/>\n'    
     ############  END FORM ############################
     string += '</form>\n'
     string += '</div>\n'
     return string
 
-def getBodyB(pdb, dataABC, asCsv,D1,D2,D3,D4,D5,D6,D7):
-
+def getBodyRun0(pdb):
+    string = '<hr/>\n'
+    string += '<h3>RESULTS: ' + pdb + '</h3>'        
+    string += '<p>EBI Link <a class="change_link_color" href="https://www.ebi.ac.uk/pdbe/entry/pdb/' + pdb + '" title="EBI link" target="_blank">Open protein pdb ebi link</a></p>'
+    return string
+    
+def getBodyRun1(pdb, dataABC, asCsv,D1,D2,D3):
+    string = ""
     if len(dataABC) > 0:
         dataA = dataABC[0]
         dataB = dataABC[1]
-        dataC = dataABC[2]
-        
-        string = '<hr/>\n'
-        string += '<h3>MAXIMA RESULTS: ' + pdb + '</h3>'
-        
-        string += '<p>EBI Link <a href="https://www.ebi.ac.uk/pdbe/entry/pdb/' + pdb + '" title="EBI link" target="_blank">Open protein pdb ebi link</a></p>'
+        dataC = dataABC[2]            
 
         ### DATA 1 Peaks projection visualised #################################
+        csvhtml=""
+        if D1 or D2 or D3:
+            csvhtml, csvtext = dataFrameToText(dataA)
+            savePeaksFile(pdb,csvtext)
+            
         if D1:
             string += '<hr/>\n'
             string += '<h4>1) Peaks visual projection to 3 planes</h4>'
-            string += dataFrameToImages(pdb,dataA,"X","Y","Z","Density","cubehelix_r")
+            string += dataFrameToImages(pdb,dataA,"X","Y","Z","Density","cubehelix_r")            
 
         ### DATA 2 Peaks data as CSV #################################
+        #-- https://www.w3schools.com/howto/tryit.asp?filename=tryhow_html_download_link --#
         if D2:
             string += '<hr/>\n'
             string += '<h4>2) Peaks data as CSV file</h4>'
-            string += dataFrameToText(dataA)
-
+            pathname = 'https://student.cryst.bbk.ac.uk/~ab002/Peaks/peaks_' + pdb + '.csv'
+            string += '<a class="change_link_color" href="' + pathname + '" download='+'peaks_'+pdb + '.csv >Download peaks file</a><br/><br/>'
+            string += csvhtml
+            
         ### DATA 3 Peaks data as html grid #################################
         if D3:
             string += '<hr/>\n'
             string += '<h4>3) Peaks data as html grid</h4>'
-            string += dataFrameToGrid(dataA)
-
+            string += dataFrameToGrid(dataA)    
+    else:
+        string = '<font color="DC143C"><h1>Exe failed to create data</h1></font>'
+    return string
+    
+def getBodyRun2(pdb, dataABC, D4,D5,D6):
+    string = ""
+    if len(dataABC) > 0:
+        dataA = dataABC[0]
+        dataB = dataABC[1]
+        dataC = dataABC[2]
+                
         ### DATA 4 Peaks projection atoms only #################################
         if D4:
             string += '<hr/>\n'
@@ -195,21 +242,16 @@ def getBodyB(pdb, dataABC, asCsv,D1,D2,D3,D4,D5,D6,D7):
         if D6:
             string += '<hr/>\n'
             string += '<h4>6) Atoms visualised on AtomNo</h4>'
-            string += dataFrameToImages(pdb,dataC,"X","Y","Z","AtomNo","jet")                    
+            string += dataFrameToImages(pdb,dataC,"X","Y","Z","AtomNo","gist_ncar")                    
     else:
         string = '<font color="DC143C"><h1>Exe failed to create data</h1></font>'
-
-
-    
-    
-    
     return string
     
-    
+
 def dataFrameToImages(pdb,data,geoA,geoB,geoC,hue,palette):    
     mtx = createDummyMatrix()
     #string = matrixToImage(mtx)
-    html = '<table><tr>'
+    html = '<table style="table-layout:fixed;width:95%;display:block;display:table"><tr>'
     html += scatterToImage(pdb,data,hue,geoA,geoB,palette)
     html += scatterToImage(pdb,data,hue,geoB,geoC,palette)
     html += scatterToImage(pdb,data,hue,geoC,geoA,palette)
@@ -218,16 +260,22 @@ def dataFrameToImages(pdb,data,geoA,geoB,geoC,hue,palette):
     return html
     
 
-def scatterToMatrix(data,length,hue):
+def scatterToMatrix(data,length,hue, cap):
+    maxVal = data[hue].values.max()
+    maxCap = maxVal * cap  
     try:
         mtx = data[hue].values.reshape(length+1,length+1)
+        for i in range(length+1):
+            for j in range(length+1):
+                if mtx[i,j] > maxCap:
+                    mtx[i,j] = maxCap
         return mtx
     except:
         return np.zeros([3,3])
             
     
 
-def getBodyC(pdb,dataABC,width,gran,D1,D2,D3,D4,D5,D6,D7):
+def getBodyRun3(pdb,dataABC,width,gran,D7):
     ### DATA 6 Atom scatter plot, all atoms #################################
     string = ''
     if D7:
@@ -242,15 +290,15 @@ def getBodyC(pdb,dataABC,width,gran,D1,D2,D3,D4,D5,D6,D7):
             dataC = dataABC[5]
             
             
-            string += '<table><tr>'
-            string += '<td>Density</td><td>Radiant</td><td>Laplacian</td></tr><tr>'
+            string += '<table style="table-layout:fixed;width:95%;display:block;display:table"><tr>'
+            string += '<td style="width:33%;">Density</td><td style="width:33%;">Radiant</td><td style="width:33%;">Laplacian</td></tr><tr>'
 
-            mtxD = scatterToMatrix(dataA,length,'Density')
-            mtxR = scatterToMatrix(dataB,length,'Radiant')
-            mtxL = scatterToMatrix(dataC,length,'Laplacian')        
-            string += matrixToImage(pdb,mtxD,'inferno')
-            string += matrixToImage(pdb,mtxR,'bone')
-            string += matrixToImage(pdb,mtxL,'inferno_r')
+            mtxD = scatterToMatrix(dataA,length,'Density',0.3)
+            mtxR = scatterToMatrix(dataB,length,'Radiant',1)
+            mtxL = scatterToMatrix(dataC,length,'Laplacian',0.3)        
+            string += matrixToImage(pdb,mtxD,'magma_r',False)
+            string += matrixToImage(pdb,mtxR,'bone',False)
+            string += matrixToImage(pdb,mtxL,'magma',False)
 
             #string += scatterToImage(pdb,dataA,"Density","i","j","inferno")
             #string += scatterToImage(pdb,dataB,"Radiant","i","j","inferno")
@@ -274,13 +322,11 @@ def getBodyD(pdb,data,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ):
 
 
 def getFooter():
-    string = '<hr/>\n'
-    string += '<div id="bottom">\n'
-    string += '<p>\n'
+    string = '<hr/>\n'    
+    string += '<p style="background-color:Crimson;margin:5px;padding:5px;color:AliceBlue;">\n'
     string += 'Created by: Rachel Alcraft<br/>\n'
     string += '<a href="https://student.cryst.bbk.ac.uk/~ab002/" title="PhDBio" target="_blank">Birkbeck Student Page - Rachel Alcraft</a>\n'
-    string += '</p>\n'
-    string += '</div>\n'
+    string += '</p>\n'    
     string += '</body>\n'
     return string
 
@@ -319,6 +365,7 @@ def dataFrameToText(df):
     cols = len(df.columns)
     rows = len(df.index)
     html = "<TEXTAREA rows=20 cols=150>\n"
+    text = ""
     
     row = ""
     for col in df.columns:
@@ -326,6 +373,7 @@ def dataFrameToText(df):
     row = row[:len(row)-1]
     #row[len(row)-1] = "\n"
     html += row + "\n"
+    text += row + "\n"
 
     for c in range(0, rows):
         row = ""
@@ -339,8 +387,18 @@ def dataFrameToText(df):
 
         row = row[:len(row)-1]
         html += row + "\n"
+        text += row + "\n"
     html += "</TEXTAREA>"
-    return (html)
+    return html,text
+
+def savePeaksFile(pdb, text):
+    filename = '/d/user6/ab002/WWW/Peaks/peaks_' + pdb + '.csv'            
+    if not os.path.isfile(filename) or True:#for now save it always while the format is changing TODO
+        f = open(filename, "w")
+        f.write(text)
+        f.close()
+    
+    
 
 def getPlotImage(fig, ax):
     img = io.BytesIO()
@@ -350,15 +408,16 @@ def getPlotImage(fig, ax):
     plt.close('all')    
     return encoded
     
-def matrixToImage(pdb,mtx,pal):
+def matrixToImage(pdb,mtx,pal,contour):
     fig, ax = plt.subplots()
-    image = plt.imshow(mtx, cmap=pal, interpolation='nearest', origin='lower', aspect='equal',alpha=1)        
-    image = plt.contour(mtx, colors='SlateGray', alpha=0.55, linewidths=0.3, levels=12)
+    image = plt.imshow(mtx, cmap=pal, interpolation='nearest', origin='lower', aspect='equal',alpha=1)
+    if contour:
+        image = plt.contour(mtx, colors='SlateGray', alpha=0.55, linewidths=0.3, levels=12)
     plt.axis('off')    
     encoded = getPlotImage(fig,ax)
-    imstring = '<img width=10% src="data:image/png;base64, {}">'.format(encoded.decode('utf-8')) + '\n'
+    imstring = '<img src="data:image/png;base64, {}">'.format(encoded.decode('utf-8')) + '\n'
     #html = imstring        
-    html = '<td><p>' + pdb + '</p><p>' + imstring + '</p></td>\n'
+    html = '<td style="width:33%;"><p>' + pdb + '</p><p>' + imstring + '</p></td>\n'
     return html
 
 
@@ -368,7 +427,7 @@ def scatterToImage(pdb, df, hue, xaxis,yaxis,pal):
     df = df.sort_values(by=hue, ascending=True)
     count = len(df)
     
-    g = ax.scatter(df[xaxis], df[yaxis], c=df[hue], cmap=pal,edgecolor='AliceBlue', alpha=0.7,linewidth=0.8,s=20)
+    g = ax.scatter(df[xaxis], df[yaxis], c=df[hue], cmap=pal,edgecolor='Silver', alpha=0.7,linewidth=0.8,s=20)
     cb = fig.colorbar(g)
     ax.set_xlabel(xaxis)
     ax.set_ylabel(yaxis)
