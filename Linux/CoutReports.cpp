@@ -8,6 +8,7 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include <iomanip>
 
 #include "VectorThree.h"
 #include "SpaceTransformation.h"
@@ -17,13 +18,12 @@
 using namespace std;
 
 
-void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp)
+void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int interpNum)
 {
     sort(ccp4->MatrixPeaks.rbegin(), ccp4->MatrixPeaks.rend());
     vector<pair<float, int> > tmpMatrixPeaks;
 
-    //All the data in the list is near neighbours. So we can go through it
-    //TO DO HERE
+    //All the data in the list is near neighbours. So we can go through it    
     for (unsigned int i = 0;  i< ccp4->MatrixPeaks.size(); ++i)
     {
         double peak = ccp4->MatrixPeaks[i].first;
@@ -55,28 +55,78 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp)
     }
 
     ccp4->MatrixPeaks = tmpMatrixPeaks;
-
+    // now create a list of interpolated peaks
+    vector<pair<float, VectorThree> > tmpInterpPeaks;
     unsigned int maxdensity = 10000;
     if (ccp4->MatrixPeaks.size() < maxdensity)
         maxdensity = ccp4->MatrixPeaks.size();
-
     
-
-    cout << "BEGIN_ALLPEAKS\n";
-    cout << "Density,C,R,S,X,Y,Z,NearestAtom,Distance\n";
-
-
     for (unsigned int i = 0; i < maxdensity; ++i)
     {
-        int pos = ccp4->MatrixPeaks[i].second;
-        // FILE PEAKS
+        int pos = ccp4->MatrixPeaks[i].second;        
         VectorThree coords = ccp4->getCRS(pos);
-        float density = ccp4->MatrixPeaks[i].first;
+        float density = ccp4->MatrixPeaks[i].first;                
+        if (interpNum > 1)
+        {
+            coords = ccp4->getNearestPeak(coords, interp, interpNum);            
+            density = interp->getValue(coords.C, coords.B, coords.A);
+        }
+        tmpInterpPeaks.push_back(pair<float,VectorThree>(density,coords));
+
+    }
+
+    //"REMARK   1                                                                      "
+    //"HETATM  286  O   HOH B  57      17.652   2.846  -0.887  1.00 28.92           O  "
+    cout << "BEGIN_CHIMERAPEAKS\n";
+    cout << "#REMARK   1 Peaks for " << pdb->getPdbCode() << " calculated by Leucippus (Birkbeck College 2021)\n";    
+    for (unsigned int i = 0; i < maxdensity; ++i)
+    {
+                
+        VectorThree coords = tmpInterpPeaks[i].second;
+        float density = tmpInterpPeaks[i].first;
         VectorThree XYZ = ccp4->getXYZFromCRS(coords.C, coords.B, coords.A);
-        // INTERP peaks
-        coords = ccp4->getNearestPeak(coords, interp);
-        XYZ = ccp4->getXYZFromCRS(coords.C, coords.B, coords.A);
-        density = interp->getValue(coords.C, coords.B, coords.A);
+        cout << "HETATM  " << i;
+        if (i < 10)
+            cout << "   ";
+        else if (i < 100)
+            cout << "  ";
+        else if (i < 1000)
+            cout << " ";
+        else
+            cout << "";
+
+
+        cout <<  "X   XXX X  " << i;
+        if (i < 10)
+            cout << "         ";
+        else if (i < 100)
+            cout << "        ";
+        else if (i < 1000)
+            cout << "       ";
+        else
+            cout << "      ";
+        cout << setprecision(3) << fixed << XYZ.A  << "  ";
+        if (XYZ.A < 10)
+            cout << " ";
+         cout <<  XYZ.B << "  ";
+         if (XYZ.B < 10)
+            cout << " ";
+         cout << XYZ.C;
+         if (XYZ.C < 10)
+            cout << " ";
+         cout << "  1.00  " <<  density << "         X\n";
+    }
+    cout << "END_CHIMERAPEAKS\n";
+        
+    cout << "BEGIN_ALLPEAKS\n";
+    cout << "Density,C,R,S,X,Y,Z,NearestAtom,Distance\n";
+    for (unsigned int i = 0; i < maxdensity; ++i)
+    {
+                
+        VectorThree coords = tmpInterpPeaks[i].second;
+        float density = tmpInterpPeaks[i].first;
+        VectorThree XYZ = ccp4->getXYZFromCRS(coords.C, coords.B, coords.A);
+        
         
         double distance = 0;
         string line = "-";
@@ -100,10 +150,10 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp)
     cout << "Density,C,R,S,X,Y,Z,NearestAtom,Distance\n";
     for (unsigned int i = 0; i < maxdensity; ++i)
     {
-        int pos = ccp4->MatrixPeaks[i].second;
-        VectorThree coords = ccp4->getCRS(pos);
+        VectorThree coords = tmpInterpPeaks[i].second;
+        float density = tmpInterpPeaks[i].first;
         VectorThree XYZ = ccp4->getXYZFromCRS(coords.C, coords.B, coords.A);
-        float density = ccp4->MatrixPeaks[i].first;
+
         double distance = 0;
         string line = "-";
         if (pdb->isLoaded())

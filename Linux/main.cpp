@@ -14,13 +14,14 @@ int main(int argc, char* argv[])
     string pdbdirectory = "/d/projects/u/ab002/Thesis/PhD/Data/Pdb/";
     // **** Windows laptop rachel  **** //
     /***************************************************/
-    //string ccp4directory = "C:/Dev/Github/ProteinDataFiles/ccp4_data/";
+    //string ccp4directory = "C:/Dev/Github/einDataFiles/ccp4_data/";
     //string pdbdirectory = "C:/Dev/Github/ProteinDataFiles/pdb_data/";
     /******   INPUTS  ***************/
     cout << "Started..." << "\n";
     string pdb = "1ejg";
-    string COMMAND= "PEAKS";
+    string COMMAND= "SLICES";
     string INTERP = "THEVENAZ";
+    int INTERPNUM = 2;
     double cX = 5;
     double cY = 5;
     double cZ = 5;
@@ -44,15 +45,16 @@ int main(int argc, char* argv[])
 
         COMMAND = (string)inputs[0];
         pdb = (string)inputs[1];
+        INTERPNUM = atol(inputs[2].c_str());
         cout << "pdb=" << pdb << "\n";
                       
 
         if (COMMAND == "SLICES")
         {
-            string central = inputs[2];
-            string linear = inputs[3];
-            string planar = inputs[4];
-            string image_size = inputs[5];
+            string central = inputs[3];
+            string linear = inputs[4];
+            string planar = inputs[5];
+            string image_size = inputs[6];
             vector<string> cCoords = helper::stringToVector(central,"-");
             vector<string> lCoords = helper::stringToVector(linear,"-");
             vector<string> pCoords = helper::stringToVector(planar,"-");
@@ -88,7 +90,7 @@ int main(int argc, char* argv[])
         interp = new Thevenaz(myCcp4.Matrix, myCcp4.W01_NX, myCcp4.W02_NY, myCcp4.W03_NZ);
 
     if (COMMAND == "PEAKS")    
-        CoutReports::coutPeaks(&myCcp4,&myPdb,interp);                    
+        CoutReports::coutPeaks(&myCcp4,&myPdb,interp,INTERPNUM);                    
     else if (COMMAND == "ATOMS")                         
         CoutReports::coutAtoms(&myCcp4,&myPdb,interp);                    
     else if (COMMAND == "SLICES")   

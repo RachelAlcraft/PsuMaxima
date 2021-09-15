@@ -8,6 +8,7 @@ CMakeFiles/PsuMaxima.dir/Atom.cpp.o: ../VectorThree.h
 CMakeFiles/PsuMaxima.dir/Ccp4.cpp.o: ../Atom.h
 CMakeFiles/PsuMaxima.dir/Ccp4.cpp.o: ../Ccp4.cpp
 CMakeFiles/PsuMaxima.dir/Ccp4.cpp.o: ../Ccp4.h
+CMakeFiles/PsuMaxima.dir/Ccp4.cpp.o: ../Interpolator.h
 CMakeFiles/PsuMaxima.dir/Ccp4.cpp.o: ../MatrixThreeThree.h
 CMakeFiles/PsuMaxima.dir/Ccp4.cpp.o: ../PdbFile.h
 CMakeFiles/PsuMaxima.dir/Ccp4.cpp.o: ../VectorThree.h

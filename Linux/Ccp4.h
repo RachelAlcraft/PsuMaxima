@@ -74,7 +74,7 @@ public:
 	bool isLoaded();
 	string getPdbCode();	
 	float getDensity(int C, int R, int S);
-	VectorThree getNearestPeak(VectorThree XYZ, Interpolator* interp);
+	VectorThree getNearestPeak(VectorThree XYZ, Interpolator* interp, int interpNum);
 	VectorThree getCRSFromXYZ(VectorThree XYZ);
 	VectorThree getXYZFromCRS(double c, double r, double s);
     int getPosition(int C, int R, int S);

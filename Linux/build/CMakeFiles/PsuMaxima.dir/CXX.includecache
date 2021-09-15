@@ -27,6 +27,8 @@ MatrixThreeThree.h
 /d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/MatrixThreeThree.h
 VectorThree.h
 /d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/VectorThree.h
+Interpolator.h
+/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/Interpolator.h
 
 /d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/CoutReports.cpp
 string
@@ -36,6 +38,8 @@ vector
 iostream
 -
 algorithm
+-
+iomanip
 -
 VectorThree.h
 /d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/VectorThree.h
@@ -55,12 +59,6 @@ PdbFile.h
 /d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/PdbFile.h
 Interpolator.h
 /d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/Interpolator.h
-
-/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/Interpolator.cpp
-Interpolator.h
-/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/Interpolator.h
-cmath
--
 
 /d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/Interpolator.h
 string
@@ -92,37 +90,5 @@ vector
 VectorThree.h
 /d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/VectorThree.h
 
-/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/SyntheticDensity.cpp
-SyntheticDensity.h
-/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/SyntheticDensity.h
-
-/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/SyntheticDensity.h
-string
--
-vector
--
-Atom.h
-/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/Atom.h
-
 /d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/VectorThree.h
-
-/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/helper.h
-string
--
-vector
--
-
-/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/main.cpp
-iostream
--
-cstdlib
--
-Ccp4.h
-/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/Ccp4.h
-helper.h
-/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/helper.h
-CoutReports.h
-/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/CoutReports.h
-Interpolator.h
-/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/Interpolator.h
 

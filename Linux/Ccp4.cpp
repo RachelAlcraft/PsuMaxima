@@ -197,20 +197,19 @@ float Ccp4::getDensity(int C, int R, int S)
     return Matrix[pos];
 }
 
-VectorThree Ccp4::getNearestPeak(VectorThree CRS, Interpolator* interp)
+VectorThree Ccp4::getNearestPeak(VectorThree CRS, Interpolator* interp, int interpNum)
 {
     float biggestDensity = getDensity(CRS.A, CRS.B, CRS.C);
-    VectorThree biggestCRS = CRS;
-    int chunks = 20;
-    for (int i = -1 * (chunks - 1); i < chunks; ++i)
+    VectorThree biggestCRS = CRS;    
+    for (int i = -1 * (interpNum - 1); i < interpNum; ++i)
     {
-        for (int j = -1 * (chunks - 1); j < chunks; ++j)
+        for (int j = -1 * (interpNum - 1); j < interpNum; ++j)
         {
-            for (int k = -1 * (chunks - 1); k < chunks; ++k)
+            for (int k = -1 * (interpNum - 1); k < interpNum; ++k)
             {
-                float c = CRS.A + float(i)/float(chunks);
-                float r = CRS.B + float(j)/float(chunks);
-                float s = CRS.C + float(k)/float(chunks);
+                float c = CRS.A + float(i)/float(interpNum);
+                float r = CRS.B + float(j)/float(interpNum);
+                float s = CRS.C + float(k)/float(interpNum);
                 double interpDensity  = interp->getValue(s, r, c);
                 if (interpDensity > biggestDensity)
                 {
