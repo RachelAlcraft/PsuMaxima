@@ -71,13 +71,15 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
         
         if (interpNum > 1)
         {
-            coords = ccp4->getNearestPeak(coords, interp, interpNum);            
+            coords = ccp4->getNearestPeak(coords, interp, true);            
             density = interp->getValue(coords.C, coords.B, coords.A);
             densityPair.second = coords;
             densityPair.first = density;
             //And we should also do this on a laplacian basis but for now I am just using the same thing TODO
+            coords = ccp4->getNearestPeak(coords, interp, false);
+            double laplacian = interp->getLaplacian(coords.C, coords.B, coords.A);
             laplacianPair.second = coords;
-            laplacianPair.first = density;
+            laplacianPair.first = laplacian;
         }
         else
         {

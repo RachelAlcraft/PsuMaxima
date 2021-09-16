@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
     string pdbdirectory = "/d/projects/u/ab002/Thesis/PhD/Data/Pdb/";
     // **** Windows laptop rachel  **** //
     /***************************************************/
-    //string ccp4directory = "C:/Dev/Github/einDataFiles/ccp4_data/";
+    //string ccp4directory = "C:/Dev/Github/ProteinDataFiles/ccp4_data/";
     //string pdbdirectory = "C:/Dev/Github/ProteinDataFiles/pdb_data/";
     /******   INPUTS  ***************/
     cout << "Started..." << "\n";

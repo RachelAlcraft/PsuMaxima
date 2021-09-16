@@ -74,11 +74,14 @@ public:
 	bool isLoaded();
 	string getPdbCode();	
 	float getDensity(int C, int R, int S);
-	VectorThree getNearestPeak(VectorThree XYZ, Interpolator* interp, int interpNum);
+	VectorThree getNearestPeak(VectorThree XYZ, Interpolator* interp, bool density);
+	VectorThree getNearestPeakOld(VectorThree XYZ, Interpolator* interp, int interpNum);
 	VectorThree getCRSFromXYZ(VectorThree XYZ);
 	VectorThree getXYZFromCRS(double c, double r, double s);
     int getPosition(int C, int R, int S);
 	VectorThree getCRS(int position);
+private:
+	VectorThree getNearestPeakRecursive(VectorThree XYZ, Interpolator* interp, bool density, int level, double width);
 };
 
 

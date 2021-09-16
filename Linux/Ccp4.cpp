@@ -197,7 +197,12 @@ float Ccp4::getDensity(int C, int R, int S)
     return Matrix[pos];
 }
 
-VectorThree Ccp4::getNearestPeak(VectorThree CRS, Interpolator* interp, int interpNum)
+VectorThree Ccp4::getNearestPeak(VectorThree CRS, Interpolator* interp, bool density)
+{
+    return getNearestPeakRecursive(CRS, interp, density, 0, 1);
+}
+
+VectorThree Ccp4::getNearestPeakOld(VectorThree CRS, Interpolator* interp, int interpNum)
 {
     float biggestDensity = getDensity(CRS.A, CRS.B, CRS.C);
     VectorThree biggestCRS = CRS;    
@@ -221,6 +226,43 @@ VectorThree Ccp4::getNearestPeak(VectorThree CRS, Interpolator* interp, int inte
         }
     }
     return biggestCRS;
+}
+
+VectorThree Ccp4::getNearestPeakRecursive(VectorThree CRS, Interpolator* interp, bool density, int level, double width)
+{
+    //the boot out of recursion step
+    if (level >= 50 || width <= 0.05)
+        return CRS; // this only works because we already know it is a grid point peak, otherwise we would have to establish that too
+
+    //otherwise we either shrink the box or move to the biggest nearby.
+    float biggestDensity = interp->getValue(CRS.C, CRS.B, CRS.A);
+    float smallestLaplacian = interp->getLaplacian(CRS.C, CRS.B, CRS.A);
+    VectorThree biggestCRS = CRS;    
+    bool haveFound = false;
+    for (double i = CRS.A - width; i <= CRS.A + width; i+=width)
+    {
+        for (double j = CRS.B - width; j <= CRS.B + width; j += width)
+        {
+            for (double k = CRS.C - width; k <= CRS.C + width; k += width)
+            {
+                if (i != CRS.A && j != CRS.B && k != CRS.C)
+                {                                
+                double interpDensity = interp->getValue(k, j, i);
+                double interpLaplacian = interp->getLaplacian(k, j, i);
+                if ((density && interpDensity > biggestDensity) || (!density && interpLaplacian < smallestLaplacian))
+                {
+                    biggestCRS = VectorThree(i, j, k);
+                    biggestDensity = interpDensity;
+                    haveFound = true;
+                }
+                }
+            }
+        }
+    }
+    if (haveFound)
+        return getNearestPeakRecursive(biggestCRS, interp, density, ++level, width);
+    else
+        return getNearestPeakRecursive(biggestCRS, interp, density, ++level, width*0.75);
 }
 
 
