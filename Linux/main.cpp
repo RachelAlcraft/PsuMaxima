@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
     /******   INPUTS  ***************/
     cout << "Started..." << "\n";
     string pdb = "1ejg";
-    string COMMAND= "SLICES";
+    string COMMAND= "PEAKS";
     string INTERP = "THEVENAZ";
     int INTERPNUM = 2;
     double cX = 5;

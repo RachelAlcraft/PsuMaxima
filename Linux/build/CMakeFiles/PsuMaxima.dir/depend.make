@@ -22,6 +22,7 @@ CMakeFiles/PsuMaxima.dir/CoutReports.cpp.o: ../MatrixThreeThree.h
 CMakeFiles/PsuMaxima.dir/CoutReports.cpp.o: ../PdbFile.h
 CMakeFiles/PsuMaxima.dir/CoutReports.cpp.o: ../SpaceTransformation.h
 CMakeFiles/PsuMaxima.dir/CoutReports.cpp.o: ../VectorThree.h
+CMakeFiles/PsuMaxima.dir/CoutReports.cpp.o: ../helper.h
 
 CMakeFiles/PsuMaxima.dir/Interpolator.cpp.o: ../Interpolator.cpp
 CMakeFiles/PsuMaxima.dir/Interpolator.cpp.o: ../Interpolator.h

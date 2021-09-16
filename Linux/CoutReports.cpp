@@ -11,6 +11,7 @@
 #include <iomanip>
 
 #include "VectorThree.h"
+#include "helper.h"
 #include "SpaceTransformation.h"
 
 #include "CoutReports.h"
@@ -23,7 +24,7 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
     sort(ccp4->MatrixPeaks.rbegin(), ccp4->MatrixPeaks.rend());
     vector<pair<float, int> > tmpMatrixPeaks;
 
-    //All the data in the list is near neighbours. So we can go through it    
+    //Simply look around each point to see if it is the biggest
     for (unsigned int i = 0;  i< ccp4->MatrixPeaks.size(); ++i)
     {
         double peak = ccp4->MatrixPeaks[i].first;
@@ -51,71 +52,115 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
         {            
             tmpMatrixPeaks.push_back(pair<float,int>(peak,position));
         }
-
     }
 
     ccp4->MatrixPeaks = tmpMatrixPeaks;
     // now create a list of interpolated peaks
-    vector<pair<float, VectorThree> > tmpInterpPeaks;
+    vector<pair<pair<float, VectorThree>,pair<float, VectorThree> > > tmpInterpPeaks;//Both density and laplacian adjusted
     unsigned int maxdensity = 10000;
     if (ccp4->MatrixPeaks.size() < maxdensity)
         maxdensity = ccp4->MatrixPeaks.size();
     
     for (unsigned int i = 0; i < maxdensity; ++i)
     {
+        pair<float,VectorThree> densityPair;
+        pair<float,VectorThree> laplacianPair;
         int pos = ccp4->MatrixPeaks[i].second;        
         VectorThree coords = ccp4->getCRS(pos);
         float density = ccp4->MatrixPeaks[i].first;                
+        
         if (interpNum > 1)
         {
             coords = ccp4->getNearestPeak(coords, interp, interpNum);            
             density = interp->getValue(coords.C, coords.B, coords.A);
+            densityPair.second = coords;
+            densityPair.first = density;
+            //And we should also do this on a laplacian basis but for now I am just using the same thing TODO
+            laplacianPair.second = coords;
+            laplacianPair.first = density;
         }
-        tmpInterpPeaks.push_back(pair<float,VectorThree>(density,coords));
+        else
+        {
+            densityPair.second = coords;
+            densityPair.first = density;
+            //And we should also do this on a laplacian basis but for now I am just using the same thing TODO
+            laplacianPair.second = coords;
+            laplacianPair.first = density;
+
+        }
+
+        tmpInterpPeaks.push_back(pair<pair<float, VectorThree>,pair<float, VectorThree> >(densityPair,laplacianPair));
 
     }
-
+    //https://www.wwpdb.org/documentation/file-format-content/format33/v3.3.html
     //"REMARK   1                                                                      "
     //"HETATM  286  O   HOH B  57      17.652   2.846  -0.887  1.00 28.92           O  "
     cout << "BEGIN_CHIMERAPEAKS\n";
-    cout << "#REMARK   1 Peaks for " << pdb->getPdbCode() << " calculated by Leucippus (Birkbeck College 2021)\n";    
+    cout << "REMARK   1 Peaks for " << pdb->getPdbCode() << " calculated by Leucippus (Birkbeck College 2021)\n";    
+    cout << "REMARK   2 Some documentation\n";    
+    cout << "REMARK   3 some more\n";    
+    int atomNo = 0;
     for (unsigned int i = 0; i < maxdensity; ++i)
     {
+        ++atomNo;
+        pair<float, VectorThree> densityPair = tmpInterpPeaks[i].first;
+        pair<float, VectorThree> laplacianPair = tmpInterpPeaks[i].second;
                 
-        VectorThree coords = tmpInterpPeaks[i].second;
-        float density = tmpInterpPeaks[i].first;
+        VectorThree coords = densityPair.second;
+        float density = densityPair.first;
         VectorThree XYZ = ccp4->getXYZFromCRS(coords.C, coords.B, coords.A);
-        cout << "HETATM  " << i;
-        if (i < 10)
-            cout << "   ";
-        else if (i < 100)
-            cout << "  ";
-        else if (i < 1000)
-            cout << " ";
-        else
-            cout << "";
-
-
-        cout <<  "X   XXX X  " << i;
-        if (i < 10)
-            cout << "         ";
-        else if (i < 100)
-            cout << "        ";
-        else if (i < 1000)
-            cout << "       ";
-        else
-            cout << "      ";
-        cout << setprecision(3) << fixed << XYZ.A  << "  ";
-        if (XYZ.A < 10)
-            cout << " ";
-         cout <<  XYZ.B << "  ";
-         if (XYZ.B < 10)
-            cout << " ";
-         cout << XYZ.C;
-         if (XYZ.C < 10)
-            cout << " ";
-         cout << "  1.00  " <<  density << "         X\n";
+        //FIRST THE DENSITY PEAKS        
+        cout << helper::getWordStringGaps("HETATM",6) << "HETATM";                                      //1. Atom or Hetatm                
+        cout << helper::getNumberStringGaps(atomNo,0,5) << atomNo;                                  //2. Atom no - 7        
+        cout << helper::getWordStringGaps("PK",3) << "PK";                                          //3. Atom type, eg CA, CB...        
+        cout << helper::getWordStringGaps("DEN",6) << "DEN";                                        //4. Amino Acid        
+        cout << helper::getWordStringGaps("P",2)<< "P";                                            //5. Chain        
+        cout << helper::getNumberStringGaps(atomNo,0,4) << atomNo;                                  //6. Residue number        
+        cout << helper::getNumberStringGaps(XYZ.A,3,12) << setprecision(3) << fixed << XYZ.A;       //7. x coord
+        cout << helper::getNumberStringGaps(XYZ.B,3,8) << setprecision(3) << fixed << XYZ.B;        //8. y coord
+        cout << helper::getNumberStringGaps(XYZ.C,3,8) << setprecision(3) << fixed << XYZ.C;        //9. z coord                        
+        cout << helper::getNumberStringGaps(1,2,6) << "1.00";                                       //10. Occupancy        
+        cout << helper::getNumberStringGaps(density,2,6) << setprecision(2) << fixed << density;    //11. BFactor,which is really density        
+        cout << helper::getWordStringGaps("H",12) << "H";                                           //12. Element     
+        cout << "  \n";
+        //THEN the laplacian peaks which are currenly the same TODO
+        ++atomNo;
+        VectorThree coordsL = laplacianPair.second;
+        float laplacian = laplacianPair.first;
+        XYZ = ccp4->getXYZFromCRS(coordsL.C, coordsL.B, coordsL.A);
+        cout << helper::getWordStringGaps("HETATM",6) << "HETATM";                                      //1. Atom or Hetatm                
+        cout << helper::getNumberStringGaps(atomNo,0,5) << atomNo;                                  //2. Atom no - 7        
+        cout << helper::getWordStringGaps("PK",3) << "PK";                                          //3. Atom type, eg CA, CB...        
+        cout << helper::getWordStringGaps("LAP",6) << "LAP";                                        //4. Amino Acid        
+        cout << helper::getWordStringGaps("P",2)<< "P";                                            //5. Chain        
+        cout << helper::getNumberStringGaps(atomNo,0,4) << atomNo;                                  //6. Residue number        
+        cout << helper::getNumberStringGaps(XYZ.A,3,12) << setprecision(3) << fixed << XYZ.A;       //7. x coord
+        cout << helper::getNumberStringGaps(XYZ.B,3,8) << setprecision(3) << fixed << XYZ.B;        //8. y coord
+        cout << helper::getNumberStringGaps(XYZ.C,3,8) << setprecision(3) << fixed << XYZ.C;        //9. z coord                        
+        cout << helper::getNumberStringGaps(1,2,6) << "1.00";                                       //10. Occupancy        
+        cout << helper::getNumberStringGaps(density,2,6) << setprecision(2) << fixed << laplacian;    //11. BFactor,which is really density        
+        cout << helper::getWordStringGaps("H",12) << "H";                                           //12. Element     
+        cout << "  \n";
     }
+       /*http://www.bmsc.washington.edu/CrystaLinks/man/pdb/part_72.html
+                 1         2         3         4         5         6         7
+        1234567890123456789012345678901234567890123456789012345678901234567890
+        MASTER       40    0    0    0    0    0    0    6 2930    2    0   29
+        */                      
+    cout << helper::getWordStringGaps("MASTER",6) << "MASTER";//1 -  6       Record name    "MASTER"             
+    cout << helper::getNumberStringGaps(3,0,9) << 3;//11 - 15       Integer        numRemark     Number of REMARK records
+    cout << helper::getNumberStringGaps(0,0,5) << 0;//16 - 20       Integer        "0"
+    cout << helper::getNumberStringGaps(0,0,5) << 0;//21 - 25       Integer        numHet        Number of HET records
+    cout << helper::getNumberStringGaps(0,0,5) << 0;//26 - 30       Integer        numHelix      Number of HELIX records
+    cout << helper::getNumberStringGaps(0,0,5) << 0;//31 - 35       Integer        numSheet      Number of SHEET records
+    cout << helper::getNumberStringGaps(0,0,5) << 0;//36 - 40       Integer        numTurn       Number of TURN records
+    cout << helper::getNumberStringGaps(0,0,5) << 0;//41 - 45       Integer        numSite       Number of SITE records
+    cout << helper::getNumberStringGaps(0,0,5) << 0;//46 - 50       Integer        numXform      Number of coordinate transformation  records (ORIGX+SCALE+MTRIX)
+    cout << helper::getNumberStringGaps(atomNo,0,5) << atomNo;//51 - 55       Integer        numCoord      Number of atomic coordinate records (ATOM+HETATM)
+    cout << helper::getNumberStringGaps(0,0,5) << 0;//56 - 60       Integer        numTer        Number of TER records
+    cout << helper::getNumberStringGaps(0,0,5) << 0;//61 - 65       Integer        numConect     Number of CONECT records
+    cout << helper::getNumberStringGaps(0,0,5) << 0;//66 - 70       Integer        numSeq        Number of SEQRES records
+    cout << "\nEND\n";
     cout << "END_CHIMERAPEAKS\n";
         
     cout << "BEGIN_ALLPEAKS\n";
@@ -123,8 +168,8 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
     for (unsigned int i = 0; i < maxdensity; ++i)
     {
                 
-        VectorThree coords = tmpInterpPeaks[i].second;
-        float density = tmpInterpPeaks[i].first;
+        VectorThree coords = tmpInterpPeaks[i].first.second;
+        float density = tmpInterpPeaks[i].first.first;
         VectorThree XYZ = ccp4->getXYZFromCRS(coords.C, coords.B, coords.A);
         
         
@@ -150,8 +195,8 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
     cout << "Density,C,R,S,X,Y,Z,NearestAtom,Distance\n";
     for (unsigned int i = 0; i < maxdensity; ++i)
     {
-        VectorThree coords = tmpInterpPeaks[i].second;
-        float density = tmpInterpPeaks[i].first;
+        VectorThree coords = tmpInterpPeaks[i].first.second;
+        float density = tmpInterpPeaks[i].first.first;
         VectorThree XYZ = ccp4->getXYZFromCRS(coords.C, coords.B, coords.A);
 
         double distance = 0;

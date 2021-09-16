@@ -1,3 +1,7 @@
+#include<sstream>
+#include <iostream>
+#include<iomanip>
+
 #include "helper.h"
 
 
@@ -20,4 +24,49 @@ vector<string> helper::stringToVector(string input, string delim)
 
 	vals.push_back(newin);
 	return vals;
+}
+
+string helper::getNumberStringGaps(double number, int dp, int length)
+{// we need fixed string intervals for pdb files in ent format	
+	int missingLength = length;	
+	if (dp > 0)
+	{
+		missingLength -= dp;
+		missingLength -= 1;//for the point
+	}
+	if (number >= 0)
+	{
+		if (number < 10)
+			missingLength -= 1;
+		else if (number < 100)
+			missingLength -= 2;
+		else if (number < 1000)
+			missingLength -= 3;
+		else// if (number < 10000)
+			missingLength -= 4;
+	}
+	else
+	{
+		if (number > -10)
+			missingLength -= 2;
+		else if (number > -100)
+			missingLength -= 3;
+		else if (number < 1000)
+			missingLength -= 4;
+		else //if (number < 10000)
+			missingLength -= 5;
+	}
+	string gaps = "";
+
+	for (unsigned int i=0; i < missingLength; ++i)
+		gaps += " ";
+	return gaps;
+}
+string helper::getWordStringGaps(string word, int length)
+{// we need fixed string intervals for pdb files in ent format		
+	int missingLength = length-word.length();	
+	string gaps = "";	
+	for (unsigned int i=0; i < missingLength; ++i)
+		gaps += " ";
+	return gaps;
 }

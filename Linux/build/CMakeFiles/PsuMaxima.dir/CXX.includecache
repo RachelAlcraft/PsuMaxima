@@ -43,6 +43,8 @@ iomanip
 -
 VectorThree.h
 /d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/VectorThree.h
+helper.h
+/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/helper.h
 SpaceTransformation.h
 /d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/SpaceTransformation.h
 CoutReports.h
@@ -91,4 +93,10 @@ VectorThree.h
 /d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/VectorThree.h
 
 /d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/VectorThree.h
+
+/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/helper.h
+string
+-
+vector
+-
 
