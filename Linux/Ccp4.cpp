@@ -264,17 +264,42 @@ VectorThree Ccp4::getNearestPeakRecursive(VectorThree CRS, Interpolator* interp,
     if (haveFound)
         return getNearestPeakRecursive(biggestCRS, interp, density, ++level, width);
     else
-        return getNearestPeakRecursive(biggestCRS, interp, density, ++level, width*0.5);
+        return getNearestPeakRecursive(biggestCRS, interp, density, ++level, width*0.75);
 }
 
 void Ccp4::CreatePeaks(Interpolator* interp, int interpNum)
 {
-    sort(MatrixPeaks.rbegin(), MatrixPeaks.rend());
+    /*
+    * Some debug code to understand why a tryptohan 219 in 1us0 is missing peaks
+    
+    int pos1 = getPosition(87, 183, 119);
+    int pos2 = getPosition(87, 182, 119);
+    int pos3 = getPosition(87, 184, 119);    
+    int pos4 = getPosition(86, 183, 119);
+    int pos5 = getPosition(88, 183, 119);
+    int pos6 = getPosition(87, 183, 118);
+    int pos7 = getPosition(87, 183, 120);
+    
+    float d1 = getDensity(87, 183, 119);
+    float d2 = getDensity(87, 182, 119);
+    float d3 = getDensity(87, 184, 119);    
+    float d4 = getDensity(86, 183, 119);
+    float d5 = getDensity(88, 183, 119);
+    float d6 = getDensity(87, 183, 118);
+    float d7 = getDensity(87, 183, 120);*/
+    /////////////////////////////////////////    
     vector<pair<float, int> > tmpMatrixPeaks;
     for (unsigned int i = 0; i< MatrixPeaks.size(); ++i)
     {
         double peak = MatrixPeaks[i].first;
         int position = MatrixPeaks[i].second;
+
+        /*if (position == 8281847)
+        {
+            int breakpoint = 0;
+            ++breakpoint;
+        }*/
+
         VectorThree CRS = getCRS(position);
         bool are_any_bigger = false;
         for (int a = -1; a < 2; ++a)
@@ -300,6 +325,7 @@ void Ccp4::CreatePeaks(Interpolator* interp, int interpNum)
         }
     }
     MatrixPeaks = tmpMatrixPeaks;//Matrixpeaks are now sorted and actual peaks
+    sort(MatrixPeaks.rbegin(), MatrixPeaks.rend());
     
     //Now we want to get density and laplacian for every peak
     vector<string> keyList;    

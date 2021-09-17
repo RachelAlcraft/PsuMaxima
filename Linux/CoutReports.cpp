@@ -50,8 +50,8 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
         cout << helper::getWordStringGaps("PK",3) << "PK";                                          //3. Atom type, eg CA, CB...        
         cout << helper::getWordStringGaps("DEN",6) << "DEN";                                        //4. Amino Acid        
         cout << helper::getWordStringGaps("P",2)<< "P";                                            //5. Chain        
-        cout << helper::getNumberStringGaps(atomNo,0,4) << atomNo;                                  //6. Residue number        
-        cout << helper::getNumberStringGaps(XYZ.A,3,12) << setprecision(3) << fixed << XYZ.A;       //7. x coord
+        cout << helper::getNumberStringGaps(atomNo,0,5) << atomNo;                                  //6. Residue number        
+        cout << helper::getNumberStringGaps(XYZ.A,3,11) << setprecision(3) << fixed << XYZ.A;       //7. x coord
         cout << helper::getNumberStringGaps(XYZ.B,3,8) << setprecision(3) << fixed << XYZ.B;        //8. y coord
         cout << helper::getNumberStringGaps(XYZ.C,3,8) << setprecision(3) << fixed << XYZ.C;        //9. z coord                        
         cout << helper::getNumberStringGaps(1,2,6) << "1.00";                                       //10. Occupancy        
