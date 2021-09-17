@@ -32,8 +32,9 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
     //"HETATM  286  O   HOH B  57      17.652   2.846  -0.887  1.00 28.92           O  "
     cout << "BEGIN_CHIMERAPEAKS\n";
     cout << "REMARK   1 Peaks for " << pdb->getPdbCode() << " calculated by Leucippus (Birkbeck College 2021)\n";    
-    cout << "REMARK   2 Some documentation\n";    
-    cout << "REMARK   3 some more\n";    
+    cout << "REMARK   2 Dummy atoms positioned at peaks calculated using both density and the laplacian\n";    
+    cout << "REMARK   3 All atoms have dummy type PK, element H and chain P\n";    
+    cout << "REMARK   4 Residue DEN is for density calculated peaks and LAP for laplacian calculated\n";
     int atomNo = 0;
     for (unsigned int i = 0; i < maxdensity; ++i)
     {
@@ -83,7 +84,7 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
         MASTER       40    0    0    0    0    0    0    6 2930    2    0   29
         */                      
     cout << helper::getWordStringGaps("MASTER",6) << "MASTER";//1 -  6       Record name    "MASTER"             
-    cout << helper::getNumberStringGaps(3,0,9) << 3;//11 - 15       Integer        numRemark     Number of REMARK records
+    cout << helper::getNumberStringGaps(4,0,9) << 3;//11 - 15       Integer        numRemark     Number of REMARK records
     cout << helper::getNumberStringGaps(0,0,5) << 0;//16 - 20       Integer        "0"
     cout << helper::getNumberStringGaps(0,0,5) << 0;//21 - 25       Integer        numHet        Number of HET records
     cout << helper::getNumberStringGaps(0,0,5) << 0;//26 - 30       Integer        numHelix      Number of HELIX records

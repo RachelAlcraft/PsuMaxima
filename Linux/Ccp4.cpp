@@ -255,7 +255,7 @@ VectorThree Ccp4::getNearestPeakRecursive(VectorThree CRS, Interpolator* interp,
                     double interpLaplacian = interp->getLaplacian(CRS.C + k, CRS.B + j, CRS.A + i);
                     if ((density && interpDensity > biggestDensity) || (!density && interpLaplacian < smallestLaplacian))
                     {
-                        biggestCRS = VectorThree(i, j, k);
+                        biggestCRS = VectorThree(CRS.C + k, CRS.B + j, CRS.A + i);
                         biggestDensity = interpDensity;
                         haveFound = true;
                     }
