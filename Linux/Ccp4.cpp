@@ -71,9 +71,8 @@ Ccp4::Ccp4(string pdbCode, string directory)
     float w20_DMIN = 0.0;
     infile.read((char*)&w20_DMIN, sizeof(w20_DMIN));   
     float w21_DMAX = 0.0;
-    infile.read((char*)&w21_DMAX, sizeof(w21_DMAX));    
-    float w22_DMEAN = 0.0;
-    infile.read((char*)&w22_DMEAN, sizeof(w22_DMEAN));
+    infile.read((char*)&w21_DMAX, sizeof(w21_DMAX));        
+    infile.read((char*)&_w22_DMEAN, sizeof(_w22_DMEAN));
         
     int ISPG = 0;
     infile.read((char*)&ISPG, sizeof(ISPG));
@@ -118,14 +117,14 @@ Ccp4::Ccp4(string pdbCode, string directory)
     _loaded = true;
 
     int len = W01_NX * W02_NY * W03_NZ;
-    int startBulk = tmpData.size() - len;
+    int startBulk = (int)tmpData.size() - len;
     int count = 0;
     for (unsigned int i = startBulk; i < tmpData.size(); ++i)
     {
         float mtx = tmpData[i];
         Matrix.push_back(mtx);
         //lets not bother to add it to the peaks if it is smaller than the mean
-        if (mtx > w22_DMEAN)
+        if (mtx > _w22_DMEAN)
             MatrixPeaks.push_back(pair<float, int>(mtx, count));
 
         
@@ -199,12 +198,12 @@ float Ccp4::getDensity(int C, int R, int S)
 
 VectorThree Ccp4::getNearestPeak(VectorThree CRS, Interpolator* interp, bool density)
 {
-    return getNearestPeakRecursive(CRS, interp, density, 0, 0.25);
+    return getNearestPeakRecursive(CRS, interp, density, 0, 0.5);
 }
 
-VectorThree Ccp4::getNearestPeakOld(VectorThree CRS, Interpolator* interp, int interpNum)
+/*VectorThree Ccp4::getNearestPeakOld(VectorThree CRS, Interpolator* interp, int interpNum)
 {
-    float biggestDensity = getDensity(CRS.A, CRS.B, CRS.C);
+    double biggestDensity = getDensity(CRS.A, CRS.B, CRS.C);
     VectorThree biggestCRS = CRS;    
     for (int i = -1 * (interpNum - 1); i < interpNum; ++i)
     {
@@ -226,7 +225,7 @@ VectorThree Ccp4::getNearestPeakOld(VectorThree CRS, Interpolator* interp, int i
         }
     }
     return biggestCRS;
-}
+}*/
 
 VectorThree Ccp4::getNearestPeakRecursive(VectorThree CRS, Interpolator* interp, bool density, int level, double width)
 {
@@ -237,8 +236,8 @@ VectorThree Ccp4::getNearestPeakRecursive(VectorThree CRS, Interpolator* interp,
         return VectorThree(false); //failure
 
     //otherwise we either shrink the box or move to the biggest nearby.
-    float biggestDensity = interp->getValue(CRS.C, CRS.B, CRS.A);
-    float smallestLaplacian = interp->getLaplacian(CRS.C, CRS.B, CRS.A);
+    double biggestDensity = interp->getValue(CRS.C, CRS.B, CRS.A);
+    double smallestLaplacian = interp->getLaplacian(CRS.C, CRS.B, CRS.A);
     VectorThree biggestCRS = CRS;    
     bool haveFound = false;
 
@@ -266,6 +265,82 @@ VectorThree Ccp4::getNearestPeakRecursive(VectorThree CRS, Interpolator* interp,
         return getNearestPeakRecursive(biggestCRS, interp, density, ++level, width);
     else
         return getNearestPeakRecursive(biggestCRS, interp, density, ++level, width*0.5);
+}
+
+void Ccp4::CreatePeaks(Interpolator* interp, int interpNum)
+{
+    sort(MatrixPeaks.rbegin(), MatrixPeaks.rend());
+    vector<pair<float, int> > tmpMatrixPeaks;
+    for (unsigned int i = 0; i< MatrixPeaks.size(); ++i)
+    {
+        double peak = MatrixPeaks[i].first;
+        int position = MatrixPeaks[i].second;
+        VectorThree CRS = getCRS(position);
+        bool are_any_bigger = false;
+        for (int a = -1; a < 2; ++a)
+        {
+            for (int b = -1; b < 2; ++b)
+            {
+                for (int c = -1; c < 2; ++c)
+                {
+                    int tmpPos = getPosition(a + (int)CRS.A, b + (int)CRS.B, c + (int)CRS.C);
+                    if (tmpPos > 0 && tmpPos < Matrix.size())
+                    {
+                        double tmpPeak = Matrix[tmpPos];
+                        if (tmpPeak > peak)
+                            are_any_bigger = true;
+                    }
+
+                }
+            }
+        }
+        if (!are_any_bigger)
+        {
+            tmpMatrixPeaks.push_back(pair<float,int>(peak,position));
+        }
+    }
+    MatrixPeaks = tmpMatrixPeaks;//Matrixpeaks are now sorted and actual peaks
+    
+    //Now we want to get density and laplacian for every peak
+    vector<string> keyList;    
+    unsigned int maxdensity = 10000;
+    if (MatrixPeaks.size() < maxdensity)
+        maxdensity = (int)MatrixPeaks.size();
+
+    for (unsigned int i = 0; i < maxdensity; ++i)
+    {
+        pair<double, VectorThree> densityPair;
+        pair<double, VectorThree> laplacianPair;        
+        float Pdensity = MatrixPeaks[i].first;
+        int pos = MatrixPeaks[i].second;
+        VectorThree Pcoords = getCRS(pos);        
+        if (interpNum > 1)
+        {
+            VectorThree Dcoords = getNearestPeak(Pcoords,interp,true);
+            VectorThree Lcoords = getNearestPeak(Pcoords, interp, false);
+            if (Dcoords.Valid && Lcoords.Valid)
+            {
+                double density = interp->getValue(Dcoords.C, Dcoords.B, Dcoords.A);
+                densityPair.second = Dcoords;
+                densityPair.first = density;
+                double laplacian = interp->getLaplacian(Lcoords.C, Lcoords.B, Lcoords.A);
+                laplacianPair.second = Lcoords;
+                laplacianPair.first = laplacian;
+                DenLapPeaks.push_back(pair<pair<double, VectorThree>, pair<double, VectorThree> >(densityPair, laplacianPair));
+            }
+        }
+        else 
+        {
+            densityPair.second = Pcoords;
+            densityPair.first = Pdensity;
+            double laplacian = interp->getLaplacian(Pcoords.C, Pcoords.B, Pcoords.A);
+            laplacianPair.second = Pcoords;
+            laplacianPair.first = laplacian;
+            DenLapPeaks.push_back(pair<pair<double, VectorThree>, pair<double, VectorThree> >(densityPair, laplacianPair));
+        }
+    }
+    
+    
 }
 
 

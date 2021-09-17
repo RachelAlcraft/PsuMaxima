@@ -21,107 +21,12 @@ using namespace std;
 
 void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int interpNum)
 {
-    sort(ccp4->MatrixPeaks.rbegin(), ccp4->MatrixPeaks.rend());
-    vector<pair<float, int> > tmpMatrixPeaks;
-
-    //Simply look around each point to see if it is the biggest
-    for (unsigned int i = 0;  i< ccp4->MatrixPeaks.size(); ++i)
-    {
-        double peak = ccp4->MatrixPeaks[i].first;
-        int position = ccp4->MatrixPeaks[i].second;
-        VectorThree CRS = ccp4->getCRS(position);
-        bool are_any_bigger = false;
-        for (int a = -1; a < 2; ++ a)
-        {
-            for (int b = -1; b < 2; ++ b)
-            {
-                for (int c = -1; c < 2; ++ c)
-                {                    
-                    int tmpPos = ccp4->getPosition(a + CRS.A, b + CRS.B, c + CRS.C);
-                    if (tmpPos > 0 && tmpPos < ccp4->Matrix.size())
-                    {
-                        double tmpPeak = ccp4->Matrix[tmpPos];
-                        if (tmpPeak > peak)
-                            are_any_bigger = true;
-                    }
-            
-                }            
-            }
-        }
-        if (!are_any_bigger)
-        {            
-            tmpMatrixPeaks.push_back(pair<float,int>(peak,position));
-        }
-    }
-
-    ccp4->MatrixPeaks = tmpMatrixPeaks;
-    // now create a list of interpolated peaks
-    vector<pair<pair<float, VectorThree>,pair<float, VectorThree> > > tmpInterpPeaks;//Both density and laplacian adjusted
-    vector<string> keyList;
+    ccp4->CreatePeaks(interp,interpNum);
 
     unsigned int maxdensity = 10000;
-    if (ccp4->MatrixPeaks.size() < maxdensity)
-        maxdensity = ccp4->MatrixPeaks.size();
-    
-    for (unsigned int i = 0; i < maxdensity; ++i)
-    {
-        pair<float,VectorThree> densityPair;
-        pair<float,VectorThree> laplacianPair;
-        int pos = ccp4->MatrixPeaks[i].second;        
-        VectorThree Pcoords = ccp4->getCRS(pos);
-        float Pdensity = ccp4->MatrixPeaks[i].first;                
-        
-        if (interpNum > 1)
-        {
-            //there could be multiple peaks for grid point
-            //so we check half a grid point away in every direction too
-            for (int a = -1; a <2; ++a)
-                for (int b = -1; b < 2; ++b)
-                    for (int c = -1; c < 2; ++c)
-                    {
-                        double ii = a * 0.5;
-                        double jj = b * 0.5;
-                        double kk = c * 0.5;
-
-                        VectorThree Ncoords(Pcoords.A + ii, Pcoords.B + jj, Pcoords.C + kk);
-
-                        VectorThree Dcoords = ccp4->getNearestPeak(Ncoords, interp, true);
-                        if (Dcoords.Valid)
-                        {
-                            string key = Dcoords.getKey();
-                            //don't proceed and add it if it is already there
-                            if (find(keyList.begin(), keyList.end(), key) == keyList.end())
-                            {
-                                keyList.push_back(key);
-                                double Ddensity = interp->getValue(Dcoords.C, Dcoords.B, Dcoords.A);
-                                densityPair.second = Dcoords;
-                                densityPair.first = Ddensity;
-                                //And we should also do this on a laplacian basis but for now I am just using the same thing TODO
-                                VectorThree Lcoords = ccp4->getNearestPeak(Ncoords, interp, false);
-                                if (Lcoords.Valid)
-                                {
-                                    double laplacian = interp->getLaplacian(Lcoords.C, Lcoords.B, Lcoords.A);
-                                    laplacianPair.second = Lcoords;
-                                    laplacianPair.first = laplacian;
-                                    tmpInterpPeaks.push_back(pair<pair<float, VectorThree>, pair<float, VectorThree> >(densityPair, laplacianPair));
-                                }                                
-                            }
-                        }                        
-                    }
-        
-        }
-        else
-        {
-            densityPair.second = Pcoords;
-            densityPair.first = Pdensity;
-            //And we should also do this on a laplacian basis but for now I am just using the same thing TODO
-            double laplacian = interp->getLaplacian(Pcoords.C, Pcoords.B, Pcoords.A);
-            laplacianPair.second = Pcoords;
-            laplacianPair.first = laplacian;
-            tmpInterpPeaks.push_back(pair<pair<float, VectorThree>, pair<float, VectorThree> >(densityPair, laplacianPair));
-        }        
-    }
-        
+    if (ccp4->DenLapPeaks.size() < maxdensity)
+        maxdensity = (int)ccp4->DenLapPeaks.size();
+                
     //https://www.wwpdb.org/documentation/file-format-content/format33/v3.3.html
     //"REMARK   1                                                                      "
     //"HETATM  286  O   HOH B  57      17.652   2.846  -0.887  1.00 28.92           O  "
@@ -133,11 +38,11 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
     for (unsigned int i = 0; i < maxdensity; ++i)
     {
         ++atomNo;
-        pair<float, VectorThree> densityPair = tmpInterpPeaks[i].first;
-        pair<float, VectorThree> laplacianPair = tmpInterpPeaks[i].second;
+        pair<double, VectorThree> densityPair = ccp4->DenLapPeaks[i].first;
+        pair<double, VectorThree> laplacianPair = ccp4->DenLapPeaks[i].second;
                 
         VectorThree coords = densityPair.second;
-        float density = densityPair.first;
+        double density = densityPair.first;
         VectorThree XYZ = ccp4->getXYZFromCRS(coords.C, coords.B, coords.A);
         //FIRST THE DENSITY PEAKS        
         cout << helper::getWordStringGaps("HETATM",6) << "HETATM";                                      //1. Atom or Hetatm                
@@ -198,8 +103,8 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
     for (unsigned int i = 0; i < maxdensity; ++i)
     {
                 
-        VectorThree coords = tmpInterpPeaks[i].first.second;
-        float density = tmpInterpPeaks[i].first.first;
+        VectorThree coords = ccp4->DenLapPeaks[i].first.second;
+        double density = ccp4->DenLapPeaks[i].first.first;
         VectorThree XYZ = ccp4->getXYZFromCRS(coords.C, coords.B, coords.A);
         
         
@@ -225,8 +130,8 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
     cout << "Density,C,R,S,X,Y,Z,NearestAtom,Distance\n";
     for (unsigned int i = 0; i < maxdensity; ++i)
     {
-        VectorThree coords = tmpInterpPeaks[i].first.second;
-        float density = tmpInterpPeaks[i].first.first;
+        VectorThree coords = ccp4->DenLapPeaks[i].first.second;
+        double density = ccp4->DenLapPeaks[i].first.first;
         VectorThree XYZ = ccp4->getXYZFromCRS(coords.C, coords.B, coords.A);
 
         double distance = 0;
@@ -282,7 +187,7 @@ void CoutReports::coutSlices(Ccp4* ccp4, PdbFile* pdb,Interpolator* interp, Vect
     VectorThree ppr = space.reverseTransformation(planar);
     //////////////
     cout << "BEGIN_DENSITYSLICE\n";    
-    int length = width / gap;
+    int length = (int)(width / gap);
     int halfLength = length/2;
     cout << "i,j,Density\n";
     for (int i = -1*halfLength; i <= halfLength; ++i)

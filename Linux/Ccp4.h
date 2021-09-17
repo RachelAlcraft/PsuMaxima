@@ -43,6 +43,7 @@ private:
 	int _w17_MAPC;
 	int _w18_MAPR;
 	int _w19_MAPS;
+	float _w22_DMEAN;
 
 
 	//Calculation data
@@ -67,6 +68,9 @@ public:
     //The matrix data lazily as a public accessor
 	vector<float> Matrix;
 	vector<pair<float, int> > MatrixPeaks;
+	vector<pair<pair<double, VectorThree>, pair<double, VectorThree> > > DenLapPeaks;//Both density and laplacian adjusted
+	//vector<pair<float, string> > InterpolatedKeys;
+	//map<string, VectorThree> InterpolatedPeaks;
 
 public:
 	Ccp4(string pdbCode, string directory);
@@ -75,11 +79,12 @@ public:
 	string getPdbCode();	
 	float getDensity(int C, int R, int S);
 	VectorThree getNearestPeak(VectorThree XYZ, Interpolator* interp, bool density);
-	VectorThree getNearestPeakOld(VectorThree XYZ, Interpolator* interp, int interpNum);
+	//VectorThree getNearestPeakOld(VectorThree XYZ, Interpolator* interp, int interpNum);
 	VectorThree getCRSFromXYZ(VectorThree XYZ);
 	VectorThree getXYZFromCRS(double c, double r, double s);
     int getPosition(int C, int R, int S);
 	VectorThree getCRS(int position);
+	void CreatePeaks(Interpolator* interp, int interpNum);
 private:
 	VectorThree getNearestPeakRecursive(VectorThree XYZ, Interpolator* interp, bool density, int level, double width);
 };

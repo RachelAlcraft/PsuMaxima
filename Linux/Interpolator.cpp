@@ -223,7 +223,7 @@ void Thevenaz::createCoefficients()
         _coefficients.push_back(Matrix[i]);
 
     vector<double> pole = getPole(_degree);
-    int numPoles = pole.size();
+    int numPoles = (int)pole.size();
 
     //Convert the samples to interpolation coefficients
     //X-wise
@@ -352,14 +352,14 @@ vector<double> Thevenaz::convertToInterpolationCoefficients(vector<double> pole,
         /* causal recursion */
         for (n = 1; n < width; n++)
         {
-            row[n] += pole[k] * row[n - 1];
+            row[n] += (double)pole[k] * row[n - 1.0];
         }
         /* anticausal initialization */
-        row[width - 1] = InitialAntiCausalCoefficient(row, width, pole[k]);
+        row[width - 1.0] = InitialAntiCausalCoefficient(row, width, pole[k]);
         /* anticausal recursion */
         for (n = width - 2; 0 <= n; n--)
         {
-            row[n] = pole[k] * (row[n + 1] - row[n]);
+            row[n] = pole[k] * (row[n + 1.0] - row[n]);
         }
     }
     return row;
@@ -395,8 +395,8 @@ double Thevenaz::InitialCausalCoefficient(vector<double> c, long dataLength, dou
         /* full loop */
         zn = pole;
         iz = 1.0 / pole;
-        z2n = pow(pole, (double)(dataLength - 1));
-        Sum = c[0] + z2n * c[dataLength - 1];
+        z2n = pow(pole, (double)(dataLength - 1.0));
+        Sum = c[0] + z2n * (double)c[dataLength - 1.0];
         z2n *= z2n * iz; //is this a mistake, should it be just *=??? Checked it is how it is in their code. NO TRIED IT.                
         for (n = 1L; n <= dataLength - 2L; n++)
         {
@@ -414,7 +414,7 @@ double Thevenaz::InitialAntiCausalCoefficient(vector<double> c,long dataLength, 
     if (dataLength < 2)
         return 0;
     else
-        return ((pole / (pole * pole - 1.0)) * (pole * c[dataLength - 2] + c[dataLength - 1]));
+        return ((pole / (pole * pole - 1.0)) * (pole * c[dataLength - 2.0] + c[dataLength - 1.0]));
 }
 vector<double> Thevenaz::applyValue3(double val, vector<int> idc, int weight_length)
 {
