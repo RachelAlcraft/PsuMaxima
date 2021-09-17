@@ -199,7 +199,7 @@ float Ccp4::getDensity(int C, int R, int S)
 
 VectorThree Ccp4::getNearestPeak(VectorThree CRS, Interpolator* interp, bool density)
 {
-    return getNearestPeakRecursive(CRS, interp, density, 0, 1);
+    return getNearestPeakRecursive(CRS, interp, density, 0, 0.4);
 }
 
 VectorThree Ccp4::getNearestPeakOld(VectorThree CRS, Interpolator* interp, int interpNum)
