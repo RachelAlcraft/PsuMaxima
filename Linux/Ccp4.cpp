@@ -231,7 +231,7 @@ VectorThree Ccp4::getNearestPeakOld(VectorThree CRS, Interpolator* interp, int i
 VectorThree Ccp4::getNearestPeakRecursive(VectorThree CRS, Interpolator* interp, bool density, int level, double width)
 {
     //the boot out of recursion step
-    if (level >= 50 || width <= 0.05)
+    if (level >= 10 || width <= 0.1)
         return CRS; // this only works because we already know it is a grid point peak, otherwise we would have to establish that too
 
     //otherwise we either shrink the box or move to the biggest nearby.
@@ -262,7 +262,7 @@ VectorThree Ccp4::getNearestPeakRecursive(VectorThree CRS, Interpolator* interp,
     if (haveFound)
         return getNearestPeakRecursive(biggestCRS, interp, density, ++level, width);
     else
-        return getNearestPeakRecursive(biggestCRS, interp, density, ++level, width*0.75);
+        return getNearestPeakRecursive(biggestCRS, interp, density, ++level, width*0.5);
 }
 
 

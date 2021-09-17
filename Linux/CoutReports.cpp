@@ -66,28 +66,29 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
         pair<float,VectorThree> densityPair;
         pair<float,VectorThree> laplacianPair;
         int pos = ccp4->MatrixPeaks[i].second;        
-        VectorThree coords = ccp4->getCRS(pos);
-        float density = ccp4->MatrixPeaks[i].first;                
+        VectorThree Pcoords = ccp4->getCRS(pos);
+        float Pdensity = ccp4->MatrixPeaks[i].first;                
         
         if (interpNum > 1)
         {
-            coords = ccp4->getNearestPeak(coords, interp, true);            
-            density = interp->getValue(coords.C, coords.B, coords.A);
-            densityPair.second = coords;
-            densityPair.first = density;
+            VectorThree Dcoords = ccp4->getNearestPeak(Pcoords, interp, true);            
+            double Ddensity = interp->getValue(Dcoords.C, Dcoords.B, Dcoords.A);
+            densityPair.second = Dcoords;
+            densityPair.first = Ddensity;
             //And we should also do this on a laplacian basis but for now I am just using the same thing TODO
-            coords = ccp4->getNearestPeak(coords, interp, false);
-            double laplacian = interp->getLaplacian(coords.C, coords.B, coords.A);
-            laplacianPair.second = coords;
+            VectorThree Lcoords = ccp4->getNearestPeak(Pcoords, interp, false);
+            double laplacian = interp->getLaplacian(Lcoords.C, Lcoords.B, Lcoords.A);
+            laplacianPair.second = Lcoords;
             laplacianPair.first = laplacian;
         }
         else
         {
-            densityPair.second = coords;
-            densityPair.first = density;
+            densityPair.second = Pcoords;
+            densityPair.first = Pdensity;
             //And we should also do this on a laplacian basis but for now I am just using the same thing TODO
-            laplacianPair.second = coords;
-            laplacianPair.first = density;
+            double laplacian = interp->getLaplacian(Pcoords.C, Pcoords.B, Pcoords.A);
+            laplacianPair.second = Pcoords;
+            laplacianPair.first = laplacian;
 
         }
 
@@ -140,7 +141,7 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
         cout << helper::getNumberStringGaps(XYZ.B,3,8) << setprecision(3) << fixed << XYZ.B;        //8. y coord
         cout << helper::getNumberStringGaps(XYZ.C,3,8) << setprecision(3) << fixed << XYZ.C;        //9. z coord                        
         cout << helper::getNumberStringGaps(1,2,6) << "1.00";                                       //10. Occupancy        
-        cout << helper::getNumberStringGaps(density,2,6) << setprecision(2) << fixed << laplacian;    //11. BFactor,which is really density        
+        cout << helper::getNumberStringGaps(laplacian*-1,2,6) << setprecision(2) << fixed << laplacian*-1;    //11. BFactor,which is really density        
         cout << helper::getWordStringGaps("H",12) << "H";                                           //12. Element     
         cout << "  \n";
     }
