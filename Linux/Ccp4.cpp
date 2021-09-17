@@ -31,12 +31,12 @@ Ccp4::Ccp4(string pdbCode, string directory)
     _resolution = 0.78;
     _directory = directory;
     //Load the binary data
-    
+
     //std::ifstream input((_directory + pdbCode + ".ccp4").c_str(), std::ios::binary);
     //std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(input), {});
-    
+
     ifstream infile;
-    infile.open((_directory + pdbCode + ".ccp4").c_str(), ios::binary | ios::in);    
+    infile.open((_directory + pdbCode + ".ccp4").c_str(), ios::binary | ios::in);
     //This opens the WORDS in the ccp4	    
     infile.read((char*)&W01_NX, sizeof(W01_NX));
     infile.read((char*)&W02_NY, sizeof(W02_NY));
@@ -63,17 +63,17 @@ Ccp4::Ccp4(string pdbCode, string directory)
     infile.read((char*)&_w16_CELLB_Z, sizeof(_w16_CELLB_Z));
     infile.read((char*)&_w17_MAPC, sizeof(_w17_MAPC));
     infile.read((char*)&_w18_MAPR, sizeof(_w18_MAPR));
-    infile.read((char*)&_w19_MAPS, sizeof(_w19_MAPS));        
+    infile.read((char*)&_w19_MAPS, sizeof(_w19_MAPS));
     _w17_MAPC -= 1;
     _w18_MAPR -= 1;
     _w19_MAPS -= 1;
-               
+
     float w20_DMIN = 0.0;
-    infile.read((char*)&w20_DMIN, sizeof(w20_DMIN));   
+    infile.read((char*)&w20_DMIN, sizeof(w20_DMIN));
     float w21_DMAX = 0.0;
-    infile.read((char*)&w21_DMAX, sizeof(w21_DMAX));        
+    infile.read((char*)&w21_DMAX, sizeof(w21_DMAX));
     infile.read((char*)&_w22_DMEAN, sizeof(_w22_DMEAN));
-        
+
     int ISPG = 0;
     infile.read((char*)&ISPG, sizeof(ISPG));
     int NYSYMBT = 0;
@@ -94,7 +94,7 @@ Ccp4::Ccp4(string pdbCode, string directory)
 
     unsigned char temp[sizeof(float)];
     while (infile.read(reinterpret_cast<char*>(temp), sizeof(float)))
-    //while (infile.read((char*)&bulk, sizeof(float)))
+        //while (infile.read((char*)&bulk, sizeof(float)))
     {
         if (false) // big endian method???
         {
@@ -127,7 +127,7 @@ Ccp4::Ccp4(string pdbCode, string directory)
         if (mtx > _w22_DMEAN)
             MatrixPeaks.push_back(pair<float, int>(mtx, count));
 
-        
+
         count++;
     }
     calculateOrthoMat(w11_CELLA_X, w12_CELLA_Y, w13_CELLA_Z, _w14_CELLB_X, _w15_CELLB_Y, _w16_CELLB_Z);
@@ -192,19 +192,19 @@ string Ccp4::getPdbCode()
 
 float Ccp4::getDensity(int C, int R, int S)
 {
-    int pos = getPosition(C,R,S);    
+    int pos = getPosition(C, R, S);
     return Matrix[pos];
 }
 
 VectorThree Ccp4::getNearestPeak(VectorThree CRS, Interpolator* interp, bool density)
 {
-    return getNearestPeakRecursive(CRS, interp, density, 0, 0.5);
+    return getNearestPeakRecursive(CRS,CRS, interp, density, 0, 0.5);
 }
 
 /*VectorThree Ccp4::getNearestPeakOld(VectorThree CRS, Interpolator* interp, int interpNum)
 {
     double biggestDensity = getDensity(CRS.A, CRS.B, CRS.C);
-    VectorThree biggestCRS = CRS;    
+    VectorThree biggestCRS = CRS;
     for (int i = -1 * (interpNum - 1); i < interpNum; ++i)
     {
         for (int j = -1 * (interpNum - 1); j < interpNum; ++j)
@@ -227,69 +227,71 @@ VectorThree Ccp4::getNearestPeak(VectorThree CRS, Interpolator* interp, bool den
     return biggestCRS;
 }*/
 
-VectorThree Ccp4::getNearestPeakRecursive(VectorThree CRS, Interpolator* interp, bool density, int level, double width)
+VectorThree Ccp4::getNearestPeakRecursive(VectorThree Orig, VectorThree CRS, Interpolator* interp, bool density, int level, double width)
 {
     //the boot out of recursion step
-    if ( width <= 0.1)//Success
-        return CRS; 
-    if (level >= 10)
+    if (width <= 0.1 || level > 8)//Success
+        return CRS;
+    /*if (level >= 10)
         return VectorThree(false); //failure
+        */
 
     //otherwise we either shrink the box or move to the biggest nearby.
     double biggestDensity = interp->getValue(CRS.C, CRS.B, CRS.A);
     double smallestLaplacian = interp->getLaplacian(CRS.C, CRS.B, CRS.A);
-    VectorThree biggestCRS = CRS;    
+    VectorThree biggestCRS = CRS;
     bool haveFound = false;
 
-    for (int a = -1; a < 2; ++a)    
-        for (int b = -1; b < 2; ++b)        
+    for (int a = -1; a < 2; ++a)
+        for (int b = -1; b < 2; ++b)
             for (int c = -1; c < 2; ++c)
             {
                 double i = a * width;
                 double j = b * width;
                 double k = c * width;
-    
+
                 if (a != 0 && b != 0 && c != 0)
                 {
-                    double interpDensity = interp->getValue(CRS.C+k, CRS.B+j, CRS.A+i);
-                    double interpLaplacian = interp->getLaplacian(CRS.C + k, CRS.B + j, CRS.A + i);
+                    VectorThree abc = VectorThree(CRS.A + i, CRS.B + j, CRS.C + k);
+                    double interpDensity = interp->getValue(abc.C, abc.B, abc.A);
+                    double interpLaplacian = interp->getLaplacian(abc.C, abc.B, abc.A);
                     if ((density && interpDensity > biggestDensity) || (!density && interpLaplacian < smallestLaplacian))
                     {
-                        biggestCRS = VectorThree(CRS.C + k, CRS.B + j, CRS.A + i);
+                        biggestCRS = abc;
                         biggestDensity = interpDensity;
                         haveFound = true;
                     }
                 }
-            }            
+            }
     if (haveFound)
-        return getNearestPeakRecursive(biggestCRS, interp, density, ++level, width);
+        return getNearestPeakRecursive(Orig,biggestCRS, interp, density, ++level, width);
     else
-        return getNearestPeakRecursive(biggestCRS, interp, density, ++level, width*0.75);
+        return getNearestPeakRecursive(Orig,biggestCRS, interp, density, ++level, width * 0.75);
 }
 
 void Ccp4::CreatePeaks(Interpolator* interp, int interpNum)
 {
     /*
     * Some debug code to understand why a tryptohan 219 in 1us0 is missing peaks
-    
+
     int pos1 = getPosition(87, 183, 119);
     int pos2 = getPosition(87, 182, 119);
-    int pos3 = getPosition(87, 184, 119);    
+    int pos3 = getPosition(87, 184, 119);
     int pos4 = getPosition(86, 183, 119);
     int pos5 = getPosition(88, 183, 119);
     int pos6 = getPosition(87, 183, 118);
     int pos7 = getPosition(87, 183, 120);
-    
+
     float d1 = getDensity(87, 183, 119);
     float d2 = getDensity(87, 182, 119);
-    float d3 = getDensity(87, 184, 119);    
+    float d3 = getDensity(87, 184, 119);
     float d4 = getDensity(86, 183, 119);
     float d5 = getDensity(88, 183, 119);
     float d6 = getDensity(87, 183, 118);
     float d7 = getDensity(87, 183, 120);*/
     /////////////////////////////////////////    
     vector<pair<float, int> > tmpMatrixPeaks;
-    for (unsigned int i = 0; i< MatrixPeaks.size(); ++i)
+    for (unsigned int i = 0; i < MatrixPeaks.size(); ++i)
     {
         double peak = MatrixPeaks[i].first;
         int position = MatrixPeaks[i].second;
@@ -321,14 +323,14 @@ void Ccp4::CreatePeaks(Interpolator* interp, int interpNum)
         }
         if (!are_any_bigger)
         {
-            tmpMatrixPeaks.push_back(pair<float,int>(peak,position));
+            tmpMatrixPeaks.push_back(pair<float, int>(peak, position));
         }
     }
     MatrixPeaks = tmpMatrixPeaks;//Matrixpeaks are now sorted and actual peaks
     sort(MatrixPeaks.rbegin(), MatrixPeaks.rend());
-    
+
     //Now we want to get density and laplacian for every peak
-    vector<string> keyList;    
+    vector<string> keyList;
     unsigned int maxdensity = 10000;
     if (MatrixPeaks.size() < maxdensity)
         maxdensity = (int)MatrixPeaks.size();
@@ -336,13 +338,13 @@ void Ccp4::CreatePeaks(Interpolator* interp, int interpNum)
     for (unsigned int i = 0; i < maxdensity; ++i)
     {
         pair<double, VectorThree> densityPair;
-        pair<double, VectorThree> laplacianPair;        
+        pair<double, VectorThree> laplacianPair;
         float Pdensity = MatrixPeaks[i].first;
         int pos = MatrixPeaks[i].second;
-        VectorThree Pcoords = getCRS(pos);        
+        VectorThree Pcoords = getCRS(pos);
         if (interpNum > 1)
         {
-            VectorThree Dcoords = getNearestPeak(Pcoords,interp,true);
+            VectorThree Dcoords = getNearestPeak(Pcoords, interp, true);
             VectorThree Lcoords = getNearestPeak(Pcoords, interp, false);
             if (Dcoords.Valid && Lcoords.Valid)
             {
@@ -355,7 +357,7 @@ void Ccp4::CreatePeaks(Interpolator* interp, int interpNum)
                 DenLapPeaks.push_back(pair<pair<double, VectorThree>, pair<double, VectorThree> >(densityPair, laplacianPair));
             }
         }
-        else 
+        else
         {
             densityPair.second = Pcoords;
             densityPair.first = Pdensity;
@@ -365,8 +367,8 @@ void Ccp4::CreatePeaks(Interpolator* interp, int interpNum)
             DenLapPeaks.push_back(pair<pair<double, VectorThree>, pair<double, VectorThree> >(densityPair, laplacianPair));
         }
     }
-    
-    
+
+
 }
 
 
@@ -383,7 +385,7 @@ int Ccp4::getPosition(int C, int R, int S)
     int sliceSize = W01_NX * W02_NY;
     int pos = C * sliceSize;
     pos += W01_NX * R;
-    pos += S;    
+    pos += S;
     return pos;
 }
 
@@ -435,7 +437,7 @@ void Ccp4::calculateOrthoMat(float w11_CELLA_X, float w12_CELLA_Y, float w13_CEL
 
 
 VectorThree Ccp4::getCRSFromXYZ(VectorThree XYZ)
-{    
+{
     VectorThree vCRS;
     //If the axes are all orthogonal            
     if (_w14_CELLB_X == 90 && _w15_CELLB_Y == 90 && _w16_CELLB_Z == 90)
@@ -450,7 +452,7 @@ VectorThree Ccp4::getCRSFromXYZ(VectorThree XYZ)
     }
     else // they are not orthogonal
     {
-        VectorThree vFraction = _deOrthoMat.multiply(XYZ,true);
+        VectorThree vFraction = _deOrthoMat.multiply(XYZ, true);
         for (int i = 0; i < 3; ++i)
         {
             double val = vFraction.getByIndex(i) * _axisSampling[i] - _crsStart[_map2xyz[i]];
@@ -538,7 +540,7 @@ void Ccp4::calculateOrigin(int w05_NXSTART, int w06_NYSTART, int w07_NZSTART, in
     oro.putByIndex(0, oro.getByIndex(0) / _w08_MX);
     oro.putByIndex(1, oro.getByIndex(1) / _w09_MY);
     oro.putByIndex(2, oro.getByIndex(2) / _w10_MZ);
-    _origin = _orthoMat.multiply(oro,true);
+    _origin = _orthoMat.multiply(oro, true);
 }
 
 bool Ccp4::isBigEndian()
@@ -558,3 +560,4 @@ bool Ccp4::isBigEndian()
 
 
 
+ 

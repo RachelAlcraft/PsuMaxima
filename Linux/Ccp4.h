@@ -86,7 +86,7 @@ public:
 	VectorThree getCRS(int position);
 	void CreatePeaks(Interpolator* interp, int interpNum);
 private:
-	VectorThree getNearestPeakRecursive(VectorThree XYZ, Interpolator* interp, bool density, int level, double width);
+	VectorThree getNearestPeakRecursive(VectorThree Orig,VectorThree XYZ, Interpolator* interp, bool density, int level, double width);
 };
 
 

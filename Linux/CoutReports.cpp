@@ -33,8 +33,8 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
     cout << "BEGIN_CHIMERAPEAKS\n";
     cout << "REMARK   1 Peaks for " << pdb->getPdbCode() << " calculated by Leucippus (Birkbeck College 2021)\n";    
     cout << "REMARK   2 Dummy atoms positioned at peaks calculated using both density and the laplacian\n";    
-    cout << "REMARK   3 All atoms have dummy type PK, element H and chain P\n";    
-    cout << "REMARK   4 Residue DEN is for density calculated peaks and LAP for laplacian calculated\n";
+    cout << "REMARK   3 All atoms have dummy type PK; element H; and chain P\n";    
+    cout << "REMARK   4 Residue DEN is for density calculated peaks and LAP for laplacian calculated\n"; 
     int atomNo = 0;
     for (unsigned int i = 0; i < maxdensity; ++i)
     {
@@ -69,8 +69,8 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
         cout << helper::getWordStringGaps("PK",3) << "PK";                                          //3. Atom type, eg CA, CB...        
         cout << helper::getWordStringGaps("LAP",6) << "LAP";                                        //4. Amino Acid        
         cout << helper::getWordStringGaps("P",2)<< "P";                                            //5. Chain        
-        cout << helper::getNumberStringGaps(atomNo,0,4) << atomNo;                                  //6. Residue number        
-        cout << helper::getNumberStringGaps(XYZ.A,3,12) << setprecision(3) << fixed << XYZ.A;       //7. x coord
+        cout << helper::getNumberStringGaps(atomNo,0,5) << atomNo;                                  //6. Residue number        
+        cout << helper::getNumberStringGaps(XYZ.A,3,11) << setprecision(3) << fixed << XYZ.A;       //7. x coord
         cout << helper::getNumberStringGaps(XYZ.B,3,8) << setprecision(3) << fixed << XYZ.B;        //8. y coord
         cout << helper::getNumberStringGaps(XYZ.C,3,8) << setprecision(3) << fixed << XYZ.C;        //9. z coord                        
         cout << helper::getNumberStringGaps(1,2,6) << "1.00";                                       //10. Occupancy        
