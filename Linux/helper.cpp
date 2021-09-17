@@ -42,8 +42,10 @@ string helper::getNumberStringGaps(double number, int dp, int length)
 			missingLength -= 2;
 		else if (number < 1000)
 			missingLength -= 3;
-		else// if (number < 10000)
+		else if (number < 10000)
 			missingLength -= 4;
+		else //if (number < 100000)
+			missingLength -= 5;
 	}
 	else
 	{
@@ -53,8 +55,10 @@ string helper::getNumberStringGaps(double number, int dp, int length)
 			missingLength -= 3;
 		else if (number < 1000)
 			missingLength -= 4;
-		else //if (number < 10000)
+		else if (number < 10000)
 			missingLength -= 5;
+		else// if (number < 100000)
+			missingLength -= 6;
 	}
 	string gaps = "";
 
