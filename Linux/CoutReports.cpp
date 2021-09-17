@@ -57,7 +57,7 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
     ccp4->MatrixPeaks = tmpMatrixPeaks;
     // now create a list of interpolated peaks
     vector<pair<pair<float, VectorThree>,pair<float, VectorThree> > > tmpInterpPeaks;//Both density and laplacian adjusted
-    vector<int> keyList;
+    vector<string> keyList;
 
     unsigned int maxdensity = 10000;
     if (ccp4->MatrixPeaks.size() < maxdensity)
@@ -75,28 +75,38 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
         {
             //there could be multiple peaks for grid point
             //so we check half a grid point away in every direction too
-            for (double i = -0.5; i <= 0.5; i += 0.5)
-                for (double j = -0.5; j <= 0.5; j += 0.5)
-                    for (double k = -0.5; k <= 0.5; k += 0.5)
+            for (int a = -1; a <2; ++a)
+                for (int b = -1; b < 2; ++b)
+                    for (int c = -1; c < 2; ++c)
                     {
-                        VectorThree Ncoords(Pcoords.A + i, Pcoords.B + j, Pcoords.C + k);
+                        double ii = a * 0.5;
+                        double jj = b * 0.5;
+                        double kk = c * 0.5;
+
+                        VectorThree Ncoords(Pcoords.A + ii, Pcoords.B + jj, Pcoords.C + kk);
 
                         VectorThree Dcoords = ccp4->getNearestPeak(Ncoords, interp, true);
-                        unsigned int key = int(Dcoords.A * 1000000000000) + int(Dcoords.B * 10000000) + int(Dcoords.C * 100);
-                        //don't proceed and add it if it is already there
-                        if (find(keyList.begin(), keyList.end(), key) == keyList.end())
+                        if (Dcoords.Valid)
                         {
-                            keyList.push_back(key);
-                            double Ddensity = interp->getValue(Dcoords.C, Dcoords.B, Dcoords.A);
-                            densityPair.second = Dcoords;
-                            densityPair.first = Ddensity;
-                            //And we should also do this on a laplacian basis but for now I am just using the same thing TODO
-                            VectorThree Lcoords = ccp4->getNearestPeak(Ncoords, interp, false);
-                            double laplacian = interp->getLaplacian(Lcoords.C, Lcoords.B, Lcoords.A);
-                            laplacianPair.second = Lcoords;
-                            laplacianPair.first = laplacian;
-                            tmpInterpPeaks.push_back(pair<pair<float, VectorThree>, pair<float, VectorThree> >(densityPair, laplacianPair));
-                        }
+                            string key = Dcoords.getKey();
+                            //don't proceed and add it if it is already there
+                            if (find(keyList.begin(), keyList.end(), key) == keyList.end())
+                            {
+                                keyList.push_back(key);
+                                double Ddensity = interp->getValue(Dcoords.C, Dcoords.B, Dcoords.A);
+                                densityPair.second = Dcoords;
+                                densityPair.first = Ddensity;
+                                //And we should also do this on a laplacian basis but for now I am just using the same thing TODO
+                                VectorThree Lcoords = ccp4->getNearestPeak(Ncoords, interp, false);
+                                if (Lcoords.Valid)
+                                {
+                                    double laplacian = interp->getLaplacian(Lcoords.C, Lcoords.B, Lcoords.A);
+                                    laplacianPair.second = Lcoords;
+                                    laplacianPair.first = laplacian;
+                                    tmpInterpPeaks.push_back(pair<pair<float, VectorThree>, pair<float, VectorThree> >(densityPair, laplacianPair));
+                                }                                
+                            }
+                        }                        
                     }
         
         }

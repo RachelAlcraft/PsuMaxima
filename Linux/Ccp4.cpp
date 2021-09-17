@@ -199,7 +199,7 @@ float Ccp4::getDensity(int C, int R, int S)
 
 VectorThree Ccp4::getNearestPeak(VectorThree CRS, Interpolator* interp, bool density)
 {
-    return getNearestPeakRecursive(CRS, interp, density, 0, 0.4);
+    return getNearestPeakRecursive(CRS, interp, density, 0, 0.25);
 }
 
 VectorThree Ccp4::getNearestPeakOld(VectorThree CRS, Interpolator* interp, int interpNum)
@@ -231,34 +231,37 @@ VectorThree Ccp4::getNearestPeakOld(VectorThree CRS, Interpolator* interp, int i
 VectorThree Ccp4::getNearestPeakRecursive(VectorThree CRS, Interpolator* interp, bool density, int level, double width)
 {
     //the boot out of recursion step
-    if (level >= 10 || width <= 0.1)
-        return CRS; // this only works because we already know it is a grid point peak, otherwise we would have to establish that too
+    if ( width <= 0.1)//Success
+        return CRS; 
+    if (level >= 10)
+        return VectorThree(false); //failure
 
     //otherwise we either shrink the box or move to the biggest nearby.
     float biggestDensity = interp->getValue(CRS.C, CRS.B, CRS.A);
     float smallestLaplacian = interp->getLaplacian(CRS.C, CRS.B, CRS.A);
     VectorThree biggestCRS = CRS;    
     bool haveFound = false;
-    for (double i = CRS.A - width; i <= CRS.A + width; i+=width)
-    {
-        for (double j = CRS.B - width; j <= CRS.B + width; j += width)
-        {
-            for (double k = CRS.C - width; k <= CRS.C + width; k += width)
+
+    for (int a = -1; a < 2; ++a)    
+        for (int b = -1; b < 2; ++b)        
+            for (int c = -1; c < 2; ++c)
             {
-                if (i != CRS.A && j != CRS.B && k != CRS.C)
-                {                                
-                double interpDensity = interp->getValue(k, j, i);
-                double interpLaplacian = interp->getLaplacian(k, j, i);
-                if ((density && interpDensity > biggestDensity) || (!density && interpLaplacian < smallestLaplacian))
+                double i = a * width;
+                double j = b * width;
+                double k = c * width;
+    
+                if (a != 0 && b != 0 && c != 0)
                 {
-                    biggestCRS = VectorThree(i, j, k);
-                    biggestDensity = interpDensity;
-                    haveFound = true;
+                    double interpDensity = interp->getValue(k, j, i);
+                    double interpLaplacian = interp->getLaplacian(k, j, i);
+                    if ((density && interpDensity > biggestDensity) || (!density && interpLaplacian < smallestLaplacian))
+                    {
+                        biggestCRS = VectorThree(i, j, k);
+                        biggestDensity = interpDensity;
+                        haveFound = true;
+                    }
                 }
-                }
-            }
-        }
-    }
+            }            
     if (haveFound)
         return getNearestPeakRecursive(biggestCRS, interp, density, ++level, width);
     else

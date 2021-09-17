@@ -1,13 +1,26 @@
 
 #include <cmath>
+#include <sstream>
+#include <iomanip>
 
 #include "VectorThree.h"
+
+using namespace std;
 
 VectorThree::VectorThree()
 {
     A = 0;
     B = 0;
     C = 0;
+    Valid = true;
+}
+
+VectorThree::VectorThree(bool isValid)
+{
+    A = 0;
+    B = 0;
+    C = 0;
+    Valid = isValid;
 }
 
 
@@ -16,6 +29,7 @@ VectorThree::VectorThree(double a, double b, double c)
     A = a;
     B = b;
     C = c;
+    Valid = true;
 }
 
 double VectorThree::getByIndex(int idx)
@@ -75,4 +89,10 @@ double VectorThree::getDotProduct(VectorThree vec)
             double py = B * vec.B;
             double pz = C * vec.C;
             return px + py + pz;
+}
+string VectorThree::getKey()
+{
+    stringstream ss;
+    ss << setprecision(2) << fixed << A << B << C;
+    return ss.str();
 }
