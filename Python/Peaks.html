@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" href="img/atom.ico"><title>Leucippus</title>
+<style> 
+body {text-align:left;background-color:LightSteelBlue;margin-left: 52px;}
+img {width:85%;border:1px solid MistyRose; }
+table {table-layout:fixed; text-align: center; border: 0.5px solid MistyRose; background: LightSteelBlue; padding: 0px;display: block;table-layout:fixed;}
+td {padding:2px;border:0.5px solid rgb(180, 180, 280,0.75);background-color:AliceBlue;}
+a:link{color:MistyRose;}
+a:visited {color:MistyRose;}
+a:hover {color:white;}
+</style></head>
+</head>
+<body>
+
+<hr/>
+<h1>
+<div style="background-color:black;padding:10px">
+<font color="DC143C">Leu</font><font color="AliceBlue">cip</font><font color="DC143C">pus</font>
+</div>
+</h1>
+<p style="background-color:Crimson;margin:5px;padding:5px;color:AliceBlue;">
+   <a href='Maxima.html' title='Home' target='_self'>PhD Home</a>
+ ~  <a href='Peaks.html' title='Home' target='_self'>Peaks Explorer</a>
+ ~  <a href='Synthetic.html' title='Home' target='_self'>Synthetic Density</a>
+ ~  <a href='Documentation.html' title='Docs' target='_self'>Documentation</a>
+~ <a href='index.html' title='Student' target='_blank'>Student Home</a>
+~ <a href='https://www.bbk.ac.uk/departments/biology/' title='Birkbeck' target='_blank'>Birkbeck Biology</a>
+</p>
+
+<hr/>
+
+
+<p>
+<h3>PhD project: <font color="DC143C">Leu</font>cip<font color="DC143C">pus</font></h3>
+</p>
+<p>
+This webpage interfaces with a C++ executable which calculates density maxima in ccp4 files from the PDBe. 
+<i>Only valid for structures with ccp4 files stored on the ebi cloud. </i>
+</p>
+
+
+<hr/>
+
+ <div>
+<form method="post" action="/cgi-bin/cgiwrap/ab002/PhD/Maxima.cgi" accept-charset="UTF-8">
+<b>~~ Application access credentials ~~</b><br/><i>You must enter a valid email address to access this software. Passwords will be forthcoming.</i><br/>Email address: <input type='text' name='email' value='' /> Password: <input type='text' name='password' value='not used' /><hr/><h3>Electron Density Analysis</h3>Enter 4 digit pdb code: <input type="text" name="dataInput" value=1ejg />
+<br/><br/>
+<table><tr><td style="background-color:Crimson;color:AliceBlue">~~ Choose results to display ~~</td><td style="background-color:Crimson;color:AliceBlue"">~~ Interpolation parameters ~~</td><td style="background-color:Crimson;color:AliceBlue"">~~ 3-point coordinates for plane ~~</td></tr><tr>
+<td>
+<table style="text-align: left;">
+<tr><td><label for="D1">1) Peaks visual projection to 3 planes</label></td><td><input type="checkbox" id="Data1" name="Data1" value="1" checked="checked"></td></tr>
+<tr><td><label for="D2">2) Peaks data in pseudo-pdb file</label></td><td><input type="checkbox" id="Data2" name="Data2" value="1" checked="checked"></td></tr>
+<tr><td><label for="D3">3) Peaks info as html grid</label></td><td><input type="checkbox" id="Data3" name="Data3" value="1"></td></tr>
+<tr><td><label for="D4">4) Peaks visual projection, atoms only (unit cell)</label></td><td><input type="checkbox" id="Data4" name="Data4" value="1"></td></tr>
+<tr><td><label for="D5">5) Density visual projection, all atoms</label></td><td><input type="checkbox" id="Data5" name="Data5" value="1" checked="checked"></td></tr>
+<tr><td><label for="D6">6) Atoms visualised on AtomNo</label></td><td><input type="checkbox" id="Data6" name="Data6" value="1" checked="checked"></td></tr>
+<tr><td><label for="D7">7) Visualised electron density planes</label></td><td><input type="checkbox" id="Data7" name="Data7" value="1" checked="checked"></td></tr>
+</table>
+</td><td><div style="text-align: left;">
+
+<p>Interpolation:<br/>
+<input type="radio" id="spline" name="interpMethod" value="spline" checked="checked"><label for="spline">B-Spline</label><br/>
+<input type="radio" id="nearest" name="interpMethod" value="nearest"><label for="nearest">Nearest Neighbour</label><br/><br/><br/><br/>
+</p>
+
+<!--<p>Interpolation frequency: <input size="4" type="text" name="interpNum" value=2 /></p><p>Iterations per grid point, <br/>enter between 0 and 5, <br/>0 or 1 means grid points only</p>-->
+</div></td>
+<td>
+<div style="text-align: left;"><b>Enter three points to get a density contour slice from the electron density.</b></div>
+<table style="background-color:AliceBlue;text-align:left;"><tr><td>Central: X=<input size="4" type="text" name="CX" value=9.373 />
+Y=<input size="4" type="text" name="CY" value=7.688 />
+Z=<input size="4" type="text" name="CZ" value=15.546 /></td></tr>
+<tr><td>Linear: X=<input size="4" type="text" name="LX" value=9.5 />
+Y=<input size="4" type="text" name="LY" value=9.079 />
+Z=<input size="4" type="text" name="LZ" value=14.937 /></td></tr>
+<tr><td>Planar: X=<input size="4" type="text" name="PX" value=9.64 />
+Y=<input size="4" type="text" name="PY" value=7.542 />
+Z=<input size="4" type="text" name="PZ" value=16.748 /></td></tr></table>
+<div style="text-align: left;padding:5px"><b>Settings for image size</b></div>
+<table style="background-color:AliceBlue">
+<tr>
+<td>Width(&#8491;)=<input size="4" type="text" name="Width" value=5 /> Granularity(&#8491;)=<input size="4" type="text" name="Gran" value=0.1 /></td>
+</tr>
+</table>
+</td></tr></table>
+<br/><input type="Submit" value="Analyse Electron Density"/>
+</form>
+</div>
+
+<hr/>
+<p style="background-color:Crimson;margin:5px;padding:5px;color:AliceBlue;">
+Created by: Rachel Alcraft<br/>
+<a href="https://student.cryst.bbk.ac.uk/~ab002/" title="PhDBio" target="_blank">Birkbeck Student Page - Rachel Alcraft</a>
+</p>
+</body>

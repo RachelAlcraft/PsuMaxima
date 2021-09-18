@@ -62,17 +62,13 @@ def getHeader():
     string = '<!DOCTYPE html>\n'
     string += '<html lang="en">\n'
     string += '<head>\n'
-    string += '<title>PsuMaxima</title>\n'   
+    string += '<title>Leucippus</title>\n'   
     string += '<link rel="icon" href="/../../../~ab002/img/atom.ico" type="image/x-icon">\n'         
     string += '<style>\n'
     string += 'body {text-align:left;background-color:LightSteelBlue;margin-left: 52px;}\n'
-    string += 'img {width:85%;border:1px solid MistyRose; }\n'
-    #string += 'table {font-size:0.8vw;width:95%;table-layout:fixed;display:table;margin:0 auto;background-color:LightSteelBlue ;}\n'
-    #string += 'table {table-layout:fixed; text-align: center; border: 0.5px solid MistyRose; background: LightSteelBlue; padding: 0px; max-height:450px; overflow-y: scroll;  display: block;table-layout:fixed;}\n'
+    string += 'img {width:85%;border:1px solid MistyRose; }\n'    
     string += 'table {table-layout:fixed; text-align: center; border: 0.5px solid MistyRose; background: LightSteelBlue; padding: 0px;display: block;table-layout:fixed;}\n'
-    string += 'td {padding:2px;border:0.5px solid rgb(180, 180, 280,0.75);background-color:AliceBlue;}\n' 
-    #string += '.verdtable {table-layout:fixed; text-align: left; border: 3px solid RebeccaPurple; background: MistyRose; padding: 0px; max-height: 250px; overflow-y: scroll;  display: block;}'
-    #string += '.verdinnerheader td {border: 3px solid RebeccaPurple;background: RebeccaPurple;padding: 0px; color: Chartreuse;}'
+    string += 'td {padding:2px;border:0.5px solid rgb(180, 180, 280,0.75);background-color:AliceBlue;}\n'     
     string += 'a:link{color:MistyRose;}\n'
     string += 'a:visited {color:MistyRose;}\n'
     string += 'a:hover {color:white;}\n'
@@ -84,23 +80,91 @@ def getHeader():
     # header includes a bit of body, where we have the header...
     string += '<body>\n'
     string += '<hr/>'
+    string += '<h1>'
+    string += '<div style="background-color:black;padding:10px">'
+    string += '<font color="DC143C">Leu</font><font color="AliceBlue">cip</font><font color="DC143C">pus</font>'
+    string += '</div>'
+    string += '</h1>'
     string += '<p style="background-color:Crimson;margin:5px;padding:5px;color:AliceBlue;">'
     string += '<a href="/../../~ab002/Maxima.html" title="Home" target="_self">PhD Home</a>'
+    string += '~  <a href="/../../~ab002/Peaks.html" title="Home" target="_self">Peaks Explorer</a>'
+    string += '~  <a href="/../../~ab002/Synthetic.html" title="Home" target="_self">Synthetic Density</a>'
+    string +=  "~  <a href='/../../~ab002/Documentation.html' title='Docs' target='_self'>Documentation</a>"
     string += "~ <a href='/../../~ab002/index.html' title='Student' target='_blank'>Student Home</a>"
     string += "~ <a href='https://www.bbk.ac.uk/departments/biology/' title='Birkbeck' target='_blank'>Birkbeck Biology</a>"
     string += '</p>'
     
     return string
 
+def getBodyMenuSynth(username, password,atoms,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,model):
+
+    iamchecked = 'checked="checked"'
+    bemchecked = ''
+    if model == "bem":
+        bemchecked = 'checked="checked"'
+        iamchecked = ''
+
+    string = '<hr/>\n'
+    string += '<p>\n'
+    string += '<h3>PhD project: <font color="DC143C">Leu</font>cip<font color="DC143C">pus</font></h3>\n'
+    string += '</p>\n'
+    string += '<p>\n'
+    string += 'This webpage interfaces with a C++ executable which calculates synthetic density for the given atoms. This tool is used to explore Gaussian Overlap and Density Drift.\n'
+    string += '</p>\n'
+    string += '<hr/>\n'
+    string += '<div>\n'
+    string += '<form method="post" action="/cgi-bin/cgiwrap/ab002/PhD/Synthetic.cgi" accept-charset="UTF-8">\n'
+    string += '<b>~~ Application access credentials ~~</b><br/><i>You must enter a valid email address to access this software. Passwords will be forthcoming.</i>\n'
+    string += "<br/>Email address: <input type='text' name='email' value='" + username + "' />"
+    string += " Password: <input type='text' name='password' value='not used' />"
+    string += '<hr/>'
+    string += '<h3>Synthetic Density Analysis</h3>\n'
+    string += '<p>\n'
+    string += 'Each row is an atom with type, coordinates, residue number (for bond electrons), bfactor, occupancy, arc parameters (end positions and number of positions).</br>\n'
+    string += 'Example atoms have been entered for you which you can edit, the end positions are blank as no motion is being modelled. The format is a csv file, with the header above the text area</br></br>\n'
+    string += '<b>Type,X,Y,Z,ResNo,BFactor,Occupancy,EndX,EndY,EndZ,ArcHeight</b></br> \n'
+    string += '<textarea id="atoms" name="atoms" rows="5" cols="120">\n'
+    string += atoms    
+    string += '</textarea>\n'
+    string += '<p>\n'
+    string += '<table><tr><td style="background-color:Crimson;color:AliceBlue"">~~ Model Paramaters parameters ~~</td><td style="background-color:Crimson;color:AliceBlue"">~~ 3-point coordinates for plane ~~</td></tr>\n'
+    string += '<tr><td>\n'
+    string += '<div style="text-align: left;">\n'
+    string += '<p>Model:<br/>\n'
+    string += '<input type="radio" id="iam" name="model" value="iam" ' + iamchecked + '"><label for="iam">Independent Atom Model</label><br/>\n'
+    string += '<input type="radio" id="bem" name="model" value="bem" ' + bemchecked + '"><label for="bem">Bond Electron Model</label><br/><br/><br/><br/>\n'
+    string += '</p>\n'
+    string += '</div></td>\n'
+    string += '<td>\n'
+    string += '<div style="text-align: left;"><b>Enter three points to get a density contour slice from the electron density.</b></div>\n'
+    string += '<table style="background-color:AliceBlue;text-align:left;"><tr><td>Central: X=<input size="4" type="text" name="CX" value=' + str(cX) + ' />\n'
+    string += 'Y=<input size="4" type="text" name="CY" value=' + str(cY) + ' />\n'
+    string += 'Z=<input size="4" type="text" name="CZ" value=' + str(cZ) + ' /></td></tr>\n'
+    string += '<tr><td>Linear: X=<input size="4" type="text" name="LX" value=' + str(lX) + ' />\n'
+    string += 'Y=<input size="4" type="text" name="LY" value=' + str(lY) + ' />\n'
+    string += 'Z=<input size="4" type="text" name="LZ" value=' + str(lZ) + ' /></td></tr>\n'
+    string += '<tr><td>Planar: X=<input size="4" type="text" name="PX" value=' + str(pX) + ' />\n'
+    string += 'Y=<input size="4" type="text" name="PY" value=' + str(pY) + ' />\n'
+    string += 'Z=<input size="4" type="text" name="PZ" value=' + str(pZ) + ' /></td></tr></table>\n'
+    string += '<div style="text-align: left;padding:5px"><b>Settings for image size</b></div>\n'
+    string += '<table style="background-color:AliceBlue">\n'
+    string += '<tr>\n'
+    string += '<td>Width(&#8491;)=<input size="4" type="text" name="Width" value=' + str(width) + ' /> Granularity(&#8491;)=<input size="4" type="text" name="Gran" value=' + str(gran) + ' /></td>\n'
+    string += '</tr>\n'
+    string += '</table>\n'
+    string += '</td></tr></table>\n'
+    string += '<br/><input type="Submit" value="Analyse Synthetic Density"/>\n'
+    string += '</form>\n'
+    string += '</div>\n'
+    return string
+
+    
 
 
 def getBodyA(pdb, interpNum, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,interpMethod,D1,D2,D3,D4,D5,D6,D7):    
-    string = '<hr/>\n'
-    string += '<h1>\n'
-    string += '<font color="DC143C">Psu</font>Max<font color="DC143C">ima</font>\n'
-    string += '</h1>\n'
+    string = '<hr/>\n'    
     string += '<p>\n'
-    string += '<h3>PhD project: <font color="DC143C">Psu</font>Max<font color="DC143C">ima</font></h3>\n'
+    string += '<h3>PhD project: <font color="DC143C">Leu</font>cip<font color="DC143C">pus</font></h3>\n'    
     string += '</p>\n'
 
     string += '<p>\n'

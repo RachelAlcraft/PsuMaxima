@@ -121,5 +121,33 @@ def runCppModule(pdb,interpNum,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,D4
       #print("results from exe=",result)
       #return []
 
+
+def runCppModuleSyntheticDensity(atoms,model,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran):        
+    #try:
+    df1a,df1b,df1c,df1d = pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame()
+    if True:
+      ### CALL Synthetic Density ######################################    
+        
+      commandlineSnth = "SYNTHETIC|" + atoms + "|" + model + "|"        
+      commandlineSlices += str(cX) + "-" + str(cY) + "-" + str(cZ) + "|"
+      commandlineSlices += str(lX) + "-" + str(lY) + "-" + str(lZ) + "|"
+      commandlineSlices += str(pX) + "-" + str(pY) + "-" + str(pZ) + "|"
+      commandlineSlices += str(width) + "-" + str(gran)
+      #------------------------------------------------
+      pigS = sub.Popen(["/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima", commandlineSlices], stdout=sub.PIPE)            
+      resultS = pigS.communicate(input=b"This is sample text.\n")
+      exe_resultS = str(resultS[0],'utf-8')
+      pigS.kill()      
+      #------------------------------------------------            
+      df1a = getCsvFromCppResults(exe_resultS, 'DENSITYSLICE')
+      df1b = getCsvFromCppResults(exe_resultS, 'RADIANTSLICE')
+      df1c = getCsvFromCppResults(exe_resultS, 'LAPLACIANSLICE')
+      df1d = getCsvFromCppResults(exe_resultS, 'SYNTHMATRIX')      
+
+      return [df1a,df1b,df1c,df1d]
+    #except:
+      #print("results from exe=",result)
+      #return []
+
     
 

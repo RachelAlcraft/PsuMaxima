@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" href="img/atom.ico"><title>Leucippus</title>
+<style> 
+body {text-align:left;background-color:LightSteelBlue;margin-left: 52px;}
+img {width:85%;border:1px solid MistyRose; }
+table {table-layout:fixed; text-align: center; border: 0.5px solid MistyRose; background: LightSteelBlue; padding: 0px;display: block;table-layout:fixed;}
+td {padding:2px;border:0.5px solid rgb(180, 180, 280,0.75);background-color:AliceBlue;}
+a:link{color:MistyRose;}
+a:visited {color:MistyRose;}
+a:hover {color:white;}
+</style></head>
+</head>
+<body>
+
+<hr/>
+<h1>
+<div style="background-color:black;padding:10px">
+<font color="DC143C">Leu</font><font color="AliceBlue">cip</font><font color="DC143C">pus</font>
+</div>
+</h1>
+<p style="background-color:Crimson;margin:5px;padding:5px;color:AliceBlue;">
+   <a href='Maxima.html' title='Home' target='_self'>PhD Home</a>
+ ~  <a href='Peaks.html' title='Home' target='_self'>Peaks Explorer</a>
+ ~  <a href='Synthetic.html' title='Home' target='_self'>Synthetic Density</a>
+ ~  <a href='Documentation.html' title='Docs' target='_self'>Documentation</a>
+~ <a href='index.html' title='Student' target='_blank'>Student Home</a>
+~ <a href='https://www.bbk.ac.uk/departments/biology/' title='Birkbeck' target='_blank'>Birkbeck Biology</a>
+</p>
+
+<hr/>
+
+
+<p>
+<h3>PhD project: <font color="DC143C">Leu</font>cip<font color="DC143C">pus</font></h3>
+</p>
+<p>
+This webpage interfaces with a C++ executable which calculates synthetic density for the given atoms. This tool is used to explore Gaussian Overlap and Density Drift.
+</p>
+
+<hr/>
+ <div>
+<form method="post" action="/cgi-bin/cgiwrap/ab002/PhD/Synthetic.cgi" accept-charset="UTF-8">
+<b>~~ Application access credentials ~~</b><br/><i>You must enter a valid email address to access this software. Passwords will be forthcoming.</i><br/>Email address: <input type='text' name='email' value='' /> Password: <input type='text' name='password' value='not used' /><hr/>
+
+<h3>Synthetic Density Analysis</h3>
+<p>
+Each row is an atom with type, coordinates, residue number (for bond electrons), bfactor, occupancy, arc parameters (end positions and number of positions).</br>
+Example atoms have been entered for you which you can edit, the end positions are blank as no motion is being modelled. The format is a csv file, with the header above the text area</br></br>
+<b>Type,X,Y,Z,ResNo,BFactor,Occupancy,EndX,EndY,EndZ,ArcHeight</b></br> 
+<textarea id="atoms" name="atoms" rows="5" cols="120">
+N,0.10,0.10,0.20,1,2.4,1.00,,,,,
+CA,0.10,1.10,0.20,2,2.6,1.00,,,,,
+  </textarea>
+<p>
+
+<table><tr><td style="background-color:Crimson;color:AliceBlue"">~~ Model Paramaters parameters ~~</td><td style="background-color:Crimson;color:AliceBlue"">~~ 3-point coordinates for plane ~~</td></tr>
+<tr><td>
+<div style="text-align: left;">
+<p>Model:<br/>
+<input type="radio" id="iam" name="model" value="iam" checked="checked"><label for="iam">Independent Atom Model</label><br/>
+<input type="radio" id="bem" name="model" value="bem"><label for="bem">Bond Electron Model</label><br/><br/><br/><br/>
+</p>
+</div></td>
+<td>
+<div style="text-align: left;"><b>Enter three points to get a density contour slice from the electron density.</b></div>
+<table style="background-color:AliceBlue;text-align:left;"><tr><td>Central: X=<input size="4" type="text" name="CX" value=9.373 />
+Y=<input size="4" type="text" name="CY" value=7.688 />
+Z=<input size="4" type="text" name="CZ" value=15.546 /></td></tr>
+<tr><td>Linear: X=<input size="4" type="text" name="LX" value=9.5 />
+Y=<input size="4" type="text" name="LY" value=9.079 />
+Z=<input size="4" type="text" name="LZ" value=14.937 /></td></tr>
+<tr><td>Planar: X=<input size="4" type="text" name="PX" value=9.64 />
+Y=<input size="4" type="text" name="PY" value=7.542 />
+Z=<input size="4" type="text" name="PZ" value=16.748 /></td></tr></table>
+<div style="text-align: left;padding:5px"><b>Settings for image size</b></div>
+<table style="background-color:AliceBlue">
+<tr>
+<td>Width(&#8491;)=<input size="4" type="text" name="Width" value=5 /> Granularity(&#8491;)=<input size="4" type="text" name="Gran" value=0.1 /></td>
+</tr>
+</table>
+</td></tr></table>
+<br/><input type="Submit" value="Analyse Synthetic Density"/>
+</form>
+</div>
+
+<hr/>
+<p style="background-color:Crimson;margin:5px;padding:5px;color:AliceBlue;">
+Created by: Rachel Alcraft<br/>
+<a href="https://student.cryst.bbk.ac.uk/~ab002/" title="PhDBio" target="_blank">Birkbeck Student Page - Rachel Alcraft</a>
+</p>
+</body>
