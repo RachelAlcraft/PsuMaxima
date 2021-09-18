@@ -48,7 +48,7 @@ def userOwnWebPage(email,string):
     res = ''
     res += '<hr/>'
     res += '<h3>Results ready for ' + pageName + '</h3>'
-    res += '<p><i>This is your private results page, further results will be copied here, it will not be stored on the server so save as needed<i><p>'
+    res += '<p><i>This is your private results page, further results will be copied here, it will not be stored on the server so save as needed</i><p>'
     
     pathname = 'https://student.cryst.bbk.ac.uk/~ab002/Users/' + pageName + '.html'
     res += '<div style="background-color:SpringGreen;">'
@@ -94,7 +94,7 @@ def getHeader():
 
 
 
-def getBodyA(pdb, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,D4,D5,D6,D7):    
+def getBodyA(pdb, interpNum, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,interpMethod,D1,D2,D3,D4,D5,D6,D7):    
     string = '<hr/>\n'
     string += '<h1>\n'
     string += '<font color="DC143C">Psu</font>Max<font color="DC143C">ima</font>\n'
@@ -139,33 +139,56 @@ def getBodyA(pdb, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width
         r7 = 'checked="checked"'
 
 
-    string += '<table><tr><td style="background-color:Crimson;color:AliceBlue">~~ Choose results to display ~~</td><td style="background-color:Crimson;color:AliceBlue"">~~ 3-point coordinates for plane ~~</td></tr><tr>\n'
+    string += '<table><tr><td style="background-color:Crimson;color:AliceBlue">~~ Choose results to display ~~</td><td style="background-color:Crimson;color:AliceBlue"">~~ Interpolation parameters ~~</td><td style="background-color:Crimson;color:AliceBlue"">~~ 3-point coordinates for plane ~~</td></tr><tr>\n'
     string += '<td>\n'
     string += '<table style="text-align: left;">\n'
-    string += '<tr><td><label for="D1">1) Peaks visual projection to 3 planes</label></td><td><input type="checkbox" id="Data1" name="Data1" value="1" ' + r1 + '"></td></tr>\n'
-    string += '<tr><td><label for="D2">2) Peaks data as CSV file</label></td><td><input type="checkbox" id="Data2" name="Data2" value="1" ' + r2 + '"></td></tr>\n'
-    string += '<tr><td><label for="D3">3) Peaks data as html grid</label></td><td><input type="checkbox" id="Data3" name="Data3" value="1" ' + r3 + '"></td></tr>\n'
-    string += '<tr><td><label for="D4">4) Peaks visual projection, atoms only (unit cell)</label></td><td><input type="checkbox" id="Data4" name="Data4" value="1" ' + r4 + '"></td></tr>\n'
-    string += '<tr><td><label for="D5">5) Density visual projection, all atoms</label></td><td><input type="checkbox" id="Data5" name="Data5" value="1" ' + r5 + '"></td></tr>\n'
-    string += '<tr><td><label for="D6">6) Atoms visualised on AtomNo</label></td><td><input type="checkbox" id="Data6" name="Data6" value="1" ' + r6 + '"></td></tr>\n'
-    string += '<tr><td><label for="D7">7) Visualised electron density planes</label></td><td><input type="checkbox" id="Data7" name="Data7" value="1" ' + r7 + '"></td></tr>\n'
+    string += '<tr><td><label for="D1">1) Peaks visual projection to 3 planes</label></td><td><input type="checkbox" id="Data1" name="Data1" value="1" ' + r1 + '></td></tr>\n'
+    string += '<tr><td><label for="D2">2) Peaks data in pseudo-pdb file</label></td><td><input type="checkbox" id="Data2" name="Data2" value="1" ' + r2 + '></td></tr>\n'
+    string += '<tr><td><label for="D3">3) Peaks info as html grid</label></td><td><input type="checkbox" id="Data3" name="Data3" value="1" ' + r3 + '></td></tr>\n'
+    string += '<tr><td><label for="D4">4) Peaks visual projection, atoms only (unit cell)</label></td><td><input type="checkbox" id="Data4" name="Data4" value="1" ' + r4 + '></td></tr>\n'
+    string += '<tr><td><label for="D5">5) Density visual projection, all atoms</label></td><td><input type="checkbox" id="Data5" name="Data5" value="1" ' + r5 + '></td></tr>\n'
+    string += '<tr><td><label for="D6">6) Atoms visualised on AtomNo</label></td><td><input type="checkbox" id="Data6" name="Data6" value="1" ' + r6 + '></td></tr>\n'
+    string += '<tr><td><label for="D7">7) Visualised electron density planes</label></td><td><input type="checkbox" id="Data7" name="Data7" value="1" ' + r7 + '></td></tr>\n'
     string += '</table>\n'
-    string += '</td><td>\n'
+    string += '</td>'
+
+    string += '<td><div style="text-align: left;">'
+
+
+    #<p>Interpolation frequency: <input size="4" type="text" name="interpNum" value=' + str(interpNum) + ' /></p>'
+    #string += '<p>Iterations per grid point, <br/>enter between 0 and 5, <br/>0 or 1 means grid points only</p>
+
+    splinechecked = 'checked="checked"'
+    nearestchecked = ''
+    if interpMethod == "nearest":
+        nearestchecked = 'checked="checked"'
+        splinechecked = ''
+        
+    string += '<p>Interpolation:<br/>'
+    string += '<input type="radio" id="spline" name="interpMethod" value="spline" ' + splinechecked + '><label for="spline">B-Spline</label><br/>'
+    string += '<input type="radio" id="nearest" name="interpMethod" value="nearest" ' + nearestchecked + '><label for="nearest">Nearest Neighbour</label><br/><br/><br/><br/>'
+    string += '</p>'
+
+
+
+    
+
+    string += '</div></td>\n<td>\n'
     string += '<div style="text-align: left;"><b>Enter three points to get a density contour slice from the electron density.</b></div>\n'    
-    string += '<table style="background-color:AliceBlue;text-align:left;"><tr><td>Central: X=<input type="text" name="CX" value=' + str(cX) + ' />\n'
-    string += 'Y=<input type="text" name="CY" value=' + str(cY) + ' />\n'
-    string += 'Z=<input type="text" name="CZ" value=' + str(cZ) + ' /></td></tr>\n'
-    string += '<tr><td>Linear: X=<input type="text" name="LX" value=' + str(lX) + ' />\n'
-    string += 'Y=<input type="text" name="LY" value=' + str(lY) + ' />\n'
-    string += 'Z=<input type="text" name="LZ" value=' + str(lZ) + ' /></td></tr>\n'
-    string += '<tr><td>Planar: X=<input type="text" name="PX" value=' + str(pX) + ' />\n'
-    string += 'Y=<input type="text" name="PY" value=' + str(pY) + ' />\n'
-    string += 'Z=<input type="text" name="PZ" value=' + str(pZ) + ' /></td></tr></table>\n'
+    string += '<table style="background-color:AliceBlue;text-align:left;"><tr><td>Central: X=<input size="4" type="text" name="CX" value=' + str(cX) + ' />\n'
+    string += 'Y=<input size="4" type="text" name="CY" value=' + str(cY) + ' />\n'
+    string += 'Z=<input size="4" type="text" name="CZ" value=' + str(cZ) + ' /></td></tr>\n'
+    string += '<tr><td>Linear: X=<input size="4" type="text" name="LX" value=' + str(lX) + ' />\n'
+    string += 'Y=<input size="4" type="text" name="LY" value=' + str(lY) + ' />\n'
+    string += 'Z=<input size="4" type="text" name="LZ" value=' + str(lZ) + ' /></td></tr>\n'
+    string += '<tr><td>Planar: X=<input size="4" type="text" name="PX" value=' + str(pX) + ' />\n'
+    string += 'Y=<input size="4" type="text" name="PY" value=' + str(pY) + ' />\n'
+    string += 'Z=<input size="4" type="text" name="PZ" value=' + str(pZ) + ' /></td></tr></table>\n'
 
     string += '<div style="text-align: left;padding:5px"><b>Settings for image size</b></div>\n'
     string += '<table style="background-color:AliceBlue">\n'
     string += '<tr>\n'
-    string += '<td>Width(&#8491;)=<input type="text" name="Width" value=' + str(width) + ' /> Granularity(&#8491;)=<input type="text" name="Gran" value=' + str(gran) + ' /></td>\n'
+    string += '<td>Width(&#8491;)=<input size="4" type="text" name="Width" value=' + str(width) + ' /> Granularity(&#8491;)=<input size="4" type="text" name="Gran" value=' + str(gran) + ' /></td>\n'
     string += '</tr>\n'
     string += '</table>\n'
 
@@ -183,18 +206,19 @@ def getBodyRun0(pdb):
     string += '<p>EBI Link <a class="change_link_color" href="https://www.ebi.ac.uk/pdbe/entry/pdb/' + pdb + '" title="EBI link" target="_blank">Open protein pdb ebi link</a></p>'
     return string
     
-def getBodyRun1(pdb, dataABC, asCsv,D1,D2,D3):
+def getBodyRun1(pdb, dataABC, asCsv,D1,D2,D3,D4):
     string = ""
     if len(dataABC) > 0:
-        dataA = dataABC[0]
-        dataB = dataABC[1]
-        dataC = dataABC[2]            
+        dataA = dataABC[0]# peaks file
+        dataB = dataABC[1]# peaks for atoms
+        dataC = dataABC[2]# peaks for chimera            
 
         ### DATA 1 Peaks projection visualised #################################
         csvhtml=""
         if D1 or D2 or D3:
             csvhtml, csvtext = dataFrameToText(dataA)
-            savePeaksFile(pdb,csvtext)
+            chimhtml, chimtext = dataFrameToText(dataC)
+            savePeaksFile(pdb,csvtext,chimtext)
             
         if D1:
             string += '<hr/>\n'
@@ -203,35 +227,50 @@ def getBodyRun1(pdb, dataABC, asCsv,D1,D2,D3):
 
         ### DATA 2 Peaks data as CSV #################################
         #-- https://www.w3schools.com/howto/tryit.asp?filename=tryhow_html_download_link --#
+        
         if D2:
+            pathname = 'https://student.cryst.bbk.ac.uk/~ab002/Peaks/peaks_' + pdb + '.ent'
             string += '<hr/>\n'
-            string += '<h4>2) Peaks data as CSV file</h4>'
-            pathname = 'https://student.cryst.bbk.ac.uk/~ab002/Peaks/peaks_' + pdb + '.csv'
-            string += '<a class="change_link_color" href="' + pathname + '" download='+'peaks_'+pdb + '.csv >Download peaks file</a><br/><br/>'
-            string += csvhtml
+            #string += '<h4>2a) Peaks data as CSV file</h4>'
+            #pathname = 'https://student.cryst.bbk.ac.uk/~ab002/Peaks/peaks_' + pdb + '.csv'            
+            #string += csvhtml
+            string += '<h4>2b) Peaks data in pseudo pdb file</h4>'            
+            string += '<a class="change_link_color" href="' + pathname + '" download='+'peaks_'+pdb + '.ent >Download peaks pseudo pdb file</a><br/><br/>'
+            string += chimhtml
             
         ### DATA 3 Peaks data as html grid #################################
         if D3:
+            pathname = 'https://student.cryst.bbk.ac.uk/~ab002/Peaks/peaks_' + pdb + '.csv'            
             string += '<hr/>\n'
             string += '<h4>3) Peaks data as html grid</h4>'
-            string += dataFrameToGrid(dataA)    
-    else:
-        string = '<font color="DC143C"><h1>Exe failed to create data</h1></font>'
-    return string
-    
-def getBodyRun2(pdb, dataABC, D4,D5,D6):
-    string = ""
-    if len(dataABC) > 0:
-        dataA = dataABC[0]
-        dataB = dataABC[1]
-        dataC = dataABC[2]
-                
+            string += '<a class="change_link_color" href="' + pathname + '" download='+'peaks_'+pdb + '.csv >Download peaks info as csv file</a><br/><br/>'
+            string += '<table><tr>'
+            string += '<td style="background-color:silver;">Density</td>'
+            string += '<td style="background-color:silver;">_ C _</td>'
+            string += '<td style="background-color:silver;">_ R _</td>'
+            string += '<td style="background-color:silver;">_ S _</td>'
+            string += '<td style="background-color:silver;">_ X _</td>'
+            string += '<td style="background-color:silver;">_ Y _</td>'
+            string += '<td style="background-color:silver;">_ Z _</td>'
+            string += '<td style="background-color:silver;">_______________ Nearest PDB Atom Line ______________</td>'
+            string += '<td style="background-color:silver;">Distance</td>'
+            string += '</tr></table>'
+            string += dataFrameToGrid(dataA)
+
         ### DATA 4 Peaks projection atoms only #################################
         if D4:
             string += '<hr/>\n'
             string += '<h4>4) Peaks visual projection, atoms only (unit cell)</h4>'
             string += dataFrameToImages(pdb,dataB,"X","Y","Z","Density","cubehelix_r")
-
+    else:
+        string = '<font color="DC143C"><h1>Exe failed to create data</h1></font>'
+    return string
+    
+def getBodyRun2(pdb, dataABC,D5,D6):
+    string = ""
+    if len(dataABC) > 0:        
+        dataC = dataABC[0]
+                        
         ### DATA 5 Density projection, all atoms #################################
         if D5:
             string += '<hr/>\n'
@@ -285,9 +324,9 @@ def getBodyRun3(pdb,dataABC,width,gran,D7):
         string += '<p>Width=' + str(width) + '&#8491; Granularity=' + str(gran) + '&#8491;'
         string += ' Sample data points =  ' + str(length+1) + 'x' + str(length+1) + '=' + str((length+1)*(length+1)) + '</p>'  
         if len(dataABC) > 0:
-            dataA = dataABC[3]
-            dataB = dataABC[4]
-            dataC = dataABC[5]
+            dataA = dataABC[0]
+            dataB = dataABC[1]
+            dataC = dataABC[2]
             
             
             string += '<table style="table-layout:fixed;width:95%;display:block;display:table"><tr>'
@@ -391,11 +430,17 @@ def dataFrameToText(df):
     html += "</TEXTAREA>"
     return html,text
 
-def savePeaksFile(pdb, text):
+def savePeaksFile(pdb, text,text2):
     filename = '/d/user6/ab002/WWW/Peaks/peaks_' + pdb + '.csv'            
     if not os.path.isfile(filename) or True:#for now save it always while the format is changing TODO
         f = open(filename, "w")
         f.write(text)
+        f.close()
+
+    filename = '/d/user6/ab002/WWW/Peaks/peaks_' + pdb + '.ent'            
+    if not os.path.isfile(filename) or True:
+        f = open(filename, "w")
+        f.write(text2)
         f.close()
     
     

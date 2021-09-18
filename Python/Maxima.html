@@ -39,47 +39,47 @@ This webpage interfaces with a C++ executable which calculates density maxima in
 
  <div>
 <form method="post" action="/cgi-bin/cgiwrap/ab002/PhD/Maxima.cgi" accept-charset="UTF-8">
-<b>~~ Application access credentials ~~</b>
-<br/><i>You must enter a valid email address to access this software. Passwords will be forthcoming.</i>
-<br/>Email address: <input type='text' name='email' value="" />
-  Password: <input type='text' name='password' value="not used" />
-<hr/>
-<h3>Electron Density Analysis</h3>
-
-Enter 4 digit pdb code: <input type='text' name='dataInput' value="1ejg" /><br/><br/>
-
-<table><tr><td style="background-color:Crimson;color:AliceBlue">~~ Choose results to display ~~</td><td style="background-color:Crimson;color:AliceBlue"">~~ 3-point coordinates for plane ~~</td></tr><tr>
+<b>~~ Application access credentials ~~</b><br/><i>You must enter a valid email address to access this software. Passwords will be forthcoming.</i><br/>Email address: <input type='text' name='email' value='' /> Password: <input type='text' name='password' value='not used' /><hr/><h3>Electron Density Analysis</h3>Enter 4 digit pdb code: <input type="text" name="dataInput" value=1ejg />
+<br/><br/>
+<table><tr><td style="background-color:Crimson;color:AliceBlue">~~ Choose results to display ~~</td><td style="background-color:Crimson;color:AliceBlue"">~~ Interpolation parameters ~~</td><td style="background-color:Crimson;color:AliceBlue"">~~ 3-point coordinates for plane ~~</td></tr><tr>
 <td>
 <table style="text-align: left;">
 <tr><td><label for="D1">1) Peaks visual projection to 3 planes</label></td><td><input type="checkbox" id="Data1" name="Data1" value="1" checked="checked"></td></tr>
-<tr><td><label for="D2">2) Peaks data as CSV file</label></td><td><input type="checkbox" id="Data2" name="Data2" value="1" checked=checked"></td></tr>
-<tr><td><label for="D3">3) Peaks data as html grid</label></td><td><input type="checkbox" id="Data3" name="Data3" value="1"></td></tr>
+<tr><td><label for="D2">2) Peaks data in pseudo-pdb file</label></td><td><input type="checkbox" id="Data2" name="Data2" value="1" checked="checked"></td></tr>
+<tr><td><label for="D3">3) Peaks info as html grid</label></td><td><input type="checkbox" id="Data3" name="Data3" value="1"></td></tr>
 <tr><td><label for="D4">4) Peaks visual projection, atoms only (unit cell)</label></td><td><input type="checkbox" id="Data4" name="Data4" value="1"></td></tr>
 <tr><td><label for="D5">5) Density visual projection, all atoms</label></td><td><input type="checkbox" id="Data5" name="Data5" value="1" checked="checked"></td></tr>
-<tr><td><label for="D6">6) Atoms visualised on AtomNo</label></td><td><input type="checkbox" id="Data6" name="Data6" value="1"></td></tr>
+<tr><td><label for="D6">6) Atoms visualised on AtomNo</label></td><td><input type="checkbox" id="Data6" name="Data6" value="1" checked="checked"></td></tr>
 <tr><td><label for="D7">7) Visualised electron density planes</label></td><td><input type="checkbox" id="Data7" name="Data7" value="1" checked="checked"></td></tr>
 </table>
-</td><td>
-<div style="text-align: left;"><b>Enter three points to get a density contour slice from the electron density.</b></div>
-<table style="background-color:AliceBlue"><tr><td>Central: X=<input type="text" name="CX" value=9.373 />
- Y=<input type="text" name="CY" value=7.688 />
- Z=<input type="text" name="CZ" value=15.546 /></td></tr>
-<tr><td>Linear: X=<input type="text" name="LX" value=9.5 />
- Y=<input type="text" name="LY" value=9.079 />
- Z=<input type="text" name="LZ" value=14.937 /></td></tr>
-<tr><td>Planar: X=<input type="text" name="PX" value=9.64 />
- Y=<input type="text" name="PY" value=7.542 />
- Z=<input type="text" name="PZ" value=16.748 /></td></tr></table>
+</td><td><div style="text-align: left;">
 
-<div style="text-align: left;"><b>Settings for image size</b></div>
+<p>Interpolation:<br/>
+<input type="radio" id="spline" name="interpMethod" value="spline" checked="checked"><label for="spline">B-Spline</label><br/>
+<input type="radio" id="nearest" name="interpMethod" value="nearest"><label for="nearest">Nearest Neighbour</label><br/><br/><br/><br/>
+</p>
+
+<!--<p>Interpolation frequency: <input size="4" type="text" name="interpNum" value=2 /></p><p>Iterations per grid point, <br/>enter between 0 and 5, <br/>0 or 1 means grid points only</p>-->
+</div></td>
+<td>
+<div style="text-align: left;"><b>Enter three points to get a density contour slice from the electron density.</b></div>
+<table style="background-color:AliceBlue;text-align:left;"><tr><td>Central: X=<input size="4" type="text" name="CX" value=9.373 />
+Y=<input size="4" type="text" name="CY" value=7.688 />
+Z=<input size="4" type="text" name="CZ" value=15.546 /></td></tr>
+<tr><td>Linear: X=<input size="4" type="text" name="LX" value=9.5 />
+Y=<input size="4" type="text" name="LY" value=9.079 />
+Z=<input size="4" type="text" name="LZ" value=14.937 /></td></tr>
+<tr><td>Planar: X=<input size="4" type="text" name="PX" value=9.64 />
+Y=<input size="4" type="text" name="PY" value=7.542 />
+Z=<input size="4" type="text" name="PZ" value=16.748 /></td></tr></table>
+<div style="text-align: left;padding:5px"><b>Settings for image size</b></div>
 <table style="background-color:AliceBlue">
 <tr>
-<td>Width(Å)=<input type="text" name="Width" value=5 /> Granularity(Å)=<input type="text" name="Gran" value=0.1 /></td>
+<td>Width(&#8491;)=<input size="4" type="text" name="Width" value=5 /> Granularity(&#8491;)=<input size="4" type="text" name="Gran" value=0.1 /></td>
 </tr>
 </table>
 </td></tr></table>
-
-<br/><input type='Submit' value='Analyse Electron Density' />
+<br/><input type="Submit" value="Analyse Electron Density"/>
 </form>
 </div>
 

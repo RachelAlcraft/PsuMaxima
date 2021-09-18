@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
     }            
     /******   INPUTS  ***************/
     cout << "Started..." << "\n";
-    string pdb = "1us0";
+    string pdb = "6eex";
     string COMMAND= "PEAKS";
     string INTERP = "THEVENAZ";
     int INTERPNUM = 2;
@@ -88,7 +88,8 @@ int main(int argc, char* argv[])
     Ccp4 myCcp4(pdb, ccp4directory);
     PdbFile myPdb(pdb, pdbdirectory);
     Interpolator* interp;
-    if (INTERP == "NEAREST")
+    //INTERPNUM is the encoded interpolator, so 0 == nearest
+    if (INTERPNUM == 0 && COMMAND != "PEAKS")//TODO don;t know why we need thvenaz for peaks...
         interp = new Nearest(myCcp4.Matrix, myCcp4.W01_NX, myCcp4.W02_NY, myCcp4.W03_NZ);
     else
         interp = new Thevenaz(myCcp4.Matrix, myCcp4.W01_NX, myCcp4.W02_NY, myCcp4.W03_NZ);

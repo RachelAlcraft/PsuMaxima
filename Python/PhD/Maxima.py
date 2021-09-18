@@ -64,13 +64,13 @@ def doWeHaveAllFiles(pdbCode):
       
   return havePDB,haveED
 
-def runCppModule(pdb, cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,D4,D5,D6,D7):        
+def runCppModule(pdb,interpNum,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,D4,D5,D6,D7):        
     #try:
-    df1,df2,df3,df4,df5,df6 = pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame()
+    df1a,df1b,df1c,df3,df4,df5,df6 = pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame()
     if True:
       ### CALL PEAKS ######################################
       if D1 or D2 or D3 or D4:
-        commandlinePeaks = "PEAKS|" + pdb + "|"
+        commandlinePeaks = "PEAKS|" + pdb + "|" + str(interpNum) + "|"
         #------------------------------------------------
         pigP =  sub.Popen(["/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima", commandlinePeaks], stdout=sub.PIPE)
         resultP = pigP.communicate(input=b"This is sample text.\n")
@@ -78,15 +78,16 @@ def runCppModule(pdb, cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,D4,D5,D6,D7
         pigP.kill()
         #------------------------------------------------
         dfInputs = getCsvFromCppResults(exe_resultP, 'USERINPUTS')      
-        df1 = getCsvFromCppResults(exe_resultP, 'ALLPEAKS')
-        if len(df1) == 0:
-          print("results from exe=",result)
+        df1a = getCsvFromCppResults(exe_resultP, 'ALLPEAKS')
+        if len(df1a) == 0:
+          print("results from exe=",resultP)
           return []      
-        df2 = getCsvFromCppResults(exe_resultP, 'ATOMPEAKS')
+        df1b = getCsvFromCppResults(exe_resultP, 'ATOMPEAKS')
+        df1c = getCsvFromCppResults(exe_resultP, 'CHIMERAPEAKS')
       
       ### CALL ATOMS ######################################
       if D5 or D6:
-        commandlineAtoms = "ATOMS|" + pdb + "|"
+        commandlineAtoms = "ATOMS|" + pdb + "|" + str(interpNum) + "|"
         #------------------------------------------------
         pigA = sub.Popen(["/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima", commandlineAtoms], stdout=sub.PIPE)            
         resultA = pigA.communicate(input=b"This is sample text.\n")
@@ -97,7 +98,7 @@ def runCppModule(pdb, cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,D4,D5,D6,D7
 
       ### CALL SLICES #######################################
       if D7:
-        commandlineSlices = "SLICES|" + pdb + "|"
+        commandlineSlices = "SLICES|" + pdb + "|" + str(interpNum) + "|"
         #Baffling, 6jvv only fails if I add more into the command line
         commandlineSlices += str(cX) + "-" + str(cY) + "-" + str(cZ) + "|"
         commandlineSlices += str(lX) + "-" + str(lY) + "-" + str(lZ) + "|"
@@ -115,7 +116,7 @@ def runCppModule(pdb, cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,D4,D5,D6,D7
         df5 = getCsvFromCppResults(exe_resultS, 'RADIANTSLICE')
         df6 = getCsvFromCppResults(exe_resultS, 'LAPLACIANSLICE')      
 
-      return [df1,df2,df3,df4,df5,df6]
+      return [[df1a,df1b,df1c],[df3],[df4,df5,df6]]
     #except:
       #print("results from exe=",result)
       #return []
