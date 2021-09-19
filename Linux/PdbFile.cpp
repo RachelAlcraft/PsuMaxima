@@ -30,7 +30,7 @@ PdbFile::PdbFile(string pdbCode, string directory)
 			int posHOH = line.find("HOH");
 
 			if (posHET == 0 || posATM == 0 || posHOH == 0)
-				Atoms.push_back(Atom(line));
+				Atoms.push_back(Atom(line,true));
             //else
             //    cout << line << "\n";
 		}

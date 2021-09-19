@@ -14,6 +14,7 @@ public:
     VectorThree();
     VectorThree(bool isValid);
     VectorThree(double a, double b, double c);
+    double distance(VectorThree ABC);
     double getMagnitude();
     double getDotProduct(VectorThree vec);
     VectorThree operator + (VectorThree const& obj);

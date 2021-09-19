@@ -52,6 +52,12 @@ void VectorThree::putByIndex(int idx, double val)
         C = val;
 }
 
+double VectorThree::distance(VectorThree ABC)
+{
+    double dis = (A - ABC.A)* (A - ABC.A) + (B - ABC.B) * (B - ABC.B) + (C - ABC.C) * (C - ABC.C);
+    return sqrt(dis);
+}
+
 double VectorThree::getMagnitude()
 {    
 	double mag = (A*A)+(B*B)+(C*C);

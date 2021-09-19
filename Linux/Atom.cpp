@@ -1,14 +1,39 @@
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <stdlib.h> 
 
+#include "helper.h"
+#include "PeriodicTable.h"
 #include "Atom.h"
 
 using namespace std;
 
-Atom::Atom(string line)
+Atom::Atom(string line, bool fromPdb)
 {
 	_line = line;
+	if (fromPdb)	
+		makePdbAtom(line);			
+	else	
+		makeSyntheticAtom(line);	
+}
 
+void Atom::makeSyntheticAtom(string line)
+{
+	//Type, X, Y, Z, ResNo, BFactor, Occupancy, EndX, EndY, EndZ, ArcHeight
+	vector<string> inps = helper::stringToVector(line, ",");
+	if (inps.size() >= 7)
+	{
+		AtomType = inps[0];
+		_x = atof(inps[1].c_str());
+		_y = atof(inps[2].c_str());
+		_z = atof(inps[3].c_str());
+		ResNo = atol(inps[4].c_str());
+		BFactor = atof(inps[5].c_str());
+		Occupancy = atof(inps[6].c_str());
+	}	
+}
+void Atom::makePdbAtom(string line)
+{
 	// 7 - 11        Integer       serial       Atom  serial number.
 	AtomNo = atol(trim(line.substr(6, 5)).c_str());
 	//13 - 16        Atom          name         Atom name.
@@ -31,10 +56,10 @@ Atom::Atom(string line)
 	string z_c = trim(line.substr(46, 8));
 	_x = atof(x_c.c_str());
 	_y = atof(y_c.c_str());
-	_z = atof(z_c.c_str());	
+	_z = atof(z_c.c_str());
 	//55 - 60        Real(8.3)     occupancy   Double
 	string occ = trim(line.substr(54, 6));
-	double occupancy = atof(occ.c_str());	
+	double occupancy = atof(occ.c_str());
 	//61 - 66        Real(8.3)     b factor   Double
 	string bfac = trim(line.substr(60, 6));
 	double bfactor = atof(bfac.c_str());
@@ -42,7 +67,6 @@ Atom::Atom(string line)
 	Element = "";
 	if (line.length() > 76)
 		Element = trim(line.substr(76, 2));
-
 }
 
 double Atom::distance(double x, double y, double z)
@@ -76,4 +100,72 @@ string Atom::trim(string string_to_trim)
 	else
 		string_trimmed = string_trimmed.substr(startpos, endpos - startpos + 1);
 	return string_trimmed;
+}
+
+double Atom::getIAMDensity(VectorThree XYZ)
+{
+	double DISTANCE_CAP = 5;
+    /*
+        https://www.phenix-online.org/presentations/latest/pavel_maps_2.pdf
+        https://github.com/project-gemmi/gemmi/blob/master/include/gemmi/dencalc.hpp
+        https://chem.libretexts.org/Bookshelves/Inorganic_Chemistry/Modules_and_Websites_(Inorganic_Chemistry)/Crystallography/X-rays/CromerMann_coefficients
+
+        rho(r) = sum(i = 1…4)
+        a(i) * [4 * pi / (bi + B)] ^ 1.5
+        * exp[-4 * pi ^ 2 * r ^ 2 / (bi + B)]
+
+        + c * [4 * pi / B] ^ 1.5
+        * exp[-4 * pi ^ 2 * r ^ 2 / B]
+
+    */
+	double distance = XYZ.distance(VectorThree(_x, _y, _z));
+    
+    //let's decide that at a certain distance there is no need to do all thi calculation
+    if (distance < DISTANCE_CAP || DISTANCE_CAP == 0)
+    {
+        double density = 0;
+        vector<double> cromerMann = PeriodicTable::getCromerMannCoefficients(AtomType);
+
+        density += getDensityComponent(distance, cromerMann[0], (cromerMann[4] + BFactor));
+        density += getDensityComponent(distance, cromerMann[1], (cromerMann[5] + BFactor));
+        density += getDensityComponent(distance, cromerMann[2], (cromerMann[6] + BFactor));
+        density += getDensityComponent(distance, cromerMann[3], (cromerMann[7] + BFactor));
+        double c = cromerMann[8];
+        c = getDensityComponent(distance, c, BFactor);
+        if (!isnan(c))
+            density += c;
+
+        return Occupancy * density;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+double Atom::getDensityComponent(double d, double x, double y)
+{
+    /*
+    rho(r) = sum(i = 1…4)
+    a(i) * [4 * pi / (bi + B)] ^ 1.5
+    * exp[-4 * pi ^ 2 * r ^ 2 / (bi + B)]
+
+    + c * [4 * pi / B] ^ 1.5
+    * exp[-4 * pi ^ 2 * r ^ 2 / B]
+
+    Passed in:
+    x * [4 * pi / y]^1.5 + exp[-4 * pi^2*r^2 / y]
+    */
+    if (y == 0)
+        return 0;
+
+    double bottom = 4 * M_PI / y;
+    double raised = pow(bottom, 3);
+    raised = sqrt(raised);
+
+    double index = 4 * pow(M_PI, 2) * pow(d, 2) / y;
+    double exponent = exp(index);
+    exponent = 1 / exponent;
+
+    return x * raised * exponent;
 }

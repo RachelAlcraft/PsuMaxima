@@ -500,4 +500,32 @@ vector<double> Thevenaz::applyValue9(double val, vector<int> idc, int weight_len
     return ws;
 }
 
+//**************SYNTHETIC DENSITY INTERPOLATOR********************************
+
+Algorithmic::Algorithmic():Interpolator(vector<float>(), 0, 0, 0)
+{
+
+}
+
+double Algorithmic::getValue(double x, double y, double z)
+{
+    double value = 0;
+    for (unsigned int i = 0; i < _atoms.size(); ++i)
+    {
+        Atom atom = _atoms[i];
+        value += atom.getIAMDensity(VectorThree(x, y, z));
+    }
+    return value;
+}
+void Algorithmic::addAtoms(vector<Atom> atoms)
+{
+    _atoms = atoms;
+
+}
+void Algorithmic::createBondElectrons()
+{
+    //TODO eventually we will cretae bond electrons here, perhaps given some paramaters
+}
+
+
     

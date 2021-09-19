@@ -243,3 +243,83 @@ void CoutReports::coutSlices(Ccp4* ccp4, PdbFile* pdb,Interpolator* interp, Vect
     }
     cout << "END_LAPLACIANSLICE\n";
 }
+
+void CoutReports::coutSynthetic(string atoms, string model, Algorithmic* interp, VectorThree central, VectorThree linear, VectorThree planar, double width, double gap)
+{
+    //The atoms are a list of lines    
+    vector<string> lines = helper::stringToVector(atoms, "\n");
+    //we want to turn each line ibnto a synthetic atom
+    vector<Atom> atomsList;
+    for (unsigned int i = 0; i < lines.size(); ++i)
+    {
+        string line = lines[i];
+        if (line.size() > 5)
+        {
+            atomsList.push_back(Atom(line, false));
+        }
+    }
+
+    interp->addAtoms(atomsList);
+    if (model == "BEM")
+        interp->createBondElectrons();//will add bond electron pairs here when do that model TODO
+    
+    //CRETAE SYNTHETIC DENSITY SLICES
+    SpaceTransformation space(central, linear, planar);        
+    VectorThree ccc = space.applyTransformation(central);
+    VectorThree ccr = space.reverseTransformation(central);
+    VectorThree lll = space.applyTransformation(linear);
+    VectorThree llr = space.reverseTransformation(linear);
+    VectorThree ppp = space.applyTransformation(planar);
+    VectorThree ppr = space.reverseTransformation(planar);
+    //////////////
+    cout << "BEGIN_DENSITYSLICE\n";
+    int length = (int)(width / gap);
+    int halfLength = length / 2;
+    cout << "i,j,Density\n";
+    for (int i = -1 * halfLength; i <= halfLength; ++i)
+    {
+        for (int j = -1 * halfLength; j <= halfLength; ++j)
+        {
+            double x0 = (i * gap);
+            double y0 = (j * gap);
+            double z0 = 0;
+            VectorThree transformed = space.applyTransformation(VectorThree(x0, y0, z0));            
+            double density = interp->getValue(transformed.A, transformed.B, transformed.C);
+            cout << i + halfLength << "," << j + halfLength << "," << density << "\n";
+        }
+    }
+    cout << "END_DENSITYSLICE\n";
+
+    cout << "BEGIN_RADIANTSLICE\n";
+    cout << "i,j,Radiant\n";
+    for (int i = -1 * halfLength; i <= halfLength; ++i)
+    {
+        for (int j = -1 * halfLength; j <= halfLength; ++j)
+        {
+            double x0 = (i * gap);
+            double y0 = (j * gap);
+            double z0 = 0;
+            VectorThree transformed = space.applyTransformation(VectorThree(x0, y0, z0));            
+            double radiant = interp->getRadiant(transformed.A, transformed.B, transformed.C);
+            cout << i + halfLength << "," << j + halfLength << "," << radiant << "\n";
+        }
+    }
+    cout << "END_RADIANTSLICE\n";
+
+    cout << "BEGIN_LAPLACIANSLICE\n";
+    cout << "i,j,Laplacian\n";
+    for (int i = -1 * halfLength; i <= halfLength; ++i)
+    {
+        for (int j = -1 * halfLength; j <= halfLength; ++j)
+        {
+            double x0 = (i * gap);
+            double y0 = (j * gap);
+            double z0 = 0;
+            VectorThree transformed = space.applyTransformation(VectorThree(x0, y0, z0));            
+            double laplacian = interp->getLaplacian(transformed.A, transformed.B, transformed.C);
+            cout << i + halfLength << "," << j + halfLength << "," << laplacian << "\n";
+        }
+    }
+    cout << "END_LAPLACIANSLICE\n";
+
+}

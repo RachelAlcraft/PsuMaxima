@@ -20,4 +20,5 @@ public:
     static void coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int interpNum);
     static void coutAtoms(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp);
     static void coutSlices(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, VectorThree central, VectorThree linear, VectorThree planar,double width,double gap);
+    static void coutSynthetic(string atoms, string model, Algorithmic* interp, VectorThree central, VectorThree linear, VectorThree planar, double width, double gap);
 };

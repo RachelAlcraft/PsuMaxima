@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "Atom.h"
+
 using namespace std;
 class Interpolator
 {
@@ -62,5 +64,19 @@ protected:
 	vector<double> applyValue7(double val, vector<int> idc, int weight_length);
 	vector<double> applyValue9(double val, vector<int> idc, int weight_length);
 	
+
+};
+
+class Algorithmic :public Interpolator
+{
+public:
+	Algorithmic();
+	double getValue(double x, double y, double z);
+	//specific to this interpolator class
+	void addAtoms(vector<Atom> atoms);
+	void createBondElectrons();
+
+private:
+	vector<Atom> _atoms;
 
 };
