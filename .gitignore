@@ -48,3 +48,7 @@ Cpp/PsuMaxima/out/build/x64-Release/
 *.iobj
 *.ipdb
 *.tlog
+Linux/out/build/x64-Debug/.ninja_log
+Linux/out/build/x64-Debug/.ninja_deps
+Linux/.vs/slnx.sqlite
+Linux/.vs/Linux/v16/.suo
