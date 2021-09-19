@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
     {
         vector<string> inputs = helper::stringToVector(INPUT, "|");
         cout << "BEGIN_USERINPUTS\n";
-        cout << argv[1] << "\n";
+        cout << INPUT << "\n";
         cout << "User Input" << "\n";
         for (unsigned int i = 0; i < inputs.size(); ++i)
             cout << (string)inputs[i] << "\n";
