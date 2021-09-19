@@ -249,6 +249,7 @@ void CoutReports::coutSynthetic(string atoms, string model, Algorithmic* interp,
     //The atoms are a list of lines    
     vector<string> lines = helper::stringToVector(atoms, "@");
     //we want to turn each line ibnto a synthetic atom
+    
     vector<Atom> atomsList;
     for (unsigned int i = 0; i < lines.size(); ++i)
     {
@@ -258,11 +259,16 @@ void CoutReports::coutSynthetic(string atoms, string model, Algorithmic* interp,
             atomsList.push_back(Atom(line, false));
         }
     }
-
+    
     interp->addAtoms(atomsList);
     if (model == "BEM")
         interp->createBondElectrons();//will add bond electron pairs here when do that model TODO
     
+    cout << "BEGIN_ATOMDATA\n";   
+    cout << "AtomStrings\n";
+    for (unsigned int i = 0; i < atomsList.size(); ++i)
+        cout << atomsList[i].info() << "\n";        
+    cout << "END_ATOMDATA\n";    
     //CRETAE SYNTHETIC DENSITY SLICES
     SpaceTransformation space(central, linear, planar);        
     VectorThree ccc = space.applyTransformation(central);

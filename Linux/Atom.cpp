@@ -1,6 +1,7 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <stdlib.h> 
+#include <sstream>
 
 #include "helper.h"
 #include "PeriodicTable.h"
@@ -110,7 +111,7 @@ double Atom::getIAMDensity(VectorThree XYZ)
         https://github.com/project-gemmi/gemmi/blob/master/include/gemmi/dencalc.hpp
         https://chem.libretexts.org/Bookshelves/Inorganic_Chemistry/Modules_and_Websites_(Inorganic_Chemistry)/Crystallography/X-rays/CromerMann_coefficients
 
-        rho(r) = sum(i = 1…4)
+        rho(r) = sum(i = 1ï¿½4)
         a(i) * [4 * pi / (bi + B)] ^ 1.5
         * exp[-4 * pi ^ 2 * r ^ 2 / (bi + B)]
 
@@ -132,7 +133,7 @@ double Atom::getIAMDensity(VectorThree XYZ)
         density += getDensityComponent(distance, cromerMann[3], (cromerMann[7] + BFactor));
         double c = cromerMann[8];
         c = getDensityComponent(distance, c, BFactor);
-        if (!isnan(c))
+        if (!isnan((double)c))
             density += c;
 
         return Occupancy * density;
@@ -146,7 +147,7 @@ double Atom::getIAMDensity(VectorThree XYZ)
 double Atom::getDensityComponent(double d, double x, double y)
 {
     /*
-    rho(r) = sum(i = 1…4)
+    rho(r) = sum(i = 1ï¿½4)
     a(i) * [4 * pi / (bi + B)] ^ 1.5
     * exp[-4 * pi ^ 2 * r ^ 2 / (bi + B)]
 
@@ -168,4 +169,12 @@ double Atom::getDensityComponent(double d, double x, double y)
     exponent = 1 / exponent;
 
     return x * raised * exponent;
+}
+
+string Atom::info()
+{
+	stringstream ss;
+	ss << AtomType << ":ResNo=" << ResNo << ":BF=" << BFactor << ":Occ=" << Occupancy << "\n";
+	return ss.str();
+
 }

@@ -31,6 +31,7 @@ public:
 	string getLine();
     VectorThree getXYZ();
 	double getIAMDensity(VectorThree XYZ);
+	string info();
 
     //Lazy public access functions    
     int AtomNo;	

@@ -157,7 +157,7 @@ if access:
       ts = getTimeDiff(start,end)
       print('completed in')
       print(ts)
-      print(' <p>')
+      print(' </p>')
       sys.stdout.flush() # update the user interface
       
       
@@ -172,7 +172,7 @@ if access:
       ts = getTimeDiff(start,end)
       print('completed in')
       print(ts)
-      print(' <p>')
+      print(' </p>')
       sys.stdout.flush() # update the user interface
       html = ""
 
@@ -187,7 +187,7 @@ if access:
       ts = getTimeDiff(start,end)
       print('completed in')
       print(ts)
-      print(' <p>')
+      print(' </p>')
       sys.stdout.flush() # update the user interface
         
       

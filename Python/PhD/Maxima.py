@@ -15,6 +15,7 @@ There is code commented out that can be used in testing outside of the cgi serve
 import subprocess as sub
 import pandas as pd
 from io import StringIO as sio
+import sys
 
 def getFile(filename, url):
   import urllib.request
@@ -71,6 +72,8 @@ def runCppModule(pdb,interpNum,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,D4
       ### CALL PEAKS ######################################
       if D1 or D2 or D3 or D4:
         commandlinePeaks = "PEAKS|" + pdb + "|" + str(interpNum) + "|"
+        print('...called Leucippus with params:' + commandlinePeaks + ' ...')              
+        #sys.stdout.flush() # update the user interface
         #------------------------------------------------
         pigP =  sub.Popen(["/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima", commandlinePeaks], stdout=sub.PIPE)
         resultP = pigP.communicate(input=b"This is sample text.\n")
@@ -88,6 +91,8 @@ def runCppModule(pdb,interpNum,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,D4
       ### CALL ATOMS ######################################
       if D5 or D6:
         commandlineAtoms = "ATOMS|" + pdb + "|" + str(interpNum) + "|"
+        print('...called Leucippus with params:' + commandlineAtoms + ' ...')
+        #sys.stdout.flush() # update the user interface
         #------------------------------------------------
         pigA = sub.Popen(["/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima", commandlineAtoms], stdout=sub.PIPE)            
         resultA = pigA.communicate(input=b"This is sample text.\n")
@@ -104,6 +109,8 @@ def runCppModule(pdb,interpNum,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,D4
         commandlineSlices += str(lX) + "-" + str(lY) + "-" + str(lZ) + "|"
         commandlineSlices += str(pX) + "-" + str(pY) + "-" + str(pZ) + "|"
         commandlineSlices += str(width) + "-" + str(gran)
+        print('...called Leucippus with params:' + commandlineSlices + ' ...')
+        #sys.stdout.flush() # update the user interface
         #------------------------------------------------
         pigS = sub.Popen(["/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima", commandlineSlices], stdout=sub.PIPE)            
         resultS = pigS.communicate(input=b"This is sample text.\n")
@@ -126,23 +133,30 @@ def runCppModuleSyntheticDensity(atoms,model,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gr
     #try:
     df1a,df1b,df1c,df1d = pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame()
     if True:
-      ### CALL Synthetic Density ######################################    
-        
+      ### CALL Synthetic Density ######################################              
       commandlineSnth = "SYNTHETIC|" + atoms + "|" + model + "|"        
-      commandlineSlices += str(cX) + "-" + str(cY) + "-" + str(cZ) + "|"
-      commandlineSlices += str(lX) + "-" + str(lY) + "-" + str(lZ) + "|"
-      commandlineSlices += str(pX) + "-" + str(pY) + "-" + str(pZ) + "|"
-      commandlineSlices += str(width) + "-" + str(gran)
+      commandlineSnth += str(cX) + "-" + str(cY) + "-" + str(cZ) + "|"
+      commandlineSnth += str(lX) + "-" + str(lY) + "-" + str(lZ) + "|"
+      commandlineSnth += str(pX) + "-" + str(pY) + "-" + str(pZ) + "|"
+      commandlineSnth += str(width) + "-" + str(gran)          
+      print('...called Leucippus with params:' + commandlineSnth + ' ...')
+      #sys.stdout.flush() # update the user interface
+      
       #------------------------------------------------
-      pigS = sub.Popen(["/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima", commandlineSlices], stdout=sub.PIPE)            
+      pigS = sub.Popen(["/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima", commandlineSnth], stdout=sub.PIPE)            
       resultS = pigS.communicate(input=b"This is sample text.\n")
       exe_resultS = str(resultS[0],'utf-8')
       pigS.kill()      
       #------------------------------------------------            
+      #dfI = getCsvFromCppResults(exe_resultS, 'USERINPUTS')
+      #print(dfI)
+      dfI = getCsvFromCppResults(exe_resultS, 'ATOMDATA')
+      print(dfI)
+
       df1a = getCsvFromCppResults(exe_resultS, 'DENSITYSLICE')
       df1b = getCsvFromCppResults(exe_resultS, 'RADIANTSLICE')
       df1c = getCsvFromCppResults(exe_resultS, 'LAPLACIANSLICE')
-      df1d = getCsvFromCppResults(exe_resultS, 'SYNTHMATRIX')      
+      #df1d = getCsvFromCppResults(exe_resultS, 'SYNTHMATRIX')      
 
       return [df1a,df1b,df1c,df1d]
     #except:

@@ -121,9 +121,9 @@ def getBodyMenuSynth(username, password,atoms,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,g
     string += '<h3>Synthetic Density Analysis</h3>\n'
     string += '<p>\n'
     string += 'Each row is an atom with type, coordinates, residue number (for bond electrons), bfactor, occupancy, arc parameters (end positions and number of positions).</br>\n'
-    string += 'Example atoms have been entered for you which you can edit, the end positions are blank as no motion is being modelled. The format is a csv file, with the header above the text area</br></br>\n'
-    string += '<b>Type,X,Y,Z,ResNo,BFactor,Occupancy,EndX,EndY,EndZ,ArcHeight</b></br> \n'
-    string += '<textarea id="atoms" name="atoms" rows="5" cols="120">\n'
+    string += 'Example atoms have been entered for you which you can edit, the end positions are blank as no motion is being modelled. The format is a csv file, with the header above the text area (start the line with @).</br></br>\n'
+    string += '<b>@Type,X,Y,Z,ResNo,BFactor,Occupancy,EndX,EndY,EndZ,ArcHeight</b></br> \n'
+    string += '<textarea style="white-space:pre-wrap;" id="atoms" name="atoms" rows="5" cols="120">\n'
     string += atoms    
     string += '</textarea>\n'
     string += '<p>\n'
@@ -396,18 +396,21 @@ def getBodyRun3(pdb,dataABC,width,gran,D7):
             string += '<table style="table-layout:fixed;width:95%;display:block;display:table"><tr>'
             string += '<td style="width:33%;">Density</td><td style="width:33%;">Radiant</td><td style="width:33%;">Laplacian</td></tr><tr>'
 
-            mtxD = scatterToMatrix(dataA,length,'Density',0.3)
+            dContour = 0.3
+            lContour = 0.2
+            if pdb == "Synthetic":
+                dContour = 0.8
+                lContour = 0.4
+
+
+            mtxD = scatterToMatrix(dataA,length,'Density',dContour)
             mtxR = scatterToMatrix(dataB,length,'Radiant',1)
-            mtxL = scatterToMatrix(dataC,length,'Laplacian',0.3)        
+            mtxL = scatterToMatrix(dataC,length,'Laplacian',lContour)                        
             string += matrixToImage(pdb,mtxD,'magma_r',False)
             string += matrixToImage(pdb,mtxR,'bone',False)
             string += matrixToImage(pdb,mtxL,'magma',False)
 
-            #string += scatterToImage(pdb,dataA,"Density","i","j","inferno")
-            #string += scatterToImage(pdb,dataB,"Radiant","i","j","inferno")
-            #string += scatterToImage(pdb,dataC,"Laplacian","i","j","inferno")
-            
-            
+                                    
             string += '</tr></table>'
 
         else:

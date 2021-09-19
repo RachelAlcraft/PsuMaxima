@@ -93,17 +93,16 @@ cgistring = ""
 
 userstring += pwb.getBodyMenuSynth(username,password,atoms,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,model)
 if access:  
-  print('<p>' + str(1) + '/' + str(1) + ' Calculating synthetic density...(approx ' + str(120) + ' seconds)...</p>')
-  print('<p>Although it is not working yet</p>')      
+  print('<p>' + str(1) + '/' + str(1) + ' Calculating synthetic density...(approx ' + str(120) + ' seconds)...')  
   sys.stdout.flush() # update the user interface      
   start = time.time()
-  #data = Maxima.runCppModule(pdb,interpNum,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,False,False,False,False)
-  #userstring += pwb.getBodyRun1(pdb,data[0],asCSV,D1,D2,D3,D4)
+  data = Maxima.runCppModuleSyntheticDensity(atoms,model,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran)  
+  userstring += pwb.getBodyRun3("Synthetic",data,width,gran,True)
   end = time.time()
   ts = getTimeDiff(start,end)
   print('completed in')
   print(ts)
-  print(' <p>')
+  print(' </p>')
   sys.stdout.flush() # update the user interface
           
   #we now create the users own html page
