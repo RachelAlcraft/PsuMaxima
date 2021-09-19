@@ -9,7 +9,7 @@
 int main(int argc, char* argv[])
 {
     /******   OP SPECIFIC SETTINGS  ***************/
-    bool isLinux = false;
+    bool isLinux = true;
     // **** LINUX PANDORA **** //
     string ccp4directory = "/d/projects/u/ab002/Thesis/PhD/Data/Ccp4/";
     string pdbdirectory = "/d/projects/u/ab002/Thesis/PhD/Data/Pdb/";
@@ -22,30 +22,35 @@ int main(int argc, char* argv[])
     }
     /******   INPUTS  ***************/
     cout << "Started..." << "\n";
-    string pdb = "6eex";
-    string COMMAND = "SYNTHETIC";
-    string INTERP = "THEVENAZ";
-    int INTERPNUM = 2;
-    double cX = 5;
-    double cY = 5;
-    double cZ = 5;
-    double lX = 6;
-    double lY = 6;
-    double lZ = 6;
-    double pX = 2;
-    double pY = 2;
-    double pZ = 13;
-    double width = 5.0;
-    double gap = 0.1;
-    
+    string pdb = "";
+    string COMMAND = "";    
+    int INTERPNUM = 0;
+    double cX = 0;
+    double cY = 0;
+    double cZ = 0;
+    double lX = 0;
+    double lY = 0;
+    double lZ = 0;
+    double pX = 0;
+    double pY = 0;
+    double pZ = 0;
+    double width = 0;
+    double gap = 0;    
     //synthetic data params
-    string atoms = "N, 5, 5, 5, 1, 2.4, 1.00, , , , ,\n";
-    atoms += "CA, 0.10, 1.10, 0.20, 2, 2.6, 1.00, , , , ,";
-    string model = "IAM";
+    string atoms = "";    
+    string model = "";
 
+    // Inputs euither through code or command line called from python
+    string INPUT = "";
+    INPUT = "PEAKS|1ejg|5|";
+    INPUT = "ATOMS|1ejg|5|";
+    INPUT = "SLICES|1ejg|5|9.373-7.688-15.546|9.5-9.079-14.937|9.64-7.542-16.748|5-0.1";
+    //INPUT = "SYNTHETIC|@N,0.10,0.10,0.20,1,2.4,1.00,,,,, @CA,0.10,1.10,0.20,2,2.6,1.00,,,,, |iam|9.373-7.688-15.546|9.5-9.079-14.937|9.64-7.542-16.748|5-0.1";
     if (argc >= 2)
+        INPUT = argv[1];
+    if (true)
     {
-        vector<string> inputs = helper::stringToVector(argv[1], "|");
+        vector<string> inputs = helper::stringToVector(INPUT, "|");
         cout << "BEGIN_USERINPUTS\n";
         cout << argv[1] << "\n";
         cout << "User Input" << "\n";
@@ -56,7 +61,6 @@ int main(int argc, char* argv[])
         pdb = (string)inputs[1];
         INTERPNUM = atol(inputs[2].c_str());
         cout << "pdb=" << pdb << "\n";
-
 
         if (COMMAND == "SLICES" || COMMAND == "SYNTHETIC")
         {
@@ -85,10 +89,11 @@ int main(int argc, char* argv[])
             cout << "(" << pX << "-" << pY << "-" << pZ << ")\n";
             cout << "(" << width << "-" << gap << ")\n";
         }
-        if (COMMAND == "SYMNTHETIC")
+        if (COMMAND == "SYNTHETIC")
         {
             atoms = (string)inputs[1];
             model = (string)inputs[2];
+            cout << "atoms=" << atoms << "\n";
         }
 
         cout << "END_USERINPUTS\n";

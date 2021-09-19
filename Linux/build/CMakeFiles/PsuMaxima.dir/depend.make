@@ -3,7 +3,9 @@
 
 CMakeFiles/PsuMaxima.dir/Atom.cpp.o: ../Atom.cpp
 CMakeFiles/PsuMaxima.dir/Atom.cpp.o: ../Atom.h
+CMakeFiles/PsuMaxima.dir/Atom.cpp.o: ../PeriodicTable.h
 CMakeFiles/PsuMaxima.dir/Atom.cpp.o: ../VectorThree.h
+CMakeFiles/PsuMaxima.dir/Atom.cpp.o: ../helper.h
 
 CMakeFiles/PsuMaxima.dir/Ccp4.cpp.o: ../Atom.h
 CMakeFiles/PsuMaxima.dir/Ccp4.cpp.o: ../Ccp4.cpp
@@ -24,8 +26,10 @@ CMakeFiles/PsuMaxima.dir/CoutReports.cpp.o: ../SpaceTransformation.h
 CMakeFiles/PsuMaxima.dir/CoutReports.cpp.o: ../VectorThree.h
 CMakeFiles/PsuMaxima.dir/CoutReports.cpp.o: ../helper.h
 
+CMakeFiles/PsuMaxima.dir/Interpolator.cpp.o: ../Atom.h
 CMakeFiles/PsuMaxima.dir/Interpolator.cpp.o: ../Interpolator.cpp
 CMakeFiles/PsuMaxima.dir/Interpolator.cpp.o: ../Interpolator.h
+CMakeFiles/PsuMaxima.dir/Interpolator.cpp.o: ../VectorThree.h
 
 CMakeFiles/PsuMaxima.dir/MatrixThreeThree.cpp.o: ../MatrixThreeThree.cpp
 CMakeFiles/PsuMaxima.dir/MatrixThreeThree.cpp.o: ../MatrixThreeThree.h
@@ -35,6 +39,9 @@ CMakeFiles/PsuMaxima.dir/PdbFile.cpp.o: ../Atom.h
 CMakeFiles/PsuMaxima.dir/PdbFile.cpp.o: ../PdbFile.cpp
 CMakeFiles/PsuMaxima.dir/PdbFile.cpp.o: ../PdbFile.h
 CMakeFiles/PsuMaxima.dir/PdbFile.cpp.o: ../VectorThree.h
+
+CMakeFiles/PsuMaxima.dir/PeriodicTable.cpp.o: ../PeriodicTable.cpp
+CMakeFiles/PsuMaxima.dir/PeriodicTable.cpp.o: ../PeriodicTable.h
 
 CMakeFiles/PsuMaxima.dir/SpaceTransformation.cpp.o: ../SpaceTransformation.cpp
 CMakeFiles/PsuMaxima.dir/SpaceTransformation.cpp.o: ../SpaceTransformation.h

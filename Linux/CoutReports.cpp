@@ -247,7 +247,7 @@ void CoutReports::coutSlices(Ccp4* ccp4, PdbFile* pdb,Interpolator* interp, Vect
 void CoutReports::coutSynthetic(string atoms, string model, Algorithmic* interp, VectorThree central, VectorThree linear, VectorThree planar, double width, double gap)
 {
     //The atoms are a list of lines    
-    vector<string> lines = helper::stringToVector(atoms, "\n");
+    vector<string> lines = helper::stringToVector(atoms, "@");
     //we want to turn each line ibnto a synthetic atom
     vector<Atom> atomsList;
     for (unsigned int i = 0; i < lines.size(); ++i)

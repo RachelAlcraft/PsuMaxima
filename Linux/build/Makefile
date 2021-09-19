@@ -699,6 +699,33 @@ PdbFile.cpp.s:
 	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/PdbFile.cpp.s
 .PHONY : PdbFile.cpp.s
 
+PeriodicTable.o: PeriodicTable.cpp.o
+
+.PHONY : PeriodicTable.o
+
+# target to build an object file
+PeriodicTable.cpp.o:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/PeriodicTable.cpp.o
+.PHONY : PeriodicTable.cpp.o
+
+PeriodicTable.i: PeriodicTable.cpp.i
+
+.PHONY : PeriodicTable.i
+
+# target to preprocess a source file
+PeriodicTable.cpp.i:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/PeriodicTable.cpp.i
+.PHONY : PeriodicTable.cpp.i
+
+PeriodicTable.s: PeriodicTable.cpp.s
+
+.PHONY : PeriodicTable.s
+
+# target to generate assembly for a file
+PeriodicTable.cpp.s:
+	$(MAKE) -f CMakeFiles/PsuMaxima.dir/build.make CMakeFiles/PsuMaxima.dir/PeriodicTable.cpp.s
+.PHONY : PeriodicTable.cpp.s
+
 SpaceTransformation.o: SpaceTransformation.cpp.o
 
 .PHONY : SpaceTransformation.o
@@ -892,6 +919,9 @@ help:
 	@echo "... PdbFile.o"
 	@echo "... PdbFile.i"
 	@echo "... PdbFile.s"
+	@echo "... PeriodicTable.o"
+	@echo "... PeriodicTable.i"
+	@echo "... PeriodicTable.s"
 	@echo "... SpaceTransformation.o"
 	@echo "... SpaceTransformation.i"
 	@echo "... SpaceTransformation.s"
