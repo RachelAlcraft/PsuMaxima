@@ -17,6 +17,16 @@ private:
 	double _x;
 	double _y;
 	double _z;
+	double _startx;
+	double _starty;
+	double _startz;
+	double _endx;
+	double _endy;
+	double _endz;	
+	int _motionNum;
+	double _arcHeight;
+	vector<VectorThree> _motionPositions1;
+	vector<VectorThree> _motionPositions2;
 	
 	// HELPER FUNCTIONS
 	string trim(string string_to_trim);
@@ -24,6 +34,7 @@ private:
 	void makePdbAtom(string line);
 	//synthetic density functons	
 	double getDensityComponent(double d, double x, double y);
+	double getIAMDensityInternal(VectorThree ABC, VectorThree XYZ, double occupancy);
 
 public:	
     Atom(string line, bool fromPdb);//couild be apdb line or a synthetic line
@@ -40,6 +51,8 @@ public:
 	string Element;
 	double BFactor;
 	double Occupancy;
+	//there culd be end positions for motion
+	bool MotionLine;
     
 };
 

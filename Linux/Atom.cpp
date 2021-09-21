@@ -31,7 +31,24 @@ void Atom::makeSyntheticAtom(string line)
 		ResNo = atol(inps[4].c_str());
 		BFactor = atof(inps[5].c_str());
 		Occupancy = atof(inps[6].c_str());
-	}	
+	}
+	MotionLine = false;
+	if (inps.size() > 13)
+	{
+		_startx = atof(inps[7].c_str());
+		_starty = atof(inps[8].c_str());
+		_startz = atof(inps[9].c_str());
+		_endx = atof(inps[10].c_str());
+		_endy = atof(inps[11].c_str());
+		_endz = atof(inps[12].c_str());
+		_motionNum = atol(inps[13].c_str());		
+		if (_motionNum > 0)
+		{//under this model it spends slightly loner in the centre - by double
+			MotionLine = true;				
+			_motionPositions1 = getXYZ().getArcPositions(VectorThree(_startx,_starty,_startz),_motionNum);
+			_motionPositions2 = getXYZ().getArcPositions(VectorThree(_endx,_endy,_endz),_motionNum);
+		}
+	}
 }
 void Atom::makePdbAtom(string line)
 {
@@ -105,6 +122,30 @@ string Atom::trim(string string_to_trim)
 
 double Atom::getIAMDensity(VectorThree XYZ)
 {
+	if (!MotionLine)
+	{
+		return getIAMDensityInternal(getXYZ(),XYZ,Occupancy);
+	}
+	else
+	{
+		double density = 0;
+		double halfOcc = Occupancy/2.0;
+		for (unsigned int i = 0; i < _motionPositions1.size(); ++i)
+		{
+			density+=getIAMDensityInternal(_motionPositions1[i],XYZ,halfOcc/_motionNum);
+		}
+		for (unsigned int i = 0; i < _motionPositions2.size(); ++i)
+		{
+			density+=getIAMDensityInternal(_motionPositions2[i],XYZ,halfOcc/_motionNum);
+		}
+		return density;
+	}
+	
+
+}
+
+double Atom::getIAMDensityInternal(VectorThree ABC, VectorThree XYZ, double occupancy)
+{
 	double DISTANCE_CAP = 5;
     /*
         https://www.phenix-online.org/presentations/latest/pavel_maps_2.pdf
@@ -119,7 +160,7 @@ double Atom::getIAMDensity(VectorThree XYZ)
         * exp[-4 * pi ^ 2 * r ^ 2 / B]
 
     */
-	double distance = XYZ.distance(VectorThree(_x, _y, _z));
+	double distance = XYZ.distance(ABC);
     
     //let's decide that at a certain distance there is no need to do all thi calculation
     if (distance < DISTANCE_CAP || DISTANCE_CAP == 0)
@@ -136,7 +177,7 @@ double Atom::getIAMDensity(VectorThree XYZ)
         if (!isnan((double)c))
             density += c;
 
-        return Occupancy * density;
+        return occupancy * density;
     }
     else
     {
@@ -174,7 +215,21 @@ double Atom::getDensityComponent(double d, double x, double y)
 string Atom::info()
 {
 	stringstream ss;
-	ss << AtomType << ":ResNo=" << ResNo << ":BF=" << BFactor << ":Occ=" << Occupancy << "\n";
+	double halfOcc = Occupancy/2.0;
+	ss << AtomType << ":ResNo=" << ResNo << ":BF=" << BFactor << ":Occ=" << Occupancy;
+	if (MotionLine)
+	{
+		ss << ":MotionLine=";
+		for (unsigned int i = 0; i < _motionPositions1.size(); ++i)
+		{
+			ss << "\n:s:" << _motionPositions1[i].A << ":Occ=" << halfOcc/_motionNum;
+		}
+		for (unsigned int i = 0; i < _motionPositions2.size(); ++i)
+		{
+			ss << "\n:e:" << _motionPositions2[i].A << ":Occ=" << halfOcc/_motionNum;
+		}
+
+	}
 	return ss.str();
 
 }

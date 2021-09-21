@@ -93,7 +93,7 @@ cgistring = ""
 
 userstring += pwb.getBodyMenuSynth(username,password,atoms,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,model)
 if access:  
-  print('<p>' + str(1) + '/' + str(1) + ' Calculating synthetic density...(approx ' + str(120) + ' seconds)...')  
+  print('<p>' + str(1) + '/' + str(1) + ' Calculating synthetic density...(approx ' + str(6) + ' seconds)...')  
   sys.stdout.flush() # update the user interface      
   start = time.time()
   data = Maxima.runCppModuleSyntheticDensity(atoms,model,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran)  

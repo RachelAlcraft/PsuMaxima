@@ -77,6 +77,14 @@ VectorThree VectorThree::operator-(VectorThree const& obj)
 	C -= obj.C;
 	return VectorThree(A, B, C);
 }
+
+VectorThree VectorThree::operator/(double val)
+{
+    A /= val;
+    B /= val;
+    C /= val;
+    return VectorThree(A, B, C);
+}
 double VectorThree::getAngle(VectorThree vec)
 {
     VectorThree BA(0-A,0-B,0-C);
@@ -101,4 +109,30 @@ string VectorThree::getKey()
     stringstream ss;
     ss << setprecision(2) << fixed << A << B << C;
     return ss.str();
+}
+
+vector<VectorThree> VectorThree::getArcPositions(VectorThree end, int count)
+{
+    //First version is linear
+    double diffX = A-end.A;
+    double diffY = B-end.B;
+    double diffZ = C-end.C;
+
+    double gapX = 0;
+    double gapY = 0;
+    double gapZ = 0;
+    if (count >1)
+    {
+        gapX = diffX/(count-1);
+        gapY = diffY/(count-1);
+        gapZ = diffZ/(count-1);
+    }
+
+    vector<VectorThree> positions;
+    for (unsigned int i = 0; i < count; ++i)
+    {        
+        positions.push_back(VectorThree(A-i*gapX,B-i*gapY,C-i*gapZ));
+    }
+    return positions;
+
 }

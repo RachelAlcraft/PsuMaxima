@@ -1,6 +1,9 @@
 #pragma once
 
 #include <string>
+#include <vector>
+
+using namespace std;
 
 class VectorThree
 {
@@ -19,7 +22,9 @@ public:
     double getDotProduct(VectorThree vec);
     VectorThree operator + (VectorThree const& obj);
     VectorThree operator - (VectorThree const& obj);
+    VectorThree operator / (double val);
     double getAngle(VectorThree vec);
-    std::string getKey();
+    string getKey();
+    vector<VectorThree> getArcPositions(VectorThree end, int count);
 };
 

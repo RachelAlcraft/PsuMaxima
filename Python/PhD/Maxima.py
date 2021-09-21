@@ -72,8 +72,7 @@ def runCppModule(pdb,interpNum,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,D4
       ### CALL PEAKS ######################################
       if D1 or D2 or D3 or D4:
         commandlinePeaks = "PEAKS|" + pdb + "|" + str(interpNum) + "|"
-        print('...called Leucippus with params:' + commandlinePeaks + ' ...')              
-        #sys.stdout.flush() # update the user interface
+        #print('...called Leucippus with params:' + commandlinePeaks + ' ...')                      
         #------------------------------------------------
         pigP =  sub.Popen(["/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima", commandlinePeaks], stdout=sub.PIPE)
         resultP = pigP.communicate(input=b"This is sample text.\n")
@@ -91,8 +90,7 @@ def runCppModule(pdb,interpNum,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,D4
       ### CALL ATOMS ######################################
       if D5 or D6:
         commandlineAtoms = "ATOMS|" + pdb + "|" + str(interpNum) + "|"
-        print('...called Leucippus with params:' + commandlineAtoms + ' ...')
-        #sys.stdout.flush() # update the user interface
+        #print('...called Leucippus with params:' + commandlineAtoms + ' ...')        
         #------------------------------------------------
         pigA = sub.Popen(["/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima", commandlineAtoms], stdout=sub.PIPE)            
         resultA = pigA.communicate(input=b"This is sample text.\n")
@@ -109,8 +107,7 @@ def runCppModule(pdb,interpNum,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,D4
         commandlineSlices += str(lX) + "-" + str(lY) + "-" + str(lZ) + "|"
         commandlineSlices += str(pX) + "-" + str(pY) + "-" + str(pZ) + "|"
         commandlineSlices += str(width) + "-" + str(gran)
-        print('...called Leucippus with params:' + commandlineSlices + ' ...')
-        #sys.stdout.flush() # update the user interface
+        #print('...called Leucippus with params:' + commandlineSlices + ' ...')        
         #------------------------------------------------
         pigS = sub.Popen(["/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima", commandlineSlices], stdout=sub.PIPE)            
         resultS = pigS.communicate(input=b"This is sample text.\n")
@@ -139,8 +136,8 @@ def runCppModuleSyntheticDensity(atoms,model,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gr
       commandlineSnth += str(lX) + "-" + str(lY) + "-" + str(lZ) + "|"
       commandlineSnth += str(pX) + "-" + str(pY) + "-" + str(pZ) + "|"
       commandlineSnth += str(width) + "-" + str(gran)          
-      print('...called Leucippus with params:' + commandlineSnth + ' ...')
-      #sys.stdout.flush() # update the user interface
+      #print('...called Leucippus with params:' + commandlineSnth + ' ...')
+      
       
       #------------------------------------------------
       pigS = sub.Popen(["/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima", commandlineSnth], stdout=sub.PIPE)            
@@ -151,11 +148,12 @@ def runCppModuleSyntheticDensity(atoms,model,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gr
       #dfI = getCsvFromCppResults(exe_resultS, 'USERINPUTS')
       #print(dfI)
       dfI = getCsvFromCppResults(exe_resultS, 'ATOMDATA')
-      print(dfI)
+      #print(dfI)
 
       df1a = getCsvFromCppResults(exe_resultS, 'DENSITYSLICE')
       df1b = getCsvFromCppResults(exe_resultS, 'RADIANTSLICE')
       df1c = getCsvFromCppResults(exe_resultS, 'LAPLACIANSLICE')
+      df1d = getCsvFromCppResults(exe_resultS, 'POSITIONSLICE')
       #df1d = getCsvFromCppResults(exe_resultS, 'SYNTHMATRIX')      
 
       return [df1a,df1b,df1c,df1d]

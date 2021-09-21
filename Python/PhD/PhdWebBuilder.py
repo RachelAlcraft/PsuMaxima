@@ -62,7 +62,7 @@ def getHeader():
     string = '<!DOCTYPE html>\n'
     string += '<html lang="en">\n'
     string += '<head>\n'
-    string += '<title>Leucippus</title>\n'   
+    string += '<title>Leucippus Results</title>\n'   
     string += '<link rel="icon" href="/../../../~ab002/img/atom.ico" type="image/x-icon">\n'         
     string += '<style>\n'
     string += 'body {text-align:left;background-color:LightSteelBlue;margin-left: 52px;}\n'
@@ -122,7 +122,7 @@ def getBodyMenuSynth(username, password,atoms,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,g
     string += '<p>\n'
     string += 'Each row is an atom with type, coordinates, residue number (for bond electrons), bfactor, occupancy, arc parameters (end positions and number of positions).</br>\n'
     string += 'Example atoms have been entered for you which you can edit, the end positions are blank as no motion is being modelled. The format is a csv file, with the header above the text area (start the line with @).</br></br>\n'
-    string += '<b>@Type,X,Y,Z,ResNo,BFactor,Occupancy,EndX,EndY,EndZ,ArcHeight</b></br> \n'
+    string += '<b>@Type,X,Y,Z,ResNo,BFactor,Occupancy,StartX,StartY,StartZ,EndX,EndY,EndZ,Count</b></br> \n'
     string += '<textarea style="white-space:pre-wrap;" id="atoms" name="atoms" rows="5" cols="120">\n'
     string += atoms    
     string += '</textarea>\n'
@@ -364,17 +364,32 @@ def dataFrameToImages(pdb,data,geoA,geoB,geoC,hue,palette):
     
 
 def scatterToMatrix(data,length,hue, cap):
+    import math
     maxVal = data[hue].values.max()
-    maxCap = maxVal * cap  
-    try:
-        mtx = data[hue].values.reshape(length+1,length+1)
-        for i in range(length+1):
-            for j in range(length+1):
-                if mtx[i,j] > maxCap:
-                    mtx[i,j] = maxCap
-        return mtx
-    except:
-        return np.zeros([3,3])
+    minVal = data[hue].values.min()
+    maxCap = maxVal * cap
+    real_len = len(data[hue].values)
+    sq_len = int(math.sqrt(real_len))
+    #print('lenghts',real_len,':',length)
+    
+    mtx = data[hue].values.reshape(int(sq_len),int(sq_len))
+    for i in range(sq_len):
+        for j in range(sq_len):
+            if mtx[i,j] > maxCap:
+                mtx[i,j] = maxCap
+    return mtx, minVal
+    
+
+def addPosToMtx(mtx,length,minVal,data):
+    
+    for index,row in data.iterrows():        
+        x = int(row['i'])
+        y = int(row['j'])
+        val = float(row['Position'])
+        if x < length and y < length:
+            mtx[x,y] = float(minVal-1)
+    
+    return mtx
             
     
 
@@ -388,9 +403,14 @@ def getBodyRun3(pdb,dataABC,width,gran,D7):
         string += '<p>Width=' + str(width) + '&#8491; Granularity=' + str(gran) + '&#8491;'
         string += ' Sample data points =  ' + str(length+1) + 'x' + str(length+1) + '=' + str((length+1)*(length+1)) + '</p>'  
         if len(dataABC) > 0:
+            havePos = False
             dataA = dataABC[0]
             dataB = dataABC[1]
             dataC = dataABC[2]
+            dataD = pd.DataFrame()#The position data
+            if len(dataABC) > 3:
+                dataD = dataABC[3]
+                havePos = True
             
             
             string += '<table style="table-layout:fixed;width:95%;display:block;display:table"><tr>'
@@ -403,12 +423,17 @@ def getBodyRun3(pdb,dataABC,width,gran,D7):
                 lContour = 0.4
 
 
-            mtxD = scatterToMatrix(dataA,length,'Density',dContour)
-            mtxR = scatterToMatrix(dataB,length,'Radiant',1)
-            mtxL = scatterToMatrix(dataC,length,'Laplacian',lContour)                        
-            string += matrixToImage(pdb,mtxD,'magma_r',False)
-            string += matrixToImage(pdb,mtxR,'bone',False)
-            string += matrixToImage(pdb,mtxL,'magma',False)
+            mtxD,minD = scatterToMatrix(dataA,length,'Density',dContour)
+            mtxR,minR = scatterToMatrix(dataB,length,'Radiant',1)
+            mtxL,minL = scatterToMatrix(dataC,length,'Laplacian',lContour)
+            
+            if havePos:
+                mtxD = addPosToMtx(mtxD,length,minD,dataD)
+                mtxR = addPosToMtx(mtxR,length,minR,dataD)
+                mtxL = addPosToMtx(mtxL,length,minL,dataD)
+            string += matrixToImage(pdb,mtxD,'magma_r',False,minD)
+            string += matrixToImage(pdb,mtxR,'bone',False,minR)
+            string += matrixToImage(pdb,mtxL,'magma',False,minL)
 
                                     
             string += '</tr></table>'
@@ -520,11 +545,21 @@ def getPlotImage(fig, ax):
     plt.close('all')    
     return encoded
     
-def matrixToImage(pdb,mtx,pal,contour):
+def matrixToImage(pdb,mtx,pal,contour,minVal):
     fig, ax = plt.subplots()
-    image = plt.imshow(mtx, cmap=pal, interpolation='nearest', origin='lower', aspect='equal',alpha=1)
+    import matplotlib.cm as cm
+    import copy
+
+    cm2 = cm.get_cmap(pal)
+    my_cmap = copy.copy(cm2)
+    my_cmap.set_under('y')
+    #mtx[10,10] = maxVal+1
+        
+    image = ax.imshow(mtx, cmap=my_cmap, interpolation='nearest', origin='lower', aspect='equal',alpha=1,vmin=minVal)
     if contour:
         image = plt.contour(mtx, colors='SlateGray', alpha=0.55, linewidths=0.3, levels=12)
+    
+
     plt.axis('off')    
     encoded = getPlotImage(fig,ax)
     imstring = '<img src="data:image/png;base64, {}">'.format(encoded.decode('utf-8')) + '\n'
