@@ -49,6 +49,8 @@ D1, D2, D3, D4, D5, D6, D7 = False,False,False,False,False,False,False
 width = 5
 gran = 0.1
 interpMethod = 'spline'
+Fos = 2
+Fcs = -1
 
 form = cgi.FieldStorage()
 
@@ -88,6 +90,11 @@ if 'Width' in form:
   width = str(form["Width"].value)
 if 'Gran' in form:
   gran = str(form["Gran"].value)
+if 'Fos' in form:  
+  Fos = form.getvalue('Fos')
+if 'Fcs' in form:  
+  Fcs = form.getvalue('Fcs')
+
 
 # RESULTS
 if form.getvalue('Data1'):
@@ -140,7 +147,7 @@ sys.stdout.flush() # update the user interface
 cgistring = ""
 
 
-userstring += pwb.getBodyA(pdb,interpNum,asCSV,username,password,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,interpMethod,D1,D2,D3,D4,D5,D6,D7)
+userstring += pwb.getBodyA(pdb,interpNum,asCSV,username,password,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,interpMethod,Fos,Fcs,D1,D2,D3,D4,D5,D6,D7)
 if access:
   havepdb, haveed = Maxima.doWeHaveAllFiles(pdb)
   userstring += pwb.getBodyRun0(pdb)
@@ -166,7 +173,7 @@ if access:
       print('<p>' + str(runNo) + '/' + str(totalRuns) + ' Calculating peaks...(approx ' + str(peaksTime) + ' seconds)...')      
       sys.stdout.flush() # update the user interface      
       start = time.time()
-      data = Maxima.runCppModule(pdb,interpNum,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,False,False,False,False)
+      data = Maxima.runCppModule(pdb,interpNum,Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,False,False,False,False)
       userstring += pwb.getBodyRun1(pdb,data[0],asCSV,D1,D2,D3,D4)
       end = time.time()
       ts = getTimeDiff(start,end)
@@ -181,7 +188,7 @@ if access:
       print('<p>' + str(runNo) + '/' + str(totalRuns) + ' Inspecting atoms...(approx 45 seconds)...')      
       sys.stdout.flush() # update the user interface
       start = time.time()
-      data = Maxima.runCppModule(pdb,interpNum,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,False,False,False,D4,D5,D6,False)
+      data = Maxima.runCppModule(pdb,interpNum,Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,False,False,False,D4,D5,D6,False)
       userstring += pwb.getBodyRun2(pdb,data[1],D5,D6)
       end = time.time()
       ts = getTimeDiff(start,end)
@@ -196,7 +203,7 @@ if access:
       print('<p>' + str(runNo) + '/' + str(totalRuns) + ' Visualising density...(approx 5 seconds)...')      
       sys.stdout.flush() # update the user interface
       start = time.time()
-      data = Maxima.runCppModule(pdb,interpNum,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,False,False,False,False,False,False,D7)
+      data = Maxima.runCppModule(pdb,interpNum,Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,False,False,False,False,False,False,D7)
       userstring += pwb.getBodyRun3(pdb,data[2],width,gran,D7)
       end = time.time()
       ts = getTimeDiff(start,end)
@@ -227,7 +234,7 @@ else:
 
 #print out the options to the cgi
 
-cgistring += pwb.getBodyA(pdb,interpNum,asCSV,username,password,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,interpMethod,D1,D2,D3,D4,D5,D6,D7)
+cgistring += pwb.getBodyA(pdb,interpNum,asCSV,username,password,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,interpMethod,Fos,Fcs,D1,D2,D3,D4,D5,D6,D7)
 cgistring += pwb.getFooter()
 
 

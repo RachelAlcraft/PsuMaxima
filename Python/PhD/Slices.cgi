@@ -43,6 +43,8 @@ lX,lY,lZ = 0,0,0
 pX,pY,pZ = 0,0,0
 username = ""
 password = ""
+Fos = 2
+Fcs = -1
 # Data return choices
 
 form = cgi.FieldStorage()
@@ -78,6 +80,10 @@ if 'Gran' in form:
   gran = str(form["Gran"].value)
 if 'interpMethod' in form:  
   interpMethod = str(form["interpMethod"].value)
+if 'Fos' in form:  
+  Fos = form.getvalue('Fos')
+if 'Fcs' in form:  
+  Fcs = form.getvalue('Fcs')
   
 
 
@@ -96,12 +102,12 @@ sys.stdout.flush() # update the user interface
 cgistring = ""
 
 
-userstring += pwb.getBodySlices(pdbCode, username, password,interpMethod, cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran)
+userstring += pwb.getBodySlices(pdbCode, username, password,interpMethod, Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran)
 if access:  
   print('<p>' + str(1) + '/' + str(1) + ' Calculating local map slices...(approx ' + str(6) + ' seconds)...')  
   sys.stdout.flush() # update the user interface      
   start = time.time()
-  data = Maxima.runCppModule(pdbCode,interpNum,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,False,False,False,False,False,False,True)
+  data = Maxima.runCppModule(pdbCode,interpNum,Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,False,False,False,False,False,False,True)
   userstring += pwb.getBodyRun3(pdbCode,data[2],width,gran,True)
   end = time.time()
   ts = getTimeDiff(start,end)
@@ -125,7 +131,7 @@ else:
 
 #print out the options to the cgi
 
-cgistring += pwb.getBodySlices(pdbCode, username, password,interpMethod, cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran)
+cgistring += pwb.getBodySlices(pdbCode, username, password,interpMethod,Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran)
 cgistring += pwb.getFooter()
 
 

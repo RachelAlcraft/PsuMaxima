@@ -50,7 +50,7 @@ This webpage interfaces with a C++ executable which calculates density maxima in
 <form method="post" action="/cgi-bin/cgiwrap/ab002/PhD/Maxima.cgi" accept-charset="UTF-8">
 <b>~~ Application access credentials ~~</b><br/><i>You must enter a valid email address to access this software. Passwords will be forthcoming.</i><br/>Email address: <input type='text' name='email' value='' /> Password: <input type='text' name='password' value='not used' /><hr/><h3>Electron Density Analysis</h3>Enter 4 digit pdb code: <input type="text" name="dataInput" value=1ejg />
 <br/><br/>
-<table><tr><td style="background-color:Crimson;color:AliceBlue">~~ Choose results to display ~~</td><td style="background-color:Crimson;color:AliceBlue"">~~ Interpolation parameters ~~</td><td style="background-color:Crimson;color:AliceBlue"">~~ 3-point coordinates for plane ~~</td></tr><tr>
+<table><tr><td style="background-color:Crimson;color:AliceBlue">~~ Choose results to display ~~</td><td style="background-color:Crimson;color:AliceBlue"">~~ Calculation parameters ~~</td><td style="background-color:Crimson;color:AliceBlue"">~~ 3-point coordinates for plane ~~</td></tr><tr>
 <td>
 <table style="text-align: left;">
 <tr><td><label for="D1">1) Peaks visual projection to 3 planes</label></td><td><input type="checkbox" id="Data1" name="Data1" value="1" checked="checked"></td></tr>
@@ -59,13 +59,20 @@ This webpage interfaces with a C++ executable which calculates density maxima in
 <tr><td><label for="D4">4) Peaks visual projection, atoms only (unit cell)</label></td><td><input type="checkbox" id="Data4" name="Data4" value="1"></td></tr>
 <tr><td><label for="D5">5) Density visual projection, all atoms</label></td><td><input type="checkbox" id="Data5" name="Data5" value="1" checked="checked"></td></tr>
 <tr><td><label for="D6">6) Atoms visualised on AtomNo</label></td><td><input type="checkbox" id="Data6" name="Data6" value="1" checked="checked"></td></tr>
-<tr><td><label for="D7">7) Visualised electron density planes</label></td><td><input type="checkbox" id="Data7" name="Data7" value="1" checked="checked"></td></tr>
+<!--<tr><td><label for="D7">7) Visualised electron density planes</label></td><td><input type="checkbox" id="Data7" name="Data7" value="1" checked="checked"></td></tr>-->
 </table>
 </td><td><div style="text-align: left;">
 
-<p>Interpolation:<br/>
+<p><b>Interpolation:</b><br/>
 <input type="radio" id="spline" name="interpMethod" value="spline" checked="checked"><label for="spline">B-Spline</label><br/>
-<input type="radio" id="nearest" name="interpMethod" value="nearest"><label for="nearest">Nearest Neighbour</label><br/><br/><br/><br/>
+<input type="radio" id="nearest" name="interpMethod" value="nearest"><label for="nearest">Nearest Neighbour</label><br/>
+</p>
+
+<p><b>Fo and Fc numbers:</b><br/>
+The main ccp4 file contains 2Fo-Fc<br/>
+The diff file contains Fo-Fc<br/>
+No Fos: <input type="text" name="Fos" value="2" size="2"/><br/>
+No Fcs: <input type="text" name="Fcs" value="-1" size="2"/><br/>
 </p>
 
 <!--<p>Interpolation frequency: <input size="4" type="text" name="interpNum" value=2 /></p><p>Iterations per grid point, <br/>enter between 0 and 5, <br/>0 or 1 means grid points only</p>-->
@@ -94,7 +101,9 @@ Z=<input size="4" type="text" name="PZ" value=16.748 /></td></tr></table>
 
 <hr/>
 <p style="background-color:Crimson;margin:5px;padding:5px;color:AliceBlue;">
-Created by: Rachel Alcraft <a href="https://student.cryst.bbk.ac.uk/~ab002/Leucippus.html" title="Leucippus" target="_self">Leucippus Home</a><br/>
-Supervisor: <a href="http://people.cryst.bbk.ac.uk/~ubcg66a/" title="MAW" target="_blank">Mark A. Williams</a>
+Created by: <a href = "mailto:ralcra01@student.bbk.ac.uk" > Rachel Alcraft </a >
+ ~ Home page: <a href="https://student.cryst.bbk.ac.uk/~ab002/Leucippus.html" title="Leucippus" target="_self">Leucippus</a>
+ ~ Supervisor: <a href="http://people.cryst.bbk.ac.uk/~ubcg66a/" title="MAW" target="_blank">Mark A. Williams</a>
+ ~ Birkbeck, University of London, 2021
 </p>
 </body>

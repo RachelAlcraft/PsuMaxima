@@ -27,6 +27,8 @@ int main(int argc, char* argv[])
     string pdb = "";
     string COMMAND = "";    
     int INTERPNUM = 0;
+    int Fos = 2;
+    int Fcs = -2;
     double cX = 0;
     double cY = 0;
     double cZ = 0;
@@ -44,10 +46,10 @@ int main(int argc, char* argv[])
 
     // Inputs euither through code or command line called from python
     string INPUT = "";
-    INPUT = "PEAKS|1ejg|5|";
-    //INPUT = "ATOMS|1ejg|5|";
-    //INPUT = "SLICES|1ejg|5|9.373-7.688-15.546|9.5-9.079-14.937|9.64-7.542-16.748|5-0.1";
-    //INPUT = "SYNTHETIC|@N,0.10,0.10,0.20,1,2.4,1.00,,,,, @CA,0.10,1.10,0.20,2,2.6,1.00,,,,, |iam|9.373-7.688-15.546|9.5-9.079-14.937|9.64-7.542-16.748|5-0.1";
+    //INPUT = "PEAKS|1ejg|5|2|-1|";
+    //INPUT = "ATOMS|1ejg|5|2|-1|";
+    //INPUT = "SLICES|1ejg|5|1|-1|9.373-7.688-15.546|9.5-9.079-14.937|9.64-7.542-16.748|5-0.02";
+    INPUT = "SYNTHETIC|@CA,9.5,9.079,14.937,1,2.4,1.00,-,-,-,-,-,-,- @C,9.373,7.688,15.546,2,2.6,1.00,-,-,-,-,-,-,- @O,9.64,7.542,16.748,3,2.6,1.00,-,-,-,-,-,-,- |iam|9.373-7.688-15.546|9.5-9.079-14.937|9.64-7.542-16.748|5-0.02";
     if (argc >= 2)
         INPUT = argv[1];
     if (true)
@@ -62,14 +64,16 @@ int main(int argc, char* argv[])
         COMMAND = (string)inputs[0];
         pdb = (string)inputs[1];
         INTERPNUM = atol(inputs[2].c_str());
+        Fos = atol(inputs[3].c_str());
+        Fcs = atol(inputs[4].c_str());        
         cout << "pdb=" << pdb << "\n";
 
         if (COMMAND == "SLICES" || COMMAND == "SYNTHETIC")
         {
-            string central = inputs[3];
-            string linear = inputs[4];
-            string planar = inputs[5];
-            string image_size = inputs[6];
+            string central = inputs[5];
+            string linear = inputs[6];
+            string planar = inputs[7];
+            string image_size = inputs[8];
             vector<string> cCoords = helper::stringToVector(central, "-");
             vector<string> lCoords = helper::stringToVector(linear, "-");
             vector<string> pCoords = helper::stringToVector(planar, "-");
@@ -107,7 +111,8 @@ int main(int argc, char* argv[])
     {
         ccp4directory = userCcp4directory;
         pdbdirectory = userPdbdirectory;
-
+        Fos = 2;
+        Fcs = -1;
     }
 
     if (COMMAND == "SYNTHETIC")
@@ -117,7 +122,7 @@ int main(int argc, char* argv[])
     else
     {
         /***************************************************/
-        Ccp4 myCcp4(pdb, ccp4directory);
+        Ccp4 myCcp4(pdb, ccp4directory,Fos,Fcs);
         PdbFile myPdb(pdb, pdbdirectory);
         Interpolator* interp;
         //INTERPNUM is the encoded interpolator, so 0 == nearest

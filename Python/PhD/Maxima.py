@@ -71,13 +71,13 @@ def doWeHaveAllFiles(pdbCode):
       
   return havePDB,haveED
 
-def runCppModule(pdb,interpNum,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,D4,D5,D6,D7):        
+def runCppModule(pdb,interpNum,Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,D4,D5,D6,D7):        
     #try:
     df1a,df1b,df1c,df3,df4,df5,df6 = pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame()
     if True:
       ### CALL PEAKS ######################################
       if D1 or D2 or D3 or D4:
-        commandlinePeaks = "PEAKS|" + pdb + "|" + str(interpNum) + "|"
+        commandlinePeaks = "PEAKS|" + pdb + "|" + str(interpNum) + "|" + str(Fos) + "|"+ str(Fcs) + "|"
         #print('...called Leucippus with params:' + commandlinePeaks + ' ...')                      
         #------------------------------------------------
         pigP =  sub.Popen(["/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima", commandlinePeaks], stdout=sub.PIPE)
@@ -95,7 +95,7 @@ def runCppModule(pdb,interpNum,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,D4
       
       ### CALL ATOMS ######################################
       if D5 or D6:
-        commandlineAtoms = "ATOMS|" + pdb + "|" + str(interpNum) + "|"
+        commandlineAtoms = "ATOMS|" + pdb + "|" + str(interpNum) + "|"+ str(Fos) + "|"+ str(Fcs) + "|"
         #print('...called Leucippus with params:' + commandlineAtoms + ' ...')        
         #------------------------------------------------
         pigA = sub.Popen(["/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima", commandlineAtoms], stdout=sub.PIPE)            
@@ -107,8 +107,7 @@ def runCppModule(pdb,interpNum,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,D4
 
       ### CALL SLICES #######################################
       if D7:
-        commandlineSlices = "SLICES|" + pdb + "|" + str(interpNum) + "|"
-        #Baffling, 6jvv only fails if I add more into the command line
+        commandlineSlices = "SLICES|" + pdb + "|" + str(interpNum) + "|" + str(Fos) + "|"+ str(Fcs) + "|"        
         commandlineSlices += str(cX) + "-" + str(cY) + "-" + str(cZ) + "|"
         commandlineSlices += str(lX) + "-" + str(lY) + "-" + str(lZ) + "|"
         commandlineSlices += str(pX) + "-" + str(pY) + "-" + str(pZ) + "|"
@@ -137,7 +136,7 @@ def runCppModuleSyntheticDensity(atoms,model,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gr
     df1a,df1b,df1c,df1d = pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame()
     if True:
       ### CALL Synthetic Density ######################################              
-      commandlineSnth = "SYNTHETIC|" + atoms + "|" + model + "|"        
+      commandlineSnth = "SYNTHETIC|" + atoms + "|" + model + "|2|-1|"        
       commandlineSnth += str(cX) + "-" + str(cY) + "-" + str(cZ) + "|"
       commandlineSnth += str(lX) + "-" + str(lY) + "-" + str(lZ) + "|"
       commandlineSnth += str(pX) + "-" + str(pY) + "-" + str(pZ) + "|"

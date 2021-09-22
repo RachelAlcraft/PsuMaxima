@@ -18,17 +18,18 @@ def userSuccess(email,password):
 
     directory = '/d/projects/u/ab002/Thesis/PhD/Data/Users/'
     filename = email
-    if not isok:
-        filename += '_FAILED'
-    
-    from datetime import datetime
-    dateTimeObj = datetime.now()
-    dateObj = dateTimeObj.date()
-    timestampStr = dateTimeObj.strftime("_%d_%b_%Y_%H_%M_%S_%f")
-    filename += timestampStr + ".txt"
-    f = open(directory+filename, "w")
-    f.write("")
-    f.close()
+    if email != "rachelalcraft@gmail.com": #no point in me logging my 1000s of accesses!
+        if not isok:
+            filename += '_FAILED'
+        
+        from datetime import datetime
+        dateTimeObj = datetime.now()
+        dateObj = dateTimeObj.date()
+        timestampStr = dateTimeObj.strftime("_%d_%b_%Y_%H_%M_%S_%f")
+        filename += timestampStr + ".txt"
+        f = open(directory+filename, "w")
+        f.write("")
+        f.close()
     
     return isok
 
@@ -80,21 +81,114 @@ def getHeader():
     # header includes a bit of body, where we have the header...
     string += '<body>\n'
     string += '<hr/>'
-    string += '<h1>'
-    string += '<div style="background-color:black;padding:10px">'
-    string += '<font color="DC143C">Leu</font><font color="AliceBlue">cip</font><font color="DC143C">pus</font>'
-    string += '</div>'
+    string += '<h1>\n'
+    string += '<div style="background-color:black;padding:10px">\n'
+    string += '<font color="DC143C">Leu</font><font color="AliceBlue">cip</font><font color="DC143C">pus</font>\n'
+    string += '<img style="width:25px;border:2px;" src="/../../../~ab002/img/atom.ico" alt="Leucippus Atom">\n'
+    string += '<font color="AliceBlue">Atomic </font><font color="Crimson">Density </font><font color="AliceBlue">Explorer</font>\n'
+    string += '</div>\n'
     string += '</h1>'
     string += '<p style="background-color:Crimson;margin:5px;padding:5px;color:AliceBlue;">'
-    string += '<a href="/../../~ab002/Maxima.html" title="Home" target="_self">PhD Home</a>'
-    string += '~  <a href="/../../~ab002/Peaks.html" title="Home" target="_self">Peaks Explorer</a>'
-    string += '~  <a href="/../../~ab002/Synthetic.html" title="Home" target="_self">Synthetic Density</a>'
-    string +=  "~  <a href='/../../~ab002/Documentation.html' title='Docs' target='_self'>Documentation</a>"
-    string += "~ <a href='/../../~ab002/index.html' title='Student' target='_blank'>Student Home</a>"
-    string += "~ <a href='https://www.bbk.ac.uk/departments/biology/' title='Birkbeck' target='_blank'>Birkbeck Biology</a>"
+    string += '<a href="/../../~ab002/Leucippus.html" title="Home" target="_self">PhD Home</a>'
+    string += " ~  <a href='/../../~ab002/InputPeaks.html' title='Home' target='_self'>User Uploads</a>\n"
+    string += ' ~  <a href="/../../~ab002/Peaks.html" title="Home" target="_self">Peaks Explorer</a>'
+    string += " ~  <a href='/../../~ab002/Slices.html' title='Home' target='_self'>Local Maps</a>\n"
+    string += " ~  <a href='/../../~ab002/Documentation.html' title='Docs' target='_self'>Documentation</a>"    
+    string += " ~ <a href='https://www.bbk.ac.uk/departments/biology/' title='Birkbeck' target='_blank'>Birkbeck Biology</a>"
     string += '</p>'
     
     return string
+
+def getBodyUserUpload(userCode, username, password):
+    string = '<hr/>\n'
+    string += '<p>\n'
+    string += '<h3>PhD project: <font color="DC143C">Leu</font>cip<font color="DC143C">pus</font> - Atomic <font color="DC143C">Density</font> Explorer</h3>\n'
+    string += '</p>\n'
+    string += '<hr/>\n'
+    string += '<h3>User File Upload</h3>\n'
+    string += '<p>You may upload a ccp4 format file of electron density, and a matching pdb file with atomic coordinates here. You will then be able to use those files in Leucippus with the code we return to you in place of a pdb code.<br/>\n'
+    string += 'Note that we expect a matching electron densiity and pdb file, the atomic coordinates are sued for distance reports. If you do not have a pdb file you can enter a blank file.<br/>\n'
+    string += 'Note also that the Fo and Fc num that are passed in for ccp4 files are not used for user files - we assume you have manipulated the file into your desired format alresdy (it saves you also uploading a diff file).<br/><br/>\n'
+    string += '<b>Please be aware that we do not keep the data for any guaranteed length of time and thise files are available for you to access and use on our servers during your session.</b>\n'
+    string += '</p>\n'
+    
+    string += '<hr/>\n'
+    string += '<div>\n'
+    string += '<form method="post" action="/cgi-bin/cgiwrap/ab002/PhD/Upload.cgi" enctype="multipart/form-data" >\n'
+    string += "<b>~~ Application access credentials ~~</b><br/><i>You must enter a valid email address to access this software. Passwords will be forthcoming.</i><br/>Email address: <input type='text' name='email' value='" + username + "' /> Password: <input type='text' name='password' value='not used' /><hr/>\n"
+    
+    string += '<hr/>\n'
+    string += 'Enter a 4 character code for your files: <input type="text" name="userCode" value="' + userCode + '"><br/><br/>\n'
+    string += 'Ccp4 File (ccp4 extension): <input type="file" name="fileCcp4"><br/><br/>\n'
+    string += 'Pdb File (ent extension): <input type="file" name="filePdb"><br/><br/>\n'
+    string += '<input type="submit" value="Upload"></p>\n'
+    string += '</form>\n'
+    string += '</div>\n'
+    return string
+
+def getBodySlices(pdbCode, username, password,interpMethod, Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran):
+
+    splinechecked = 'checked="checked"'
+    nearestchecked = ''
+    if interpMethod == "nearest":
+        nearestchecked = 'checked="checked"'
+        splinechecked = ''
+        
+    string = '<hr/>\n'
+    string += '<p>\n'
+    string += '<h3>PhD project: <font color="DC143C">Leu</font>cip<font color="DC143C">pus</font> - Atomic <font color="DC143C">Density</font> Explorer</h3>\n'
+    string += '</p>\n'
+    string += '<p>\n'
+    string += 'This webpage interfaces with a C++ executable which calculates synthetic density for the given atoms. This tool is used to explore Gaussian Overlap and Density Drift.\n'
+    string += '</p>\n'
+    string += '<hr/>\n'
+    string += '<div>\n'
+    string += '<form method="post" action="/cgi-bin/cgiwrap/ab002/PhD/Slices.cgi" accept-charset="UTF-8">\n'
+    string += '<b>~~ Application access credentials ~~</b><br/><i>You must enter a valid email address to access this software. Passwords will be forthcoming.</i>\n'
+    string += "<br/>Email address: <input type='text' name='email' value='" + username + "' />"
+    string += " Password: <input type='text' name='password' value='not used' />"
+    string += '<hr/>'
+    string += '<h3>Local Map Visualisation</h3>\n'
+    string += 'Enter 4 digit pdb code: <input type="text" name="dataInput" value=' + pdbCode + ' />\n'    
+    string += '<table><tr><td style="background-color:Crimson;color:AliceBlue"">~~ Model Paramaters parameters ~~</td><td style="background-color:Crimson;color:AliceBlue"">~~ 3-point coordinates for plane ~~</td></tr>\n'
+    string += '<tr><td>\n'
+    string += '<div style="text-align: left;">\n'
+    string += '<p><b>Interpolation:</b><br/>'
+    string += '<input type="radio" id="spline" name="interpMethod" value="spline" ' + splinechecked + '><label for="spline">B-Spline</label><br/>'
+    string += '<input type="radio" id="nearest" name="interpMethod" value="nearest" ' + nearestchecked + '><label for="nearest">Nearest Neighbour</label><br/>'
+    string += '</p>'
+    string += '<p><b>Fo and Fc numbers:</b><br/>\n'
+    string += 'The main ccp4 file contains 2Fo-Fc<br/>\n'
+    string += 'The diff file contains Fo-Fc<br/>\n'
+    string += 'No Fos: <input type="text" name="Fos" value="' + Fos + '" size="2"/><br/>\n'
+    string += 'No Fcs: <input type="text" name="Fcs" value="' + Fcs + '" size="2"/><br/>\n'
+    string += '</p>\n'
+    string += '</div></td>\n'
+    string += '<td>\n'
+    string += '<div style="text-align: left;"><b>Enter three points to get a density contour slice from the electron density.</b></div>\n'
+    string += '<table style="background-color:AliceBlue;text-align:left;"><tr><td>Central: X=<input size="4" type="text" name="CX" value=' + str(cX) + ' />\n'
+    string += 'Y=<input size="4" type="text" name="CY" value=' + str(cY) + ' />\n'
+    string += 'Z=<input size="4" type="text" name="CZ" value=' + str(cZ) + ' /></td></tr>\n'
+    string += '<tr><td>Linear: X=<input size="4" type="text" name="LX" value=' + str(lX) + ' />\n'
+    string += 'Y=<input size="4" type="text" name="LY" value=' + str(lY) + ' />\n'
+    string += 'Z=<input size="4" type="text" name="LZ" value=' + str(lZ) + ' /></td></tr>\n'
+    string += '<tr><td>Planar: X=<input size="4" type="text" name="PX" value=' + str(pX) + ' />\n'
+    string += 'Y=<input size="4" type="text" name="PY" value=' + str(pY) + ' />\n'
+    string += 'Z=<input size="4" type="text" name="PZ" value=' + str(pZ) + ' /></td></tr></table>\n'
+    string += '<div style="text-align: left;padding:5px"><b>Settings for image size</b></div>\n'
+    string += '<table style="background-color:AliceBlue">\n'
+    string += '<tr>\n'
+    string += '<td>Width(&#8491;)=<input size="4" type="text" name="Width" value=' + str(width) + ' /> Granularity(&#8491;)=<input size="4" type="text" name="Gran" value=' + str(gran) + ' /></td>\n'
+    string += '</tr>\n'
+    string += '</table>\n'
+    string += '</td></tr></table>\n'
+    string += '<br/><input type="Submit" value="Analyse Local Maps"/>\n'
+    string += '</form>\n'
+    string += '</div>\n'
+          
+    return string
+
+
 
 def getBodyMenuSynth(username, password,atoms,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,model):
 
@@ -106,7 +200,7 @@ def getBodyMenuSynth(username, password,atoms,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,g
 
     string = '<hr/>\n'
     string += '<p>\n'
-    string += '<h3>PhD project: <font color="DC143C">Leu</font>cip<font color="DC143C">pus</font></h3>\n'
+    string += '<h3>PhD project: <font color="DC143C">Leu</font>cip<font color="DC143C">pus</font> - Atomic <font color="DC143C">Density</font> Explorer</h3>\n'
     string += '</p>\n'
     string += '<p>\n'
     string += 'This webpage interfaces with a C++ executable which calculates synthetic density for the given atoms. This tool is used to explore Gaussian Overlap and Density Drift.\n'
@@ -161,12 +255,11 @@ def getBodyMenuSynth(username, password,atoms,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,g
     
 
 
-def getBodyA(pdb, interpNum, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,interpMethod,D1,D2,D3,D4,D5,D6,D7):    
+def getBodyA(pdb, interpNum, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,interpMethod,Fos,Fcs,D1,D2,D3,D4,D5,D6,D7):    
     string = '<hr/>\n'    
     string += '<p>\n'
-    string += '<h3>PhD project: <font color="DC143C">Leu</font>cip<font color="DC143C">pus</font></h3>\n'    
+    string += '<h3>PhD project: <font color="DC143C">Leu</font>cip<font color="DC143C">pus</font> - Atomic <font color="DC143C">Density</font> Explorer</h3>\n'
     string += '</p>\n'
-
     string += '<p>\n'
     string += 'This webpage interfaces with a C++ executable which calculates density maxima in ccp4 files from the PDBe. \n'
     string += '<i>Only valid for structures with ccp4 files stored on the ebi cloud. </i>\n'    
@@ -203,7 +296,7 @@ def getBodyA(pdb, interpNum, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,
         r7 = 'checked="checked"'
 
 
-    string += '<table><tr><td style="background-color:Crimson;color:AliceBlue">~~ Choose results to display ~~</td><td style="background-color:Crimson;color:AliceBlue"">~~ Interpolation parameters ~~</td><td style="background-color:Crimson;color:AliceBlue"">~~ 3-point coordinates for plane ~~</td></tr><tr>\n'
+    string += '<table><tr><td style="background-color:Crimson;color:AliceBlue">~~ Choose results to display ~~</td><td style="background-color:Crimson;color:AliceBlue"">~~ Calculation parameters ~~</td><td style="background-color:Crimson;color:AliceBlue"">~~ 3-point coordinates for plane ~~</td></tr><tr>\n'
     string += '<td>\n'
     string += '<table style="text-align: left;">\n'
     string += '<tr><td><label for="D1">1) Peaks visual projection to 3 planes</label></td><td><input type="checkbox" id="Data1" name="Data1" value="1" ' + r1 + '></td></tr>\n'
@@ -212,7 +305,7 @@ def getBodyA(pdb, interpNum, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,
     string += '<tr><td><label for="D4">4) Peaks visual projection, atoms only (unit cell)</label></td><td><input type="checkbox" id="Data4" name="Data4" value="1" ' + r4 + '></td></tr>\n'
     string += '<tr><td><label for="D5">5) Density visual projection, all atoms</label></td><td><input type="checkbox" id="Data5" name="Data5" value="1" ' + r5 + '></td></tr>\n'
     string += '<tr><td><label for="D6">6) Atoms visualised on AtomNo</label></td><td><input type="checkbox" id="Data6" name="Data6" value="1" ' + r6 + '></td></tr>\n'
-    string += '<tr><td><label for="D7">7) Visualised electron density planes</label></td><td><input type="checkbox" id="Data7" name="Data7" value="1" ' + r7 + '></td></tr>\n'
+    #string += '<tr><td><label for="D7">7) Visualised electron density planes</label></td><td><input type="checkbox" id="Data7" name="Data7" value="1" ' + r7 + '></td></tr>\n'
     string += '</table>\n'
     string += '</td>'
 
@@ -228,15 +321,16 @@ def getBodyA(pdb, interpNum, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,
         nearestchecked = 'checked="checked"'
         splinechecked = ''
         
-    string += '<p>Interpolation:<br/>'
+    string += '<p><b>Interpolation:</b><br/>'
     string += '<input type="radio" id="spline" name="interpMethod" value="spline" ' + splinechecked + '><label for="spline">B-Spline</label><br/>'
-    string += '<input type="radio" id="nearest" name="interpMethod" value="nearest" ' + nearestchecked + '><label for="nearest">Nearest Neighbour</label><br/><br/><br/><br/>'
+    string += '<input type="radio" id="nearest" name="interpMethod" value="nearest" ' + nearestchecked + '><label for="nearest">Nearest Neighbour</label><br/>'
     string += '</p>'
-
-
-
-    
-
+    string += '<p><b>Fo and Fc numbers:</b><br/>\n'
+    string += 'The main ccp4 file contains 2Fo-Fc<br/>\n'
+    string += 'The diff file contains Fo-Fc<br/>\n'
+    string += 'No Fos: <input type="text" name="Fos" value="' + Fos + '" size="2"/><br/>\n'
+    string += 'No Fcs: <input type="text" name="Fcs" value="' + Fcs + '" size="2"/><br/>\n'
+    string += '</p>\n'
     string += '</div></td>\n<td>\n'
     string += '<div style="text-align: left;"><b>Enter three points to get a density contour slice from the electron density.</b></div>\n'    
     string += '<table style="background-color:AliceBlue;text-align:left;"><tr><td>Central: X=<input size="4" type="text" name="CX" value=' + str(cX) + ' />\n'
@@ -453,11 +547,13 @@ def getBodyD(pdb,data,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ):
 
 
 def getFooter():
-    string = '<hr/>\n'    
+    string = '<hr/>\n'
     string += '<p style="background-color:Crimson;margin:5px;padding:5px;color:AliceBlue;">\n'
-    string += 'Created by: Rachel Alcraft<br/>\n'
-    string += '<a href="https://student.cryst.bbk.ac.uk/~ab002/" title="PhDBio" target="_blank">Birkbeck Student Page - Rachel Alcraft</a>\n'
-    string += '</p>\n'    
+    string += 'Created by: <a href = "mailto:ralcra01@student.bbk.ac.uk" > Rachel Alcraft </a >\n'
+    string += ' ~ Home page: <a href="https://student.cryst.bbk.ac.uk/~ab002/Leucippus.html" title="Leucippus" target="_self">Leucippus</a>\n'
+    string += ' ~ Supervisor: <a href="http://people.cryst.bbk.ac.uk/~ubcg66a/" title="MAW" target="_blank">Mark A. Williams</a>\n'
+    string += ' ~ Birkbeck, University of London, 2021\n'
+    string += '</p>\n'
     string += '</body>\n'
     return string
 

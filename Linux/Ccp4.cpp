@@ -20,7 +20,38 @@ using namespace std;
 typedef unsigned char uchar;
 
 
-Ccp4::Ccp4(string pdbCode, string directory)
+Ccp4::Ccp4(string pdbCode, string directory, int Fos, int Fcs)
+{
+    _fos = Fos;
+    _fcs = Fcs;
+    _noMains = _fos + _fcs;
+	_noDiffs = (_fos - _fcs) - (_fos + _noMains);
+    
+    if (_noDiffs != 0)
+        loadDiffFile(pdbCode,directory);
+    loadMainFile(pdbCode,directory);
+    //now create the peaks matrix
+
+    vector<float> tmpMatrix;
+    for (unsigned int i = 0; i < Matrix.size(); ++i)
+    {
+        float mtx = Matrix[i];
+        mtx *= _noMains;
+        if (_noDiffs != 0)
+        {
+           mtx +=  _noDiffs * MatrixDiff[i];
+        }
+        tmpMatrix.push_back(mtx);
+        //lets not bother to add it to the peaks if it is smaller than the mean
+        if (mtx > _w22_DMEAN)
+            MatrixPeaks.push_back(pair<float, int>(mtx, i));
+        
+    }
+    Matrix = tmpMatrix;
+
+}
+
+void Ccp4::loadMainFile(string pdbCode, string directory)
 {
     PI = 3.14159265;
     _loaded = false;
@@ -124,8 +155,8 @@ Ccp4::Ccp4(string pdbCode, string directory)
         float mtx = tmpData[i];
         Matrix.push_back(mtx);
         //lets not bother to add it to the peaks if it is smaller than the mean
-        if (mtx > _w22_DMEAN)
-            MatrixPeaks.push_back(pair<float, int>(mtx, count));
+        //if (mtx > _w22_DMEAN)
+        //    MatrixPeaks.push_back(pair<float, int>(mtx, count));
 
 
         count++;
@@ -174,6 +205,113 @@ Ccp4::Ccp4(string pdbCode, string directory)
     _dimOrder[0] = W01_NX;
     _dimOrder[1] = W02_NY;
     _dimOrder[2] = W03_NZ;
+}
+void Ccp4::loadDiffFile(string pdbCode, string directory)
+{
+    PI = 3.14159265;
+    _loaded = false;
+    _resolution = 0.0;
+    _endian = isBigEndian();
+
+    _pdbCode = pdbCode;
+    _resolution = 0.78;
+    _directory = directory;
+    //Load the binary data
+
+    //std::ifstream input((_directory + pdbCode + ".ccp4").c_str(), std::ios::binary);
+    //std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(input), {});
+
+    ifstream infile;
+    infile.open((_directory + pdbCode + "_diff.ccp4").c_str(), ios::binary | ios::in);
+    //This opens the WORDS in the ccp4	    
+    infile.read((char*)&W01_NX, sizeof(W01_NX));
+    infile.read((char*)&W02_NY, sizeof(W02_NY));
+    infile.read((char*)&W03_NZ, sizeof(W03_NZ));
+    int MODE = 0;
+    infile.read((char*)&MODE, sizeof(MODE));
+    infile.read((char*)&_w05_NXSTART, sizeof(_w05_NXSTART));
+    infile.read((char*)&_w06_NYSTART, sizeof(_w06_NYSTART));
+    infile.read((char*)&_w07_NZSTART, sizeof(_w07_NZSTART));
+    infile.read((char*)&_w08_MX, sizeof(_w08_MX));
+    infile.read((char*)&_w09_MY, sizeof(_w09_MY));
+    infile.read((char*)&_w10_MZ, sizeof(_w10_MZ));
+    float w11_CELLA_X = 0.0;
+    infile.read((char*)&w11_CELLA_X, sizeof(w11_CELLA_X));
+    float w12_CELLA_Y = 0.0;
+    infile.read((char*)&w12_CELLA_Y, sizeof(w12_CELLA_Y));
+    float w13_CELLA_Z = 0.0;
+    infile.read((char*)&w13_CELLA_Z, sizeof(w13_CELLA_Z));
+    _w14_CELLB_X = 0.0;
+    infile.read((char*)&_w14_CELLB_X, sizeof(_w14_CELLB_X));
+    _w15_CELLB_Y = 0.0;
+    infile.read((char*)&_w15_CELLB_Y, sizeof(_w15_CELLB_Y));
+    _w16_CELLB_Z = 0.0;
+    infile.read((char*)&_w16_CELLB_Z, sizeof(_w16_CELLB_Z));
+    infile.read((char*)&_w17_MAPC, sizeof(_w17_MAPC));
+    infile.read((char*)&_w18_MAPR, sizeof(_w18_MAPR));
+    infile.read((char*)&_w19_MAPS, sizeof(_w19_MAPS));
+    _w17_MAPC -= 1;
+    _w18_MAPR -= 1;
+    _w19_MAPS -= 1;
+
+    float w20_DMIN = 0.0;
+    infile.read((char*)&w20_DMIN, sizeof(w20_DMIN));
+    float w21_DMAX = 0.0;
+    infile.read((char*)&w21_DMAX, sizeof(w21_DMAX));
+    infile.read((char*)&_w22_DMEAN, sizeof(_w22_DMEAN));
+
+    int ISPG = 0;
+    infile.read((char*)&ISPG, sizeof(ISPG));
+    int NYSYMBT = 0;
+    infile.read((char*)&NYSYMBT, sizeof(NYSYMBT));
+    int EXTTYP = 0;
+    infile.read((char*)&EXTTYP, sizeof(EXTTYP));
+    int NVERSION = 0;
+    infile.read((char*)&NVERSION, sizeof(NVERSION));
+    float ORIGIN_X = 0.0;
+    infile.read((char*)&ORIGIN_X, sizeof(ORIGIN_X));
+    float ORIGIN_Y = 0.0;
+    infile.read((char*)&ORIGIN_X, sizeof(ORIGIN_Y));
+    float ORIGIN_Z = 0.0;
+    infile.read((char*)&ORIGIN_Z, sizeof(ORIGIN_Z));
+    //we don;t want any of the rest of this, but we want the last bit as long as the matrix is:
+    vector<float> tmpData;
+    float bulk = 0.0;
+
+    unsigned char temp[sizeof(float)];
+    while (infile.read(reinterpret_cast<char*>(temp), sizeof(float)))
+        //while (infile.read((char*)&bulk, sizeof(float)))
+    {
+        if (false) // big endian method???
+        {
+            unsigned char t = temp[0];
+            temp[0] = temp[3];
+            temp[3] = t;
+            t = temp[1];
+            temp[1] = temp[2];
+            temp[2] = t;
+            float bulk = reinterpret_cast<float&>(temp);
+            tmpData.push_back(bulk);
+        }
+        else
+        {
+            float bulk = reinterpret_cast<float&>(temp);
+            tmpData.push_back(bulk);
+        }
+    }
+    infile.close();
+    _loaded = true;
+
+    int len = W01_NX * W02_NY * W03_NZ;
+    int startBulk = (int)tmpData.size() - len;
+    int count = 0;
+    for (unsigned int i = startBulk; i < tmpData.size(); ++i)
+    {
+        float mtx = tmpData[i];
+        MatrixDiff.push_back(mtx);        
+        count++;
+    }
+    
 }
 double Ccp4::getResolution()
 {

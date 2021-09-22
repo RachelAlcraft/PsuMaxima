@@ -24,6 +24,10 @@ private:
 	double _resolution;
 	//SETINGS
 	string _directory;
+	int _fos;
+	int _fcs;
+	int _noMains;
+	int _noDiffs;
 
 	//THE "WORDS" from the Ccp4 file	
 public:
@@ -67,13 +71,14 @@ private:
 public:
     //The matrix data lazily as a public accessor
 	vector<float> Matrix;
+	vector<float> MatrixDiff;
 	vector<pair<float, int> > MatrixPeaks;
 	vector<pair<pair<double, VectorThree>, pair<double, VectorThree> > > DenLapPeaks;//Both density and laplacian adjusted
 	//vector<pair<float, string> > InterpolatedKeys;
 	//map<string, VectorThree> InterpolatedPeaks;
 
 public:
-	Ccp4(string pdbCode, string directory);
+	Ccp4(string pdbCode, string directory, int Fos, int Fcs);	
 	double getResolution();
 	bool isLoaded();
 	string getPdbCode();	
@@ -86,6 +91,8 @@ public:
 	VectorThree getCRS(int position);
 	void CreatePeaks(Interpolator* interp, int interpNum);
 private:
+	void loadMainFile(string pdbCode, string directory);	
+	void loadDiffFile(string pdbCode, string directory);	
 	VectorThree getNearestPeakRecursive(VectorThree Orig,VectorThree XYZ, Interpolator* interp, bool density, int level, double width);
 };
 
