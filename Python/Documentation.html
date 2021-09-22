@@ -1,19 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en"><head><link rel="icon" href="img/atom.ico"><title>Leucippus Help</title>
+<html>
 <head>
-<link rel="icon" href="img/atom.ico"><title>Leucippus Help</title>
-<style> 
-body {text-align:left;background-color:LightSteelBlue;margin-left: 52px;}
-img {width:85%;border:1px solid MistyRose; }
-table {table-layout:fixed; text-align: center; border: 0.5px solid MistyRose; background: LightSteelBlue; padding: 0px;display: block;table-layout:fixed;}
-td {padding:2px;border:0.5px solid rgb(180, 180, 280,0.75);background-color:AliceBlue;}
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {text-align:left;
+	background-color:LightSteelBlue;
+	padding: 9px;
+	} 
+pre {text-align:left;
+		background-color:AliceBlue;
+		padding: 9px;
+		color:Navy} 
+	img {width:98% }
+	table {width:98%;
+	table-layout:fixed;	
+	margin:0 auto;
+	background-color:Snow;	
+	display: table;} 
+td {border:1px solid Snow;background-color:White;word-wrap:break-word;}
+.collapsible {
+  background-color: cornflowerblue;
+  color: AliceBlue;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+.active, .collapsible:hover {
+  background-color: DeepSkyBlue;
+}
+
+.content {
+  padding: 0 18px;
+  display: none;
+  overflow: hidden;
+  background-color: #f1f1f1;
+}
 a:link{color:MistyRose;}
 a:visited {color:MistyRose;}
 a:hover {color:white;}
 a.change_link_color:link{color: black;}
 a.change_link_color:visited{color: DarkSlateBlue;}
 a.change_link_color:hover{color: Navy;}
-</style></head>
+</style>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HBH4HKT0NM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HBH4HKT0NM');
+</script>
 </head>
 <body>
 
@@ -39,8 +81,107 @@ a.change_link_color:hover{color: Navy;}
 <h3>PhD project: <font color="DC143C">Leu</font>cip<font color="DC143C">pus</font> - Atomic <font color="DC143C">Density</font> Explorer</h3>
 </p>
 <hr/>
+<h3>Leucippus Summary</h3>
+
+<p>This PhD project is exploring ultrahigh-resolution electron density. The software written as part of this project is made available here while under development. 
+The university server uses cgi python scripts to interact between the webpages and an application written in C++.<br/></p>
+<hr/>
+<button type="button" class="collapsible">Peaks Exploration</button>
+<div class="content">
+<p>
+The Peaks Explorer looks through the electron density maps for peaks, returning the largest peaks in order capped as 1,999 is all that is sensible for the pdb file format.</br>
+<h3>Inputs</h3>
+<li><b>Interpolation Method</b></li>
+Nearest Neighbour returns peaks directly from the input matrix, B-Spline interpolates the electron density at a 5th degree b-spline (Thevenaz 2000). 
+These interpoolation methods are used for the electron density returned at atom positions too.
+The algorithm to find peaks has a numerical cap for efficiency.
+
+<br/><br/><li><b>Fo and Fc Numbers</b></li>
+By convention, the ccp4 matrix is 2Fo-Fc and the diff matrix is Fo-Fc. 
+You can have any combination of Fos and Fcs you want (unless you uploaded your own file in which case it will use that only).
+Note that the peaks has an efficiency check using the mean value, so deviating from anything much different to a sum of 1 will be problematic for the peaks 
+(ask me if yuo want to do that, it will be fine for visualisation of the density contour slices).
+
+<h3>Available Results</h3>
+<li><b>Peaks visual projection to 3 planes</b></li>
+The density peaks are visualised with a scatter plot in the XY and Yz and zx planes, with the density as a hue, with the highest density sorted to the top.
+<br/><br/><li><b>Peaks data in pseudo-pdb file</b></li>
+The peaks are saved in a coordinate file of pdb format, extension ent, which can be viewed in either Chimera or Coot (etc).n They use some pseudo codes for identification, with the atom type of H.
+<br/><code>HETATM    1 PK   DEN P   1      -8.169  18.142  13.609  1.00 58.26           H  
+<br/>HETATM    2 PK   LAP P   1      -8.169  18.142  13.609  1.00103.16           H  </code>
+<br/>PK is a made up atom type, P is the chain as it is usually not occupied, DEN are the peaks found as density maxima, LAP are the peaks found using the laplacian minima.
+<br/><img style="width:250px;border:2px;" src="img/peaks.png" alt="View Peaks">
+<br/>With a mix of shading, zoning and transparency they can be usefully loaded, eg in Chimera as above, where the tictacs are the density and laplacian peaks seen together at very slightly different points, green is DEN, blue is LAP (this is an area of research).
+<br/><br/><li><b>Peaks info as html grid</b></li>
+This has the density peaks (not laplacian) listed from greatest, as an html scriollable grid. 
+Of particular use here is the column which shows the nearest atom from the pdb file within 1&#8491;
+<br/><br/><li><b>Peaks visual project, atoms only (unit cell)</b></li>
+Another projection of peaks onto the xy, yz and zx planes, this time not the entire electron density matrix, but only those peaks within 1&#8491; of a peak. Roughly this shows the unit cell, though not exactly.
+<br/><br/><li><b>Density visual projection, all atoms</b></li>
+No peaks at all now, and this is a different run through of the executable, this time we simply project to the xy, yz and zx planes the density of all the atoms in the pdb file. 
+This should look very similar to the peaks for ultrahigh-res structures, very much less so for medium to low res structures.
+<br/><br/><li><b>Atoms visualised on AtomNo</b></li>
+Another view of atoms on the plane, this time visualised on AtomNo purely to give help disentangling the protein structure mentally.
+</p>
+</div>
+<hr/>
+<button type="button" class="collapsible">Local Maps</button>
+<div class="content">
+<p>
+The local maps show planar slices of electron density maps  visualised like a contour map. 
+</br>
+<h3>Inputs</h3>
+<li><b>Interpolation Method</b></li>
+Nearest Neighbour returns the density value at the nearest point on the matrix, B-Spline interpolates the electron density at a 5th degree b-spline (Thevenaz 2000). 
+
+<br/><br/><li><b>Fo and Fc Numbers</b></li>
+By convention, the ccp4 matrix is 2Fo-Fc and the diff matrix is Fo-Fc. 
+You can have any combination of Fos and Fcs you want (unless you uploaded your own file in which case it will use that only).
+
+<br/><br/><li><b>3 points for a plane</b></li>
+A plane must have and can only have 3 points to define it. The centre will be in the centre, the linear point will be upwards, and the planar opint will be anywhere on the plane on the right hand side.
+It is possible that the linear and planar points are not visible if the size is too small.
+
+<br/><br/><li><b>Image size</b></li>
+The image will be the width specified, and will have sampled points at every gap, so the smaller the gap the smoother the image and the longer it will take.
+Start with a reasonable size gap until you have the image you want, then you can perfect it.
+
+<h3>Results</h3>
+<li><b>Density</b></li>
+This is a visualisation of the density directly, interpolated as chosen.
+<br/><br/><li><b>Radiant</b></li>
+This is properly known as the L1 Norm of Del, referred to by me as the radiant for being a kind of gradient (sum of absolute values of 1st partial derivatives) 
+and because the coordinate grid lines radiate out of the maxima positions (which is not necessarily a popular view but I find it useful for identifying maxima).
+<br/><br/><li><b>Laplacian</b></li>
+The second derivative, either the sum of the 2nd partial derivatives, or the sum of the eigenvalues, they are equivalent.
+
+</p>
+</div>
+<hr/>
+<button type="button" class="collapsible">User Uploads</button>
+<div class="content">
+ <p>  
+You can upload your own ccp4 and pdb files to analyse. You are responsible for them being in the correct format of the standard ccp4 or pdb formats - I can't test them 
+(well, if you have any difficulty I can debug them if you get in touch).
+</br>
+<h3>Inputs</h3>
+<li><b>4 character code</b></li>
+This is the name by which your data will be referred (it could be any length actually), not the file name.
+
+<br/><br/><li><b>Ccp4 File</b></li>
+It must be in the <a class="change_link_color" href="https://www.ccpem.ac.uk/mrc_format/mrc2014.php" title="Ccp4" target="_blank">ccp4 format</a>
+
+<br/><br/><li><b>Pdb File</b></li>
+It must be in the <a class="change_link_color" href="https://www.wwpdb.org/documentation/file-format-content/format33/v3.3.html" title="Pdb" target="_blank">pdb format</a>
+<br/>However, you don't have to enter a pdb file, it is used for distance between atoms and peaks comparison. If you don't want to use one, you need to enter a dummy pdb file, it needs to be at least 2 characters long (it won't allow you to upload an empty file).
+<br/>In this case, when it looks for nearby atoms, it just won't find any.  
+</p>
+ 
+</div>
+<hr/>
+
+<hr/>
 <div style="background-color:Silver;padding:3px">
-<p>Documentation currently under construction</p>
 <hr/>
 <h3>References</h3>
 <li>Afonine, Pavel V., Vladimir Y. Lunin, Nicolas Muzet, and Alexandre Urzhumtsev. ‘On the Possibility of the Observation of Valence Electron Density for Individual Bonds in Proteins in Conventional Difference Maps’. Acta Crystallographica Section D Biological Crystallography 60, no. 2 (1 February 2004): 260–74. https://doi.org/10.1107/S0907444903026209.
@@ -54,8 +195,6 @@ a.change_link_color:hover{color: Navy;}
 
 </div>
 
-
-
 <hr/>
 <p style="background-color:Crimson;margin:5px;padding:5px;color:AliceBlue;">
 Created by: <a href = "mailto:ralcra01@student.bbk.ac.uk" > Rachel Alcraft </a >
@@ -63,4 +202,26 @@ Created by: <a href = "mailto:ralcra01@student.bbk.ac.uk" > Rachel Alcraft </a >
  ~ Supervisor: <a href="http://people.cryst.bbk.ac.uk/~ubcg66a/" title="MAW" target="_blank">Mark A. Williams</a>
  ~ Birkbeck, University of London, 2021
 </p>
+</div>
+
+<script>
+var coll = document.getElementsByClassName("collapsible");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  });
+}
+</script>
+
 </body>
+</html>
+
+

@@ -76,9 +76,10 @@ def runCppModule(pdb,interpNum,Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,
     df1a,df1b,df1c,df3,df4,df5,df6 = pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame()
     if True:
       ### CALL PEAKS ######################################
-      if D1 or D2 or D3 or D4:
+      if D1 or D2 or D3 or D4:        
         commandlinePeaks = "PEAKS|" + pdb + "|" + str(interpNum) + "|" + str(Fos) + "|"+ str(Fcs) + "|"
-        #print('...called Leucippus with params:' + commandlinePeaks + ' ...')                      
+        #print('...called Leucippus with params:' + commandlinePeaks + ' ...')
+        #sys.stdout.flush() # update the user interface
         #------------------------------------------------
         pigP =  sub.Popen(["/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima", commandlinePeaks], stdout=sub.PIPE)
         resultP = pigP.communicate(input=b"This is sample text.\n")

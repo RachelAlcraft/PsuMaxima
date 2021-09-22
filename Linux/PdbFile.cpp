@@ -53,25 +53,29 @@ string PdbFile::getPdbCode()
 
 Atom* PdbFile::getNearest(double x, double y, double z)
 {
-	Atom* nearest = &Atoms[0];
-	double neardistance = nearest->distance(x, y, z);
-	for (unsigned int i = 1; i < Atoms.size(); ++i)
+	if (Atoms.size() > 0)
 	{
-		Atom* atm = &Atoms[i];
-        if (atm->Element != "H")
-        {
-            double distance = atm->distance(x, y, z);
-            if (distance < neardistance)
-            {
-                nearest = atm;
-                neardistance = distance;
-            }
-        }
+		Atom* nearest = &Atoms[0];
+		double neardistance = nearest->distance(x, y, z);
+		for (unsigned int i = 1; i < Atoms.size(); ++i)
+		{
+			Atom* atm = &Atoms[i];
+			if (atm->Element != "H")
+			{
+				double distance = atm->distance(x, y, z);
+				if (distance < neardistance)
+				{
+					nearest = atm;
+					neardistance = distance;
+				}
+			}
+		}
+		if (neardistance < 1.1)
+			return nearest;
+		else
+			return NULL;
 	}
-
-
-	if (neardistance < 1.1)
-		return nearest;
 	else
 		return NULL;
+	
 }

@@ -62,7 +62,7 @@ if 'fileCcp4' in form:
 
 if 'filePdb' in form:
   fileitem = form["filePdb"].value
-  if len(fileitem) > 20:
+  if len(fileitem) > 2:
       open(cfg.UserDataPdbDir + 'pdbuser_' + userCode + '.ent', 'wb').write(fileitem)
       UserPdb = True
 
