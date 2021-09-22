@@ -23,7 +23,7 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
 {
     ccp4->CreatePeaks(interp,interpNum);
 
-    unsigned int maxdensity = 10000;
+    unsigned int maxdensity = 9999;
     if (ccp4->DenLapPeaks.size() < maxdensity)
         maxdensity = (int)ccp4->DenLapPeaks.size();
                 
@@ -31,14 +31,17 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
     //"REMARK   1                                                                      "
     //"HETATM  286  O   HOH B  57      17.652   2.846  -0.887  1.00 28.92           O  "
     cout << "BEGIN_CHIMERAPEAKS\n";
-    cout << "REMARK   1 Peaks for " << pdb->getPdbCode() << " calculated by Leucippus (Birkbeck College 2021)\n";    
-    cout << "REMARK   2 Dummy atoms positioned at peaks calculated using both density and the laplacian\n";    
-    cout << "REMARK   3 All atoms have dummy type PK; element H; and chain P\n";    
-    cout << "REMARK   4 Residue DEN is for density calculated peaks and LAP for laplacian calculated\n"; 
+    cout << "REMARK   1 Peaks for " << pdb->getPdbCode() << " calculated by Leucippus (Birkbeck University of London 2021).\n";    
+    cout << "REMARK   2 Software developed by Rachel Alcraft (2021) - supervisor Mark A. Williams.\n";    
+    cout << "REMARK   3 Dummy atoms positioned at peaks calculated using both density and the laplacian.\n";    
+    cout << "REMARK   4 All atoms have dummy type PK; element H; and chain P.\n";    
+    cout << "REMARK   5 Residue DEN is for density calculated peaks and LAP for laplacian calculated.\n"; 
     int atomNo = 0;
+    int resNo = 0;
     for (unsigned int i = 0; i < maxdensity; ++i)
     {
         ++atomNo;
+        ++resNo;
         pair<double, VectorThree> densityPair = ccp4->DenLapPeaks[i].first;
         pair<double, VectorThree> laplacianPair = ccp4->DenLapPeaks[i].second;
                 
@@ -51,8 +54,8 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
         cout << helper::getWordStringGaps("PK",3) << "PK";                                          //3. Atom type, eg CA, CB...        
         cout << helper::getWordStringGaps("DEN",6) << "DEN";                                        //4. Amino Acid        
         cout << helper::getWordStringGaps("P",2)<< "P";                                            //5. Chain        
-        cout << helper::getNumberStringGaps(atomNo,0,5) << atomNo;                                  //6. Residue number        
-        cout << helper::getNumberStringGaps(XYZ.A,3,11) << setprecision(3) << fixed << XYZ.A;       //7. x coord
+        cout << helper::getNumberStringGaps(resNo,0,4) << resNo;                                  //6. Residue number        
+        cout << helper::getNumberStringGaps(XYZ.A,3,12) << setprecision(3) << fixed << XYZ.A;       //7. x coord
         cout << helper::getNumberStringGaps(XYZ.B,3,8) << setprecision(3) << fixed << XYZ.B;        //8. y coord
         cout << helper::getNumberStringGaps(XYZ.C,3,8) << setprecision(3) << fixed << XYZ.C;        //9. z coord                        
         cout << helper::getNumberStringGaps(1,2,6) << "1.00";                                       //10. Occupancy        
@@ -69,8 +72,8 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
         cout << helper::getWordStringGaps("PK",3) << "PK";                                          //3. Atom type, eg CA, CB...        
         cout << helper::getWordStringGaps("LAP",6) << "LAP";                                        //4. Amino Acid        
         cout << helper::getWordStringGaps("P",2)<< "P";                                            //5. Chain        
-        cout << helper::getNumberStringGaps(atomNo,0,5) << atomNo;                                  //6. Residue number        
-        cout << helper::getNumberStringGaps(XYZ.A,3,11) << setprecision(3) << fixed << XYZ.A;       //7. x coord
+        cout << helper::getNumberStringGaps(resNo,0,4) << resNo;                                  //6. Residue number        
+        cout << helper::getNumberStringGaps(XYZ.A,3,12) << setprecision(3) << fixed << XYZ.A;       //7. x coord
         cout << helper::getNumberStringGaps(XYZ.B,3,8) << setprecision(3) << fixed << XYZ.B;        //8. y coord
         cout << helper::getNumberStringGaps(XYZ.C,3,8) << setprecision(3) << fixed << XYZ.C;        //9. z coord                        
         cout << helper::getNumberStringGaps(1,2,6) << "1.00";                                       //10. Occupancy        
@@ -84,7 +87,7 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
         MASTER       40    0    0    0    0    0    0    6 2930    2    0   29
         */                      
     cout << helper::getWordStringGaps("MASTER",6) << "MASTER";//1 -  6       Record name    "MASTER"             
-    cout << helper::getNumberStringGaps(4,0,9) << 3;//11 - 15       Integer        numRemark     Number of REMARK records
+    cout << helper::getNumberStringGaps(4,0,9) << 5;//11 - 15       Integer        numRemark     Number of REMARK records
     cout << helper::getNumberStringGaps(0,0,5) << 0;//16 - 20       Integer        "0"
     cout << helper::getNumberStringGaps(0,0,5) << 0;//21 - 25       Integer        numHet        Number of HET records
     cout << helper::getNumberStringGaps(0,0,5) << 0;//26 - 30       Integer        numHelix      Number of HELIX records
@@ -363,4 +366,3 @@ void CoutReports::coutSynthetic(string atoms, string model, Algorithmic* interp,
     cout << "END_POSITIONSLICE\n";
 
 }
- 

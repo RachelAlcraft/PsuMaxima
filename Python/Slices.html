@@ -44,27 +44,18 @@ This webpage interfaces with a C++ executable which calculates synthetic density
 
 <hr/>
  <div>
-<form method="post" action="/cgi-bin/cgiwrap/ab002/PhD/Synthetic.cgi" accept-charset="UTF-8">
+<form method="post" action="/cgi-bin/cgiwrap/ab002/PhD/Slices.cgi" accept-charset="UTF-8">
 <b>~~ Application access credentials ~~</b><br/><i>You must enter a valid email address to access this software. Passwords will be forthcoming.</i><br/>Email address: <input type='text' name='email' value='' /> Password: <input type='text' name='password' value='not used' /><hr/>
 
-<h3>Synthetic Density Analysis</h3>
-<p>
-Each row is an atom with type, coordinates, residue number (for bond electrons), bfactor, occupancy, arc parameters (end positions and number of positions).</br>
-Example atoms have been entered for you which you can edit, the end positions are blank as no motion is being modelled. The format is a csv file, with the header above the text area (start the line with @).</br></br>
-<b>@Type,X,Y,Z,ResNo,BFactor,Occupancy,StartX,StartY,StartZ,EndX,EndY,EndZ,Count</b></br> 
-<textarea style="white-space:pre-wrap;" id="atoms" name="atoms" rows="5" cols="120">
-@CA,9.5,9.079,14.937,1,2.4,1.00,-,-,-,-,-,-,-
-@C,9.373,7.688,15.546,2,2.6,1.00,-,-,-,-,-,-,-
-@O,9.64,7.542,16.748,3,2.6,1.00,-,-,-,-,-,-,-
-  </textarea>
-<p>
+<h3>Local Map Visualisation</h3>
+Enter 4 digit pdb code: <input type="text" name="dataInput" value=1ejg /><br/><br/>
 
 <table><tr><td style="background-color:Crimson;color:AliceBlue"">~~ Model Paramaters parameters ~~</td><td style="background-color:Crimson;color:AliceBlue"">~~ 3-point coordinates for plane ~~</td></tr>
 <tr><td>
 <div style="text-align: left;">
-<p>Model:<br/>
-<input type="radio" id="iam" name="model" value="iam" checked="checked"><label for="iam">Independent Atom Model</label><br/>
-<input type="radio" id="bem" name="model" value="bem"><label for="bem">Bond Electron Model</label><br/><br/><br/><br/>
+<p>Interpolation:<br/>
+<input type="radio" id="spline" name="interpMethod" value="spline" checked="checked"><label for="spline">B-Spline</label><br/>
+<input type="radio" id="nearest" name="interpMethod" value="nearest"><label for="nearest">Nearest Neighbour</label><br/><br/><br/><br/>
 </p>
 </div></td>
 <td>
@@ -85,7 +76,7 @@ Z=<input size="4" type="text" name="PZ" value=16.748 /></td></tr></table>
 </tr>
 </table>
 </td></tr></table>
-<br/><input type="Submit" value="Analyse Synthetic Density"/>
+<br/><input type="Submit" value="Analyse Local Maps"/>
 </form>
 </div>
 

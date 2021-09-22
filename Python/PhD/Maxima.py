@@ -16,6 +16,7 @@ import subprocess as sub
 import pandas as pd
 from io import StringIO as sio
 import sys
+import Config as cfg
 
 def getFile(filename, url):
   import urllib.request
@@ -33,7 +34,7 @@ def getCsvFromCppResults(cppResults,ID):
     #print(startPos,endPos)
     return pd.DataFrame()
   
-def doWeHaveAllFiles(pdbCode):
+def doWeHaveAllFiles(pdbCode):  
   haveED = False
   havePDB = False
   import os
@@ -43,6 +44,11 @@ def doWeHaveAllFiles(pdbCode):
   origPdb = directory + 'Pdb/pdb' + pdbCode + '.ent'
   ccp4File = directory + 'Ccp4/' + pdbCode + '.ccp4'
   ccp4Diff = directory + 'Ccp4/' + pdbCode + '_diff.ccp4'
+
+  if pdbCode[:5] == "user_":
+    origPdb = cfg.UserDataPdbDir + 'pdb' + pdbCode + '.ent'
+    ccp4File = cfg.UserDataCcp4Dir + pdbCode + '.ccp4'
+    ccp4Diff = cfg.UserDataCcp4Dir + pdbCode + '.ccp4' # no diff file
 
   if os.path.isfile(origPdb):
     havePDB = True

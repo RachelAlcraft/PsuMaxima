@@ -112,7 +112,22 @@ else:
 
 peaksTime = 50#10 + (interpNum*interpNum)
 if interpMethod == "nearest":
-  peaksTime = 15 
+  peaksTime = 15
+
+#### LOADING A FILE FROM THE PLOAD BUTTON: https://cgi.tutorial.codepoint.net/file-upload
+# A nested FieldStorage instance holds the file
+#fileitem = form.getvalue('file')
+# Test if the file was uploaded
+#if fileitem.filename:
+#    # strip leading path from file name
+#    # to avoid directory traversal attacks
+#    fn = os.path.basename(fileitem.filename)
+#    print(fn)
+#    open('files/' + fn, 'wb').write(fileitem.file.read())
+#    print(fileitem.file.read())
+#    sys.stdout.flush() # update the user interface
+    
+    
 
 
 access = pwb.userSuccess(username,password)

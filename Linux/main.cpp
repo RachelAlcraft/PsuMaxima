@@ -13,6 +13,8 @@ int main(int argc, char* argv[])
     // **** LINUX PANDORA **** //
     string ccp4directory = "/d/projects/u/ab002/Thesis/PhD/Data/Ccp4/";
     string pdbdirectory = "/d/projects/u/ab002/Thesis/PhD/Data/Pdb/";
+    string userCcp4directory = "/d/projects/u/ab002/Thesis/PhD/Data/UserCcp4/";
+    string userPdbdirectory = "/d/projects/u/ab002/Thesis/PhD/Data/UserPdb/";
     if (!isLinux)
     {
         // **** Windows laptop rachel  **** //
@@ -43,9 +45,9 @@ int main(int argc, char* argv[])
     // Inputs euither through code or command line called from python
     string INPUT = "";
     INPUT = "PEAKS|1ejg|5|";
-    INPUT = "ATOMS|1ejg|5|";
+    //INPUT = "ATOMS|1ejg|5|";
     //INPUT = "SLICES|1ejg|5|9.373-7.688-15.546|9.5-9.079-14.937|9.64-7.542-16.748|5-0.1";
-    INPUT = "SYNTHETIC|@N,0.10,0.10,0.20,1,2.4,1.00,,,,, @CA,0.10,1.10,0.20,2,2.6,1.00,,,,, |iam|9.373-7.688-15.546|9.5-9.079-14.937|9.64-7.542-16.748|5-0.1";
+    //INPUT = "SYNTHETIC|@N,0.10,0.10,0.20,1,2.4,1.00,,,,, @CA,0.10,1.10,0.20,2,2.6,1.00,,,,, |iam|9.373-7.688-15.546|9.5-9.079-14.937|9.64-7.542-16.748|5-0.1";
     if (argc >= 2)
         INPUT = argv[1];
     if (true)
@@ -97,6 +99,15 @@ int main(int argc, char* argv[])
         }
 
         cout << "END_USERINPUTS\n";
+    }
+    //if the coder is USER_ tghen we have user uploaded data    
+    
+    size_t user = pdb.find("user_");
+    if (user != string::npos)
+    {
+        ccp4directory = userCcp4directory;
+        pdbdirectory = userPdbdirectory;
+
     }
 
     if (COMMAND == "SYNTHETIC")

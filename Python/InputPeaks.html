@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="icon" href="img/atom.ico"><title>Leucippus Help</title>
+<link rel="icon" href="img/atom.ico"><title>Leucippus Peaks</title>
 <style> 
 body {text-align:left;background-color:LightSteelBlue;margin-left: 52px;}
 img {width:85%;border:1px solid MistyRose; }
@@ -10,9 +10,6 @@ td {padding:2px;border:0.5px solid rgb(180, 180, 280,0.75);background-color:Alic
 a:link{color:MistyRose;}
 a:visited {color:MistyRose;}
 a:hover {color:white;}
-a.change_link_color:link{color: black;}
-a.change_link_color:visited{color: DarkSlateBlue;}
-a.change_link_color:hover{color: Navy;}
 </style></head>
 </head>
 <body>
@@ -33,28 +30,38 @@ a.change_link_color:hover{color: Navy;}
  ~  <a href='Documentation.html' title='Docs' target='_self'>Documentation</a>
 ~ <a href='https://www.bbk.ac.uk/departments/biology/' title='Birkbeck' target='_blank'>Birkbeck Biology</a>
 </p>
-
 <hr/>
 <p>
 <h3>PhD project: <font color="DC143C">Leu</font>cip<font color="DC143C">pus</font> - Atomic <font color="DC143C">Density</font> Explorer</h3>
 </p>
 <hr/>
-<div style="background-color:Silver;padding:3px">
-<p>Documentation currently under construction</p>
+<h3>User File Upload</h3>
+<p>You may upload a ccp4 format file of electron density, and a matching pdb file with atomic coordinates here. You will then be able to use those files in Leucippus with the code we return to you in place of a pdb code.<br/>
+Note that we expect a matching electron densiity and pdb file, the atomic coordinates are used for distance reports. If you do not have a pdb file you can enter a blank file.<br/>
+Note also that the Fo and Fc num that are passed in for ccp4 files are not used for user files - we assume you have manipulated the file into your desired format alresdy (it saves you also uploading a diff file).<br/><br/>
+
+<b>Please be aware that we do not keep the data for any guaranteed length of time and thise files are available for you to access and use on our servers during your session.</b>
+</p>
+
 <hr/>
-<h3>References</h3>
-<li>Afonine, Pavel V., Vladimir Y. Lunin, Nicolas Muzet, and Alexandre Urzhumtsev. ‘On the Possibility of the Observation of Valence Electron Density for Individual Bonds in Proteins in Conventional Difference Maps’. Acta Crystallographica Section D Biological Crystallography 60, no. 2 (1 February 2004): 260–74. https://doi.org/10.1107/S0907444903026209.
-</li>
-<li>Thévenaz, P., Blu, T., &#38; Unser, M. (2000). Interpolation Revisited. <i>IEEE TRANSACTIONS ON MEDICAL IMAGING</i>, <i>19</i>(7), 739.</li>
-<li>Yao, S., &#38; Moseley, H. N. B. (2019). <i>A chemical interpretation of protein electron density maps in the worldwide protein data bank</i></li>
-<h3>Web Resources</h3>
-<li><a class="change_link_color" href='https://www.phenix-online.org/presentations/latest/pavel_maps_2.pdf'' title='PavelAfonine' target='_blank'>Pavel Afonine: Some Facts About Maps</a></li>
-<li><a class="change_link_color" href='https://gemmi.readthedocs.io/en/latest/' title='Gemmi' target='_blank'>CCP4 Project GEMMI: library for structural biology</a></li>
-<li><a class="change_link_color" href='https://chem.libretexts.org/Bookshelves/Inorganic_Chemistry/Modules_and_Websites_(Inorganic_Chemistry)/Crystallography/X-rays/CromerMann_coefficients'' title='Libre' target='_blank'>LibreTexts: Cromer-Mann coefficients</a></li>
+
+ <div>
+
+<form method="post" action="/cgi-bin/cgiwrap/ab002/PhD/Upload.cgi" enctype="multipart/form-data" >
+<b>~~ Application access credentials ~~</b><br/><i>You must enter a valid email address to access this software. Passwords will be forthcoming.</i><br/>Email address: <input type='text' name='email' value='' /> Password: <input type='text' name='password' value='not used' /><hr/>
+
+<hr/>
+
+Enter a 4 character code for your files: <input type="text" name="userCode" value="0abc"><br/><br/>
+Ccp4 File (ccp4 extension): <input type="file" name="fileCcp4"><br/><br/>
+Pdb File (ent extension): <input type="file" name="filePdb"><br/><br/>
+<input type="submit" value="Upload"></p>
+
+
+
+</form>
 
 </div>
-
-
 
 <hr/>
 <p style="background-color:Crimson;margin:5px;padding:5px;color:AliceBlue;">
