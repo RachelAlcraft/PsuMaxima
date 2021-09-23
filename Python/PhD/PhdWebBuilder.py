@@ -93,7 +93,7 @@ def getHeader():
     string += " ~  <a href='/../../~ab002/InputPeaks.html' title='Home' target='_self'>User Uploads</a>\n"
     string += ' ~  <a href="/../../~ab002/Peaks.html" title="Home" target="_self">Peaks Explorer</a>'
     string += " ~  <a href='/../../~ab002/Slices.html' title='Home' target='_self'>Local Maps</a>\n"
-    string += " ~  <a href='/../../~ab002/Documentation.html' title='Docs' target='_self'>Documentation</a>"    
+    string += " ~  <a href='/../../~ab002/Documentation.html' title='Docs' target='_self'>About</a>"    
     string += " ~ <a href='https://www.bbk.ac.uk/departments/biology/' title='Birkbeck' target='_blank'>Birkbeck Biology</a>"
     string += '</p>'
     
