@@ -27,6 +27,11 @@ public:
 	double getDxDx(double x, double y, double z, double val);
 	double getDyDy(double x, double y, double z, double val);
 	double getDzDz(double x, double y, double z, double val);
+	VectorThree getNearbyAtomPeak(VectorThree XYZ, bool density);
+	VectorThree getNearbyGridPeak(VectorThree XYZ, bool density);	
+
+protected:
+	VectorThree getNearestPeakRecursive(VectorThree Orig, VectorThree XYZ, bool density, int level, double width, int cap, bool invalidNonConvergence);
 };
 
 class Nearest :public Interpolator

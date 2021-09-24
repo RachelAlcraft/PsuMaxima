@@ -33,13 +33,16 @@ def userSuccess(email,password):
     
     return isok
 
-def userOwnWebPage(email,string):
+def userOwnWebPage(email,string,debug=False):
     isok = True
     #Does the email address contaion an @ sign?
     on_at = email.split('@')
     pageName = email#on_at[0] + "_" + on_at[1]
 
     directory = '/d/user6/ab002/WWW/Users/'
+    if debug:
+        directory = 'C:/Dev/Github/ProteinDataFiles/LeicippusTesting/'
+
     filename = directory + pageName + ".html"
             
     f = open(filename, "w")
@@ -59,17 +62,24 @@ def userOwnWebPage(email,string):
     
     return res
 
-def getHeader():
+def getHeader(Geometry=False):
     string = '<!DOCTYPE html>\n'
     string += '<html lang="en">\n'
     string += '<head>\n'
     string += '<title>Leucippus Results</title>\n'   
     string += '<link rel="icon" href="/../../../~ab002/img/atom.ico" type="image/x-icon">\n'         
     string += '<style>\n'
+
     string += 'body {text-align:left;background-color:LightSteelBlue;margin-left: 52px;}\n'
-    string += 'img {width:85%;border:1px solid MistyRose; }\n'    
-    string += 'table {table-layout:fixed; text-align: center; border: 0.5px solid MistyRose; background: LightSteelBlue; padding: 0px;display: block;table-layout:fixed;}\n'
-    string += 'td {padding:2px;border:0.5px solid rgb(180, 180, 280,0.75);background-color:AliceBlue;}\n'     
+
+    if Geometry:
+        string += 'img {width:95%;border:1px solid MistyRose; }\n'
+        string += 'table{font-size:0.8vw;width:95%;table-layout:fixed;display:table;margin:0 auto;background-color:LightSteelBlue;}\n'
+        string += 'td{border:1px solid MistyRose; background-color:AliceBlue;}\n'
+    else:
+        string += 'img {width:85%;border:1px solid MistyRose; }\n'
+        string += 'table {table-layout:fixed; text-align: center; border: 0.5px solid MistyRose; background: LightSteelBlue; padding: 0px;display: block;table-layout:fixed;}\n'
+        string += 'td {padding:2px;border:0.5px solid rgb(180, 180, 280,0.75);background-color:AliceBlue;}\n'
     string += 'a:link{color:MistyRose;}\n'
     string += 'a:visited {color:MistyRose;}\n'
     string += 'a:hover {color:white;}\n'
@@ -84,7 +94,7 @@ def getHeader():
     string += '<h1>\n'
     string += '<div style="background-color:black;padding:10px">\n'
     string += '<font color="DC143C">Leu</font><font color="AliceBlue">cip</font><font color="DC143C">pus</font>\n'
-    string += '<img style="width:25px;border:2px;" src="/../../../~ab002/img/atom.ico" alt="Leucippus Atom">\n'
+    string += '<img style="width:25px;border:2px;" src="https://student.cryst.bbk.ac.uk/~ab002/img/atom.ico" alt="Leucippus Atom">\n'
     string += '<font color="AliceBlue">Atomic </font><font color="Crimson">Density </font><font color="AliceBlue">Explorer</font>\n'
     string += '</div>\n'
     string += '</h1>'
@@ -365,7 +375,7 @@ def getBodyRun0(pdb):
     string += '<p>EBI Link <a class="change_link_color" href="https://www.ebi.ac.uk/pdbe/entry/pdb/' + pdb + '" title="EBI link" target="_blank">Open protein pdb ebi link</a></p>'
     return string
     
-def getBodyRun1(pdb, dataABC, asCsv,D1,D2,D3,D4):
+def getBodyRun1(pdb, dataABC, asCsv,D1,D2,D3,D4,debug=False):
     string = ""
     if len(dataABC) > 0:
         dataA = dataABC[0]# peaks file
@@ -377,7 +387,7 @@ def getBodyRun1(pdb, dataABC, asCsv,D1,D2,D3,D4):
         if D1 or D2 or D3:
             csvhtml, csvtext = dataFrameToText(dataA)
             chimhtml, chimtext = dataFrameToText(dataC)
-            savePeaksFile(pdb,csvtext,chimtext)
+            savePeaksFile(pdb,csvtext,chimtext,debug=debug)
             
         if D1:
             string += '<hr/>\n'
@@ -425,22 +435,43 @@ def getBodyRun1(pdb, dataABC, asCsv,D1,D2,D3,D4):
         string = '<font color="DC143C"><h1>Exe failed to create data</h1></font>'
     return string
     
-def getBodyRun2(pdb, dataABC,D5,D6):
+def getBodyRun2(pdb, dataABC,D5,D6,D7,D8,debug=False):
     string = ""
     if len(dataABC) > 0:        
-        dataC = dataABC[0]
+        dataA = dataABC[0]#atomsd data
+        dataB = dataABC[1]#pseudo pdb density
+        dataC = dataABC[2]#pseudo pdb laplacian
                         
         ### DATA 5 Density projection, all atoms #################################
         if D5:
             string += '<hr/>\n'
             string += '<h4>5) Density visual projection, all atoms</h4>'
-            string += dataFrameToImages(pdb,dataC,"X","Y","Z","Density","cubehelix_r")
+            string += dataFrameToImages(pdb,dataA,"X","Y","Z","Density","cubehelix_r")
 
         ### DATA 6 Atom scatter plot, all atoms #################################
         if D6:
             string += '<hr/>\n'
             string += '<h4>6) Atoms visualised on AtomNo</h4>'
-            string += dataFrameToImages(pdb,dataC,"X","Y","Z","AtomNo","gist_ncar")                    
+            string += dataFrameToImages(pdb,dataA,"X","Y","Z","AtomNo","gist_ncar")
+
+        if D7:
+            csvhtml, csvtext = dataFrameToText(dataB)
+            savePseudoFile(pdb, csvtext, "density", debug=debug)
+            pathname = 'https://student.cryst.bbk.ac.uk/~ab002/Peaks/density_' + pdb + '.ent'
+            string += '<hr/>\n'
+            string += '<h4>2b) Pdb File adjusted to Density Peaks </h4>'
+            string += '<a class="change_link_color" href="' + pathname + '" download='+'density_'+pdb + '.ent >Download density adjusted pdb file</a><br/><br/>'
+            string += csvhtml
+
+        if D8:
+            csvhtml, csvtext = dataFrameToText(dataC)
+            savePseudoFile(pdb, csvtext, "laplacian", debug=debug)
+            pathname = 'https://student.cryst.bbk.ac.uk/~ab002/Peaks/laplacian_' + pdb + '.ent'
+            string += '<hr/>\n'
+            string += '<h4>2b) Pdb File Adjusted to Laplacian Peaks </h4>'
+            string += '<a class="change_link_color" href="' + pathname + '" download='+'laplacian_'+pdb + '.ent >Download laplacian adjusted pdb file</a><br/><br/>'
+            string += csvhtml
+
     else:
         string = '<font color="DC143C"><h1>Exe failed to create data</h1></font>'
     return string
@@ -619,20 +650,34 @@ def dataFrameToText(df):
     html += "</TEXTAREA>"
     return html,text
 
-def savePeaksFile(pdb, text,text2):
-    filename = '/d/user6/ab002/WWW/Peaks/peaks_' + pdb + '.csv'            
+def savePeaksFile(pdb, text,text2,debug=False):
+    filenameA = '/d/user6/ab002/WWW/Peaks/peaks_' + pdb + '.csv'
+    filenameB = '/d/user6/ab002/WWW/Peaks/peaks_' + pdb + '.ent'
+    filename = 'C:/Dev/Github/ProteinDataFiles/LeicippusTesting/PdbFiles/' + type + '_' + pdb + '.csv'
+    if debug:
+        filenameA = 'C:/Dev/Github/ProteinDataFiles/LeicippusTesting/PdbFiles/peaks_' + pdb + '.csv'
+        filenameB = 'C:/Dev/Github/ProteinDataFiles/LeicippusTesting/PdbFiles/peaks_' + pdb + '.csv'
+
+    if not os.path.isfile(filenameA) or True:#for now save it always while the format is changing TODO
+        f = open(filenameA, "w")
+        f.write(text)
+        f.close()
+
+    if not os.path.isfile(filenameB) or True:
+        f = open(filenameB, "w")
+        f.write(text2)
+        f.close()
+
+def savePseudoFile(pdb, text,type,debug=False):
+    filename = '/d/user6/ab002/WWW/Peaks/' + type + '_' + pdb + '.csv'
+    if debug:
+        filename = 'C:/Dev/Github/ProteinDataFiles/LeicippusTesting/PdbFiles/' + type + '_' + pdb + '.csv'
+
     if not os.path.isfile(filename) or True:#for now save it always while the format is changing TODO
         f = open(filename, "w")
         f.write(text)
         f.close()
 
-    filename = '/d/user6/ab002/WWW/Peaks/peaks_' + pdb + '.ent'            
-    if not os.path.isfile(filename) or True:
-        f = open(filename, "w")
-        f.write(text2)
-        f.close()
-    
-    
 
 def getPlotImage(fig, ax):
     img = io.BytesIO()

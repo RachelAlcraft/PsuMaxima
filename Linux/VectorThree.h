@@ -26,5 +26,6 @@ public:
     double getAngle(VectorThree vec);
     string getKey();
     vector<VectorThree> getArcPositions(VectorThree end, int count);
+    VectorThree reverse();
 };
 

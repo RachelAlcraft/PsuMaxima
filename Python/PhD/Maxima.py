@@ -34,16 +34,21 @@ def getCsvFromCppResults(cppResults,ID):
     #print(startPos,endPos)
     return pd.DataFrame()
   
-def doWeHaveAllFiles(pdbCode):  
+def doWeHaveAllFiles(pdbCode,debug=False):
   haveED = False
   havePDB = False
   import os
-  directory = '/d/projects/u/ab002/Thesis/PhD/Data/'
   allFiles = True
-  #Files from the PDBE	
+  #Files from the PDBE
+  directory = '/d/projects/u/ab002/Thesis/PhD/Data/'
   origPdb = directory + 'Pdb/pdb' + pdbCode + '.ent'
   ccp4File = directory + 'Ccp4/' + pdbCode + '.ccp4'
   ccp4Diff = directory + 'Ccp4/' + pdbCode + '_diff.ccp4'
+  if debug:
+    directory = 'C:/Dev/Github/ProteinDataFiles/'
+    origPdb = directory + 'pdb_data/pdb' + pdbCode + '.ent'
+    ccp4File = directory + 'ccp4_data/' + pdbCode + '.ccp4'
+    ccp4Diff = directory + 'ccp4_data/' + pdbCode + '_diff.ccp4'
 
   if pdbCode[:5] == "user_":
     origPdb = cfg.UserDataPdbDir + 'pdb' + pdbCode + '.ent'
@@ -71,9 +76,14 @@ def doWeHaveAllFiles(pdbCode):
       
   return havePDB,haveED
 
-def runCppModule(pdb,interpNum,Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,D4,D5,D6,D7):        
+def runCppModule(pdb,interpNum,Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,D4,D5,D6,D7,D8,D9,debug=False):
     #try:
-    df1a,df1b,df1c,df3,df4,df5,df6 = pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame()
+    df1a,df1b,df1c = pd.DataFrame(),pd.DataFrame(),pd.DataFrame()
+    df2a, df2b, df2c = pd.DataFrame(), pd.DataFrame(), pd.DataFrame()
+    df4, df5, df6 = pd.DataFrame(),pd.DataFrame(),pd.DataFrame()
+    exePath ="/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima"
+    if debug:
+      exePath = 'C:/Dev/Github/PsuMaxima/Linux/out/build/x64-Release/PsuMaxima.exe'
     if True:
       ### CALL PEAKS ######################################
       if D1 or D2 or D3 or D4:        
@@ -81,7 +91,7 @@ def runCppModule(pdb,interpNum,Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,
         #print('...called Leucippus with params:' + commandlinePeaks + ' ...')
         #sys.stdout.flush() # update the user interface
         #------------------------------------------------
-        pigP =  sub.Popen(["/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima", commandlinePeaks], stdout=sub.PIPE)
+        pigP =  sub.Popen([exePath, commandlinePeaks], stdout=sub.PIPE)
         resultP = pigP.communicate(input=b"This is sample text.\n")
         exe_resultP = str(resultP[0],'utf-8')
         pigP.kill()
@@ -95,19 +105,21 @@ def runCppModule(pdb,interpNum,Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,
         df1c = getCsvFromCppResults(exe_resultP, 'CHIMERAPEAKS')
       
       ### CALL ATOMS ######################################
-      if D5 or D6:
+      if D5 or D6 or D7 or D8:
         commandlineAtoms = "ATOMS|" + pdb + "|" + str(interpNum) + "|"+ str(Fos) + "|"+ str(Fcs) + "|"
         #print('...called Leucippus with params:' + commandlineAtoms + ' ...')        
         #------------------------------------------------
-        pigA = sub.Popen(["/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima", commandlineAtoms], stdout=sub.PIPE)            
+        pigA = sub.Popen([exePath, commandlineAtoms], stdout=sub.PIPE)
         resultA = pigA.communicate(input=b"This is sample text.\n")
         exe_resultA = str(resultA[0],'utf-8')
         pigA.kill()      
         #------------------------------------------------
-        df3 = getCsvFromCppResults(exe_resultA, 'ATOMDENSITY')
+        df2a = getCsvFromCppResults(exe_resultA, 'ATOMDENSITY')
+        df2b = getCsvFromCppResults(exe_resultA, 'DENSITYADJUSTED')
+        df2c = getCsvFromCppResults(exe_resultA, 'LAPLACIANADJUSTED')
 
       ### CALL SLICES #######################################
-      if D7:
+      if D9:
         commandlineSlices = "SLICES|" + pdb + "|" + str(interpNum) + "|" + str(Fos) + "|"+ str(Fcs) + "|"        
         commandlineSlices += str(cX) + "-" + str(cY) + "-" + str(cZ) + "|"
         commandlineSlices += str(lX) + "-" + str(lY) + "-" + str(lZ) + "|"
@@ -115,7 +127,7 @@ def runCppModule(pdb,interpNum,Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,
         commandlineSlices += str(width) + "-" + str(gran)
         #print('...called Leucippus with params:' + commandlineSlices + ' ...')        
         #------------------------------------------------
-        pigS = sub.Popen(["/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima", commandlineSlices], stdout=sub.PIPE)            
+        pigS = sub.Popen([exePath, commandlineSlices], stdout=sub.PIPE)
         resultS = pigS.communicate(input=b"This is sample text.\n")
         exe_resultS = str(resultS[0],'utf-8')
         pigS.kill()      
@@ -126,7 +138,7 @@ def runCppModule(pdb,interpNum,Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,
         df5 = getCsvFromCppResults(exe_resultS, 'RADIANTSLICE')
         df6 = getCsvFromCppResults(exe_resultS, 'LAPLACIANSLICE')      
 
-      return [[df1a,df1b,df1c],[df3],[df4,df5,df6]]
+      return [[df1a,df1b,df1c],[df2a,df2b,df2c],[df4,df5,df6]]
     #except:
       #print("results from exe=",result)
       #return []

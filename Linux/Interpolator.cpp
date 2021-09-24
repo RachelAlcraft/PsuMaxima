@@ -76,6 +76,61 @@ double Interpolator::getDzDz(double x, double y, double z, double val)
     return dd;
 }
 
+VectorThree Interpolator::getNearbyAtomPeak(VectorThree XYZ, bool density)
+{
+    return getNearestPeakRecursive(XYZ, XYZ, density, 0, 0.5,10,true);//we can't go on forever but we don;t want to imagine somehting that might not be there
+}
+VectorThree Interpolator::getNearbyGridPeak(VectorThree CRS, bool density)
+{
+    return getNearestPeakRecursive(CRS, CRS, density, 0, 0.5,8,false);//we know we have a peak, so optimise it to give us an answer
+}
+VectorThree Interpolator::getNearestPeakRecursive(VectorThree Orig, VectorThree CRS, bool density, int level, double width, int cap, bool invalidNonConvergence)
+{
+    //the boot out of recursion step
+    if (level > cap)
+    {
+        if (width <= 0.1)//Success
+            return CRS;
+        if (!invalidNonConvergence)
+            return CRS;
+        else
+            return VectorThree(false);
+
+    }
+       
+    //otherwise we either shrink the box or move to the biggest nearby.
+    double biggestDensity = getValue(CRS.C, CRS.B, CRS.A);
+    double smallestLaplacian = getLaplacian(CRS.C, CRS.B, CRS.A);
+    VectorThree biggestCRS = CRS;
+    bool haveFound = false;
+
+    for (int a = -1; a < 2; ++a)
+        for (int b = -1; b < 2; ++b)
+            for (int c = -1; c < 2; ++c)
+            {
+                double i = a * width;
+                double j = b * width;
+                double k = c * width;
+
+                if (a != 0 && b != 0 && c != 0)
+                {
+                    VectorThree abc = VectorThree(CRS.A + i, CRS.B + j, CRS.C + k);
+                    double interpDensity = getValue(abc.C, abc.B, abc.A);
+                    double interpLaplacian = getLaplacian(abc.C, abc.B, abc.A);
+                    if ((density && interpDensity > biggestDensity) || (!density && interpLaplacian < smallestLaplacian))
+                    {
+                        biggestCRS = abc;
+                        biggestDensity = interpDensity;
+                        haveFound = true;
+                    }
+                }
+            }
+    if (haveFound)
+        return getNearestPeakRecursive(Orig, biggestCRS, density, ++level, width,cap,invalidNonConvergence);
+    else
+        return getNearestPeakRecursive(Orig, biggestCRS, density, ++level, width * 0.75, cap,invalidNonConvergence);
+}
+
 // ****** Nearest Neighbour Implementation ****************************************
 Nearest::Nearest(vector<float> matrix, int x, int y, int z):Interpolator(matrix,x,y,z)
 {

@@ -47,7 +47,7 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
                 
         VectorThree coords = densityPair.second;
         double density = densityPair.first;
-        VectorThree XYZ = ccp4->getXYZFromCRS(coords.C, coords.B, coords.A);
+        VectorThree XYZ = ccp4->getXYZFromCRS(coords.reverse());
         //FIRST THE DENSITY PEAKS        
         cout << helper::getWordStringGaps("HETATM",6) << "HETATM";                                      //1. Atom or Hetatm                
         cout << helper::getNumberStringGaps(atomNo,0,5) << atomNo;                                  //2. Atom no - 7        
@@ -66,7 +66,7 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
         ++atomNo;
         VectorThree coordsL = laplacianPair.second;
         double laplacian = laplacianPair.first;
-        XYZ = ccp4->getXYZFromCRS(coordsL.C, coordsL.B, coordsL.A);
+        XYZ = ccp4->getXYZFromCRS(coordsL.reverse());
         cout << helper::getWordStringGaps("HETATM",6) << "HETATM";                                      //1. Atom or Hetatm                
         cout << helper::getNumberStringGaps(atomNo,0,5) << atomNo;                                  //2. Atom no - 7        
         cout << helper::getWordStringGaps("PK",3) << "PK";                                          //3. Atom type, eg CA, CB...        
@@ -109,7 +109,7 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
                 
         VectorThree coords = ccp4->DenLapPeaks[i].first.second;
         double density = ccp4->DenLapPeaks[i].first.first;
-        VectorThree XYZ = ccp4->getXYZFromCRS(coords.C, coords.B, coords.A);
+        VectorThree XYZ = ccp4->getXYZFromCRS(coords.reverse());
         
         
         double distance = 0;
@@ -136,7 +136,7 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
     {
         VectorThree coords = ccp4->DenLapPeaks[i].first.second;
         double density = ccp4->DenLapPeaks[i].first.first;
-        VectorThree XYZ = ccp4->getXYZFromCRS(coords.C, coords.B, coords.A);
+        VectorThree XYZ = ccp4->getXYZFromCRS(coords.reverse());
 
         double distance = 0;
         string line = "-";
@@ -175,6 +175,88 @@ void CoutReports::coutAtoms(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp)
         }
     }
     cout << "END_ATOMDENSITY\n";   
+
+
+    if (pdb->isLoaded())
+    {
+        cout << "BEGIN_DENSITYADJUSTED\n";
+        cout << "REMARK   1 Atom positions for " << pdb->getPdbCode() << " adjusted on density maxima by Leucippus (Birkbeck University of London 2021).\n";
+        cout << "REMARK   2 Software developed by Rachel Alcraft (2021) - supervisor Mark A. Williams.\n";
+        cout << "REMARK   3 Only atoms with full occupancy have been included.\n";
+        cout << "REMARK   4 Where a nearby density peak could not be found the atom has been removed\n";
+
+        int numAtoms = 0;
+        for (unsigned int i = 0; i < pdb->Atoms.size(); ++i)
+        {
+            Atom atm = pdb->Atoms[i];
+            if (atm.peakable("DEN"))
+            {
+                VectorThree CRS = ccp4->getCRSFromXYZ(atm.getXYZ());                
+                VectorThree ABC = interp->getNearbyAtomPeak(CRS.reverse(), true);                
+                if (ABC.Valid) 
+                {
+                    VectorThree XYZ = ccp4->getXYZFromCRS(ABC.reverse());
+                    ++numAtoms;
+                    string line = atm.getLineCoords(XYZ);
+                    cout << line << "\n";
+                }
+            }            
+        }
+        cout << helper::getWordStringGaps("MASTER", 6) << "MASTER";//1 -  6       Record name    "MASTER"             
+        cout << helper::getNumberStringGaps(4, 0, 9) << 4;//11 - 15       Integer        numRemark     Number of REMARK records
+        cout << helper::getNumberStringGaps(0, 0, 5) << 0;//16 - 20       Integer        "0"
+        cout << helper::getNumberStringGaps(0, 0, 5) << 0;//21 - 25       Integer        numHet        Number of HET records
+        cout << helper::getNumberStringGaps(0, 0, 5) << 0;//26 - 30       Integer        numHelix      Number of HELIX records
+        cout << helper::getNumberStringGaps(0, 0, 5) << 0;//31 - 35       Integer        numSheet      Number of SHEET records
+        cout << helper::getNumberStringGaps(0, 0, 5) << 0;//36 - 40       Integer        numTurn       Number of TURN records
+        cout << helper::getNumberStringGaps(0, 0, 5) << 0;//41 - 45       Integer        numSite       Number of SITE records
+        cout << helper::getNumberStringGaps(0, 0, 5) << 0;//46 - 50       Integer        numXform      Number of coordinate transformation  records (ORIGX+SCALE+MTRIX)
+        cout << helper::getNumberStringGaps(numAtoms, 0, 5) << numAtoms;//51 - 55       Integer        numCoord      Number of atomic coordinate records (ATOM+HETATM)
+        cout << helper::getNumberStringGaps(0, 0, 5) << 0;//56 - 60       Integer        numTer        Number of TER records
+        cout << helper::getNumberStringGaps(0, 0, 5) << 0;//61 - 65       Integer        numConect     Number of CONECT records
+        cout << helper::getNumberStringGaps(0, 0, 5) << 0;//66 - 70       Integer        numSeq        Number of SEQRES records
+        cout << "END_DENSITYADJUSTED\n";
+
+        cout << "BEGIN_LAPLACIANADJUSTED\n";
+        cout << "REMARK   1 Atom positions for " << pdb->getPdbCode() << " adjusted on density maxima by Leucippus (Birkbeck University of London 2021).\n";
+        cout << "REMARK   2 Software developed by Rachel Alcraft (2021) - supervisor Mark A. Williams.\n";
+        cout << "REMARK   3 Only atoms with full occupancy have been included.\n";
+        cout << "REMARK   4 Where a nearby density peak could not be found the atom has been removed\n";
+
+        numAtoms = 0;
+        for (unsigned int i = 0; i < pdb->Atoms.size(); ++i)
+        {
+            Atom atm = pdb->Atoms[i];
+            if (atm.peakable("LAP"))
+            {
+                VectorThree CRS = ccp4->getCRSFromXYZ(atm.getXYZ());
+                VectorThree ABC = interp->getNearbyAtomPeak(CRS.reverse(), false);                
+                if (ABC.Valid)
+                {
+                    VectorThree XYZ = ccp4->getXYZFromCRS(ABC.reverse());
+                    ++numAtoms;
+                    string line = atm.getLineCoords(XYZ);
+                    cout << line << "\n";
+                }
+            }
+        }
+        cout << helper::getWordStringGaps("MASTER", 6) << "MASTER";//1 -  6       Record name    "MASTER"             
+        cout << helper::getNumberStringGaps(4, 0, 9) << 4;//11 - 15       Integer        numRemark     Number of REMARK records
+        cout << helper::getNumberStringGaps(0, 0, 5) << 0;//16 - 20       Integer        "0"
+        cout << helper::getNumberStringGaps(0, 0, 5) << 0;//21 - 25       Integer        numHet        Number of HET records
+        cout << helper::getNumberStringGaps(0, 0, 5) << 0;//26 - 30       Integer        numHelix      Number of HELIX records
+        cout << helper::getNumberStringGaps(0, 0, 5) << 0;//31 - 35       Integer        numSheet      Number of SHEET records
+        cout << helper::getNumberStringGaps(0, 0, 5) << 0;//36 - 40       Integer        numTurn       Number of TURN records
+        cout << helper::getNumberStringGaps(0, 0, 5) << 0;//41 - 45       Integer        numSite       Number of SITE records
+        cout << helper::getNumberStringGaps(0, 0, 5) << 0;//46 - 50       Integer        numXform      Number of coordinate transformation  records (ORIGX+SCALE+MTRIX)
+        cout << helper::getNumberStringGaps(numAtoms, 0, 5) << numAtoms;//51 - 55       Integer        numCoord      Number of atomic coordinate records (ATOM+HETATM)
+        cout << helper::getNumberStringGaps(0, 0, 5) << 0;//56 - 60       Integer        numTer        Number of TER records
+        cout << helper::getNumberStringGaps(0, 0, 5) << 0;//61 - 65       Integer        numConect     Number of CONECT records
+        cout << helper::getNumberStringGaps(0, 0, 5) << 0;//66 - 70       Integer        numSeq        Number of SEQRES records
+        cout << "END_LAPLACIANADJUSTED\n";
+    }
+    
+
 
 }
 

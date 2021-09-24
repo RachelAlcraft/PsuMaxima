@@ -334,10 +334,7 @@ float Ccp4::getDensity(int C, int R, int S)
     return Matrix[pos];
 }
 
-VectorThree Ccp4::getNearestPeak(VectorThree CRS, Interpolator* interp, bool density)
-{
-    return getNearestPeakRecursive(CRS,CRS, interp, density, 0, 0.5);
-}
+
 
 /*VectorThree Ccp4::getNearestPeakOld(VectorThree CRS, Interpolator* interp, int interpNum)
 {
@@ -365,47 +362,7 @@ VectorThree Ccp4::getNearestPeak(VectorThree CRS, Interpolator* interp, bool den
     return biggestCRS;
 }*/
 
-VectorThree Ccp4::getNearestPeakRecursive(VectorThree Orig, VectorThree CRS, Interpolator* interp, bool density, int level, double width)
-{
-    //the boot out of recursion step
-    if (width <= 0.1 || level > 8)//Success
-        return CRS;
-    /*if (level >= 10)
-        return VectorThree(false); //failure
-        */
 
-    //otherwise we either shrink the box or move to the biggest nearby.
-    double biggestDensity = interp->getValue(CRS.C, CRS.B, CRS.A);
-    double smallestLaplacian = interp->getLaplacian(CRS.C, CRS.B, CRS.A);
-    VectorThree biggestCRS = CRS;
-    bool haveFound = false;
-
-    for (int a = -1; a < 2; ++a)
-        for (int b = -1; b < 2; ++b)
-            for (int c = -1; c < 2; ++c)
-            {
-                double i = a * width;
-                double j = b * width;
-                double k = c * width;
-
-                if (a != 0 && b != 0 && c != 0)
-                {
-                    VectorThree abc = VectorThree(CRS.A + i, CRS.B + j, CRS.C + k);
-                    double interpDensity = interp->getValue(abc.C, abc.B, abc.A);
-                    double interpLaplacian = interp->getLaplacian(abc.C, abc.B, abc.A);
-                    if ((density && interpDensity > biggestDensity) || (!density && interpLaplacian < smallestLaplacian))
-                    {
-                        biggestCRS = abc;
-                        biggestDensity = interpDensity;
-                        haveFound = true;
-                    }
-                }
-            }
-    if (haveFound)
-        return getNearestPeakRecursive(Orig,biggestCRS, interp, density, ++level, width);
-    else
-        return getNearestPeakRecursive(Orig,biggestCRS, interp, density, ++level, width * 0.75);
-}
 
 void Ccp4::CreatePeaks(Interpolator* interp, int interpNum)
 {
@@ -482,8 +439,8 @@ void Ccp4::CreatePeaks(Interpolator* interp, int interpNum)
         VectorThree Pcoords = getCRS(pos);
         if (interpNum > 1)
         {
-            VectorThree Dcoords = getNearestPeak(Pcoords, interp, true);
-            VectorThree Lcoords = getNearestPeak(Pcoords, interp, false);
+            VectorThree Dcoords = interp->getNearbyGridPeak(Pcoords,true);
+            VectorThree Lcoords = interp->getNearbyGridPeak(Pcoords,false);
             if (Dcoords.Valid && Lcoords.Valid)
             {
                 double density = interp->getValue(Dcoords.C, Dcoords.B, Dcoords.A);
@@ -608,14 +565,10 @@ VectorThree Ccp4::getCRSFromXYZ(VectorThree XYZ)
     return CRS;
 
 }
-VectorThree Ccp4::getXYZFromCRS(double c, double r, double s)
+VectorThree Ccp4::getXYZFromCRS(VectorThree vCRSIn)
 {
     VectorThree vXYZ;
-    VectorThree vCRSIn;
-
-    vCRSIn.A = c;
-    vCRSIn.B = r;
-    vCRSIn.C = s;
+        
     //If the axes are all orthogonal            
     if (_w14_CELLB_X == 90 && _w15_CELLB_Y == 90 && _w16_CELLB_Z == 90)
     {
@@ -634,11 +587,11 @@ VectorThree Ccp4::getXYZFromCRS(double c, double r, double s)
         {
             double startVal = 0;
             if (_w17_MAPC == i)
-                startVal = _w05_NXSTART + c;
+                startVal = _w05_NXSTART + vCRSIn.A;
             else if (_w18_MAPR == i)
-                startVal = _w06_NYSTART + r;
+                startVal = _w06_NYSTART + vCRSIn.B;
             else
-                startVal = _w07_NZSTART + s;
+                startVal = _w07_NZSTART + vCRSIn.C;
             vCRS.putByIndex(i, startVal);
         }
         vCRS.putByIndex(0, vCRS.getByIndex(0) / _w08_MX);

@@ -27,6 +27,8 @@ private:
 	double _arcHeight;
 	vector<VectorThree> _motionPositions1;
 	vector<VectorThree> _motionPositions2;
+	VectorThree _densityAdjustedCoords;
+	VectorThree _laplacianAdjustedCoords;
 	
 	// HELPER FUNCTIONS
 	string trim(string string_to_trim);
@@ -42,7 +44,9 @@ public:
 	string getLine();
     VectorThree getXYZ();
 	double getIAMDensity(VectorThree XYZ);
-	string info();
+	string info();	
+	bool peakable(string peakType);
+	string getLineCoords(VectorThree coords);
 
     //Lazy public access functions    
     int AtomNo;	

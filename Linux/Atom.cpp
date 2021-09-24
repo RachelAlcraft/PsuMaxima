@@ -2,6 +2,7 @@
 #include <cmath>
 #include <stdlib.h> 
 #include <sstream>
+#include <iomanip>
 
 #include "helper.h"
 #include "PeriodicTable.h"
@@ -77,7 +78,7 @@ void Atom::makePdbAtom(string line)
 	_z = atof(z_c.c_str());
 	//55 - 60        Real(8.3)     occupancy   Double
 	string occ = trim(line.substr(54, 6));
-	double occupancy = atof(occ.c_str());
+	Occupancy = atof(occ.c_str());
 	//61 - 66        Real(8.3)     b factor   Double
 	string bfac = trim(line.substr(60, 6));
 	double bfactor = atof(bfac.c_str());
@@ -232,4 +233,26 @@ string Atom::info()
 	}
 	return ss.str();
 
+}
+
+bool Atom::peakable(string peakType)
+{
+	if (Occupancy < 1)
+		return false;
+	return true;
+}
+string Atom::getLineCoords(VectorThree coords)
+{
+	//ATOM   1735 HH21 ARG A 104      43.578 -16.554  97.660  1.00 23.80           H
+	//HETATM28234  O   HOH F 699      14.045  -0.373 -23.581  1.00 34.10           O  
+	//ATOM    664  N   ASN A  46      13.954   6.416  13.695  1.00  3.26           N  
+	//HETATM  685  O  BEOH A  66      14.811   2.078  12.602  0.40  5.53           O  
+	//HETATM    4 PK   LAP P   2      -7.998  18.130  -8.794  1.00107.49           H  
+	string bgn = _line.substr(0, 26);	
+	string end = _line.substr(54);
+	stringstream ss;
+	ss << helper::getNumberStringGaps(coords.A, 3, 12) << setprecision(3) << fixed << coords.A;
+	ss << helper::getNumberStringGaps(coords.B, 3, 8) << setprecision(3) << fixed << coords.B;
+	ss << helper::getNumberStringGaps(coords.C, 3, 8) << setprecision(3) << fixed << coords.C;
+	return bgn + ss.str() + end;
 }

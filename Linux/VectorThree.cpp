@@ -136,3 +136,7 @@ vector<VectorThree> VectorThree::getArcPositions(VectorThree end, int count)
     return positions;
 
 }
+VectorThree VectorThree::reverse()
+    {
+        return VectorThree(C,B,A);
+    }

@@ -82,18 +82,16 @@ public:
 	double getResolution();
 	bool isLoaded();
 	string getPdbCode();	
-	float getDensity(int C, int R, int S);
-	VectorThree getNearestPeak(VectorThree XYZ, Interpolator* interp, bool density);
+	float getDensity(int C, int R, int S);	
 	//VectorThree getNearestPeakOld(VectorThree XYZ, Interpolator* interp, int interpNum);
 	VectorThree getCRSFromXYZ(VectorThree XYZ);
-	VectorThree getXYZFromCRS(double c, double r, double s);
+	VectorThree getXYZFromCRS(VectorThree CRS);
     int getPosition(int C, int R, int S);
 	VectorThree getCRS(int position);
 	void CreatePeaks(Interpolator* interp, int interpNum);
 private:
 	void loadMainFile(string pdbCode, string directory);	
-	void loadDiffFile(string pdbCode, string directory);	
-	VectorThree getNearestPeakRecursive(VectorThree Orig,VectorThree XYZ, Interpolator* interp, bool density, int level, double width);
+	void loadDiffFile(string pdbCode, string directory);		
 };
 
 
