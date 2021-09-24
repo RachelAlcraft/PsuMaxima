@@ -99,10 +99,12 @@ def getHeader(Geometry=False):
     string += '</div>\n'
     string += '</h1>'
     string += '<p style="background-color:Crimson;margin:5px;padding:5px;color:AliceBlue;">'
+    
     string += '<a href="/../../~ab002/Leucippus.html" title="Home" target="_self">PhD Home</a>'
-    string += " ~  <a href='/../../~ab002/InputPeaks.html' title='Home' target='_self'>User Uploads</a>\n"
-    string += ' ~  <a href="/../../~ab002/Peaks.html" title="Home" target="_self">Peaks Explorer</a>'
-    string += " ~  <a href='/../../~ab002/Slices.html' title='Home' target='_self'>Local Maps</a>\n"
+    string += " ~  <a href='/../../~ab002/InputPeaks.html' title='Upload' target='_self'>User Uploads</a>\n"
+    string += ' ~  <a href="/../../~ab002/Peaks.html" title="Peaks" target="_self">Peaks Explorer</a>'
+    string += " ~  <a href='/../../~ab002/Slices.html' title='Slices' target='_self'>Local Maps</a>\n"
+    string += " ~  <a href='/../../~ab002/Geometry.html' title='Geometry' target='_self'>Geometry</a>"
     string += " ~  <a href='/../../~ab002/Documentation.html' title='Docs' target='_self'>About</a>"    
     string += " ~ <a href='https://www.bbk.ac.uk/departments/biology/' title='Birkbeck' target='_blank'>Birkbeck Biology</a>"
     string += '</p>'
@@ -198,6 +200,45 @@ def getBodySlices(pdbCode, username, password,interpMethod, Fos,Fcs,cX,cY,cZ,lX,
           
     return string
 
+def getBodyGeometry(pdbCodeA, pdbCodeB, username, password,GeoA, GeoB, GeoC):
+    
+    string = '<hr/>\n'
+    string += '<p>\n'
+    string += '<h3>PhD project: <font color="DC143C">Leu</font>cip<font color="DC143C">pus</font> - Atomic <font color="DC143C">Density</font> Explorer</h3>\n'
+    string += '</p>\n'
+    string += '<p>\n'
+    string += 'This webpage interfaces with a C++ executable which calculates synthetic density for the given atoms. This tool is used to explore Gaussian Overlap and Density Drift.\n'
+    string += '</p>\n'
+    string += '<hr/>\n'
+    string += '<div>\n'
+    string += '<form method="post" action="/cgi-bin/cgiwrap/ab002/PhD/Geometry.cgi" accept-charset="UTF-8">\n'
+    string += '<b>~~ Application access credentials ~~</b><br/><i>You must enter a valid email address to access this software. Passwords will be forthcoming.</i>\n'
+    string += "<br/>Email address: <input type='text' name='email' value='" + username + "' />"
+    string += " Password: <input type='text' name='password' value='not used' />"
+    string += '<hr/>'
+    string += '<h3>Geometry Comparison of 2 Structures</h3>\n'
+    string += '<p><b>Pdb Codes: </b>They can be 4 digit pdb codes, or your uploaded pdb. You can compare an amended structure.</p>\n'
+    string += 'Enter pdb code A: <input type="text" value="' + pdbCodeA + '" name="PdbA" size="6"/>\n'
+    string += 'Enter pdb code B: <input type="text" value="' + pdbCodeB + '" name="PdbB" size="6"/><br/>\n'
+    
+    string += '<p><b>Geos: </b>\n'
+    string += 'The 3 geos will be shown as histograms and scatter plots for each pdb and against each other in rotation. Geos can be any distance, angle or dihedral described by the atom code and a colon, e.g.\n'
+    string += '<li>N:CA for the distance between backbone N and CA</li>\n'
+    string += '<li>N:CA:C for the backbone angle, which also has an alias TAU</li>\n'
+    string += '<li>N:CA:C:N+1 or PSI to descibe a dihedral</li>\n'
+    string += '<li>You can define anything, eg CA-2:C:CA+2 if you want</li>\n'
+    string += '<li>Instead of a Geo you can alternatively use bfactor</li>\n'
+    string += '</p>\n'
+
+
+    string += 'GeoHueA: <input type="text" value="' + GeoA + '" name="GeoHueA" size="6"/>\n'
+    string += 'GeoHueB: <input type="text" value="' + GeoB + '" name="GeoHueB" size="6"/>\n'
+    string += 'GeoHueC: <input type="text" value="' + GeoC +'" name="GeoHueC" size="6"/><br/>\n'
+    string += '<br/><input type="Submit" value="Compare Geometry"/>\n'
+    string += '</form>\n'
+    string += '</div>\n'
+    return string
+
 
 
 def getBodyMenuSynth(username, password,atoms,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,model):
@@ -265,7 +306,7 @@ def getBodyMenuSynth(username, password,atoms,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,g
     
 
 
-def getBodyA(pdb, interpNum, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,interpMethod,Fos,Fcs,D1,D2,D3,D4,D5,D6,D7):    
+def getBodyA(pdb, interpNum, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,interpMethod,Fos,Fcs,D1,D2,D3,D4,D5,D6,D7,D8):    
     string = '<hr/>\n'    
     string += '<p>\n'
     string += '<h3>PhD project: <font color="DC143C">Leu</font>cip<font color="DC143C">pus</font> - Atomic <font color="DC143C">Density</font> Explorer</h3>\n'
@@ -289,7 +330,7 @@ def getBodyA(pdb, interpNum, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,
     string += 'Enter 4 digit pdb code: <input type="text" name="dataInput" value=' + pdb + ' />\n'    
     string += '<br/><br/>\n'
     #Data return format
-    r1,r2,r3,r4,r5,r6,r7 = '','','','','','',''
+    r1,r2,r3,r4,r5,r6,r7,r8 = '','','','','','','',''
     if D1:
         r1 = 'checked="checked"'
     if D2:
@@ -304,6 +345,10 @@ def getBodyA(pdb, interpNum, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,
         r6 = 'checked="checked"'
     if D7:
         r7 = 'checked="checked"'
+    if D7:
+        r7 = 'checked="checked"'
+    if D8:
+        r8 = 'checked="checked"'
 
 
     string += '<table><tr><td style="background-color:Crimson;color:AliceBlue">~~ Choose results to display ~~</td>\n'
@@ -317,6 +362,8 @@ def getBodyA(pdb, interpNum, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,
     string += '<tr><td><label for="D4">4) Peaks visual projection, atoms only (unit cell)</label></td><td><input type="checkbox" id="Data4" name="Data4" value="1" ' + r4 + '></td></tr>\n'
     string += '<tr><td><label for="D5">5) Density visual projection, all atoms</label></td><td><input type="checkbox" id="Data5" name="Data5" value="1" ' + r5 + '></td></tr>\n'
     string += '<tr><td><label for="D6">6) Atoms visualised on AtomNo</label></td><td><input type="checkbox" id="Data6" name="Data6" value="1" ' + r6 + '></td></tr>\n'
+    string += '<tr><td><label for="D7">7) Create density adjusted pdb file</label></td><td><input type="checkbox" id="Data7" name="Data7" value="1"' + r7 + ' ></td></tr>\n'
+    string += '<tr><td><label for="D8">8) Create laplacian adjusted pdb file</label></td><td><input type="checkbox" id="Data8" name="Data8" value="1"' + r8 + ' ></td></tr>\n'
     #string += '<tr><td><label for="D7">7) Visualised electron density planes</label></td><td><input type="checkbox" id="Data7" name="Data7" value="1" ' + r7 + '></td></tr>\n'
     string += '</table>\n'
     string += '</td>'
@@ -398,13 +445,13 @@ def getBodyRun1(pdb, dataABC, asCsv,D1,D2,D3,D4,debug=False):
         #-- https://www.w3schools.com/howto/tryit.asp?filename=tryhow_html_download_link --#
         
         if D2:
-            pathname = 'https://student.cryst.bbk.ac.uk/~ab002/Peaks/peaks_' + pdb + '.ent'
+            pathname = 'https://student.cryst.bbk.ac.uk/~ab002/Peaks/pdbpeaks_' + pdb + '.ent'
             string += '<hr/>\n'
             #string += '<h4>2a) Peaks data as CSV file</h4>'
             #pathname = 'https://student.cryst.bbk.ac.uk/~ab002/Peaks/peaks_' + pdb + '.csv'            
             #string += csvhtml
-            string += '<h4>2b) Peaks data in pseudo pdb file</h4>'            
-            string += '<a class="change_link_color" href="' + pathname + '" download='+'peaks_'+pdb + '.ent >Download peaks pseudo pdb file</a><br/><br/>'
+            string += '<h4>2) Peaks data in pseudo pdb file</h4>'            
+            string += '<a class="change_link_color" href="' + pathname + '" download='+'pdbpeaks_'+pdb + '.ent >Download peaks pseudo pdb file</a><br/><br/>'
             string += chimhtml
             
         ### DATA 3 Peaks data as html grid #################################
@@ -457,19 +504,19 @@ def getBodyRun2(pdb, dataABC,D5,D6,D7,D8,debug=False):
         if D7:
             csvhtml, csvtext = dataFrameToText(dataB)
             savePseudoFile(pdb, csvtext, "density", debug=debug)
-            pathname = 'https://student.cryst.bbk.ac.uk/~ab002/Peaks/density_' + pdb + '.ent'
+            pathname = 'https://student.cryst.bbk.ac.uk/~ab002/Peaks/pdbdensity_' + pdb + '.ent'
             string += '<hr/>\n'
-            string += '<h4>2b) Pdb File adjusted to Density Peaks </h4>'
-            string += '<a class="change_link_color" href="' + pathname + '" download='+'density_'+pdb + '.ent >Download density adjusted pdb file</a><br/><br/>'
+            string += '<h4>7) Pdb File adjusted to Density Peaks </h4>'
+            string += '<a class="change_link_color" href="' + pathname + '" download='+'pdbdensity_'+pdb + '.ent >Download density adjusted pdb file</a><br/><br/>'
             string += csvhtml
 
         if D8:
             csvhtml, csvtext = dataFrameToText(dataC)
             savePseudoFile(pdb, csvtext, "laplacian", debug=debug)
-            pathname = 'https://student.cryst.bbk.ac.uk/~ab002/Peaks/laplacian_' + pdb + '.ent'
+            pathname = 'https://student.cryst.bbk.ac.uk/~ab002/Peaks/pdblaplacian_' + pdb + '.ent'
             string += '<hr/>\n'
-            string += '<h4>2b) Pdb File Adjusted to Laplacian Peaks </h4>'
-            string += '<a class="change_link_color" href="' + pathname + '" download='+'laplacian_'+pdb + '.ent >Download laplacian adjusted pdb file</a><br/><br/>'
+            string += '<h4>8) Pdb File Adjusted to Laplacian Peaks </h4>'
+            string += '<a class="change_link_color" href="' + pathname + '" download='+'pdblaplacian_'+pdb + '.ent >Download laplacian adjusted pdb file</a><br/><br/>'
             string += csvhtml
 
     else:
@@ -652,11 +699,10 @@ def dataFrameToText(df):
 
 def savePeaksFile(pdb, text,text2,debug=False):
     filenameA = '/d/user6/ab002/WWW/Peaks/peaks_' + pdb + '.csv'
-    filenameB = '/d/user6/ab002/WWW/Peaks/peaks_' + pdb + '.ent'
-    filename = 'C:/Dev/Github/ProteinDataFiles/LeicippusTesting/PdbFiles/' + type + '_' + pdb + '.csv'
+    filenameB = '/d/user6/ab002/WWW/Peaks/pdbpeaks_' + pdb + '.ent'    
     if debug:
         filenameA = 'C:/Dev/Github/ProteinDataFiles/LeicippusTesting/PdbFiles/peaks_' + pdb + '.csv'
-        filenameB = 'C:/Dev/Github/ProteinDataFiles/LeicippusTesting/PdbFiles/peaks_' + pdb + '.csv'
+        filenameB = 'C:/Dev/Github/ProteinDataFiles/LeicippusTesting/PdbFiles/pdbpeaks_' + pdb + '.ent'
 
     if not os.path.isfile(filenameA) or True:#for now save it always while the format is changing TODO
         f = open(filenameA, "w")
@@ -669,9 +715,9 @@ def savePeaksFile(pdb, text,text2,debug=False):
         f.close()
 
 def savePseudoFile(pdb, text,type,debug=False):
-    filename = '/d/user6/ab002/WWW/Peaks/' + type + '_' + pdb + '.csv'
+    filename = '/d/user6/ab002/WWW/Peaks/pdb' + type + '_' + pdb + '.ent'
     if debug:
-        filename = 'C:/Dev/Github/ProteinDataFiles/LeicippusTesting/PdbFiles/' + type + '_' + pdb + '.csv'
+        filename = 'C:/Dev/Github/ProteinDataFiles/LeicippusTesting/PdbFiles/pdb' + type + '_' + pdb + '.ent'
 
     if not os.path.isfile(filename) or True:#for now save it always while the format is changing TODO
         f = open(filename, "w")

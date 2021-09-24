@@ -107,7 +107,7 @@ if access:
   print('<p>' + str(1) + '/' + str(1) + ' Calculating local map slices...(approx ' + str(6) + ' seconds)...')  
   sys.stdout.flush() # update the user interface      
   start = time.time()
-  data = Maxima.runCppModule(pdbCode,interpNum,Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,False,False,False,False,False,False,True)
+  data = Maxima.runCppModule(pdbCode,interpNum,Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,False,False,False,False,False,False,False,False,True)
   userstring += pwb.getBodyRun3(pdbCode,data[2],width,gran,True)
   end = time.time()
   ts = getTimeDiff(start,end)

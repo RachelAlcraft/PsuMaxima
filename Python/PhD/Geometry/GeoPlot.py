@@ -1,5 +1,8 @@
+#!/l_mnt/python/envs/teaching/bin/python3 
 import gc
-
+import sys
+sys.path.append('/Geometry/')
+sys.path.append('')
 import pandas as pd
 import numpy as np
 from matplotlib import cm
@@ -95,7 +98,7 @@ class GeoPlot:
         elif self.plot == 'summary':
             return self.plotSummary()
         elif self.plot == 'comment':
-            print('comment=',self.title)
+            #print('comment=',self.title)
             return self.title
 
     def plotSurface(self, fig, ax):
@@ -497,30 +500,11 @@ class GeoPlot:
         #fig, ax = plt.subplots()
         ax.grid(b=True, which='major', color='Gainsboro', linestyle='-')
         ax.set_axisbelow(True)
-
+        
         if self.categorical or self.hue == 'dssp':
-            #blanksdata = self.data[self.data[self.hue] == '']
-            #print(blanksdata)
-            # it is possible for errors in dssp assignment in which case we call them X, but it will cover any errors not just dssp
-            self.data.loc[self.data[self.hue] == '', self.hue] = 'X'
-
-            gradients = {}
-            dataforgrad = self.data.copy()
-            gradsorig = dataforgrad.sort_values(by=self.hue, ascending=True)[self.hue].unique()
-            grads = self.getHueLists(self.hue,gradsorig)
-            evenly_spaced_interval = np.linspace(0, 1, len(grads))
-
-            try:
-                sns.set_palette(sns.color_palette(self.palette, len(grads)))
-                colors = [cm.get_cmap(self.palette)(x) for x in evenly_spaced_interval]
-                i = 0
-                for g in grads:
-                    gradients[g] = colors[i]
-                    i = i+1
-                self.palette = gradients
-            except:
-                self.palette = self.palette
-
+            #at some point I will change the hue data to numerical, but for now do nothing
+            a=1
+        
         if self.operation == 'ABS':
             self.data = self.data[self.data[self.geoX] == abs(self.data[self.geoX])]
 
@@ -585,7 +569,8 @@ class GeoPlot:
         elif self.plot == 'contact':
             alpha = 0.75
             self.data['distanceinv'] = 1/(self.data['distance'] ** 3)*4000
-            if self.categorical == False:
+            if False:
+            #if self.categorical == False:
                 g = ax.scatter(self.data[self.geoX], self.data[self.geoY], c=self.data[self.hue],
                                cmap=self.palette,s=self.data['distanceinv'],edgecolor=ecol,alpha=alpha,linewidth=lw)
                 cb = plt.colorbar(g)
@@ -609,7 +594,8 @@ class GeoPlot:
                 plt.ylim(ymin=self.range[0], ymax=self.range[1])
                 plt.gca().set_aspect("equal")
 
-            if self.categorical:
+            #if self.categorical:
+            if False:
                 legend='brief'
                 try:
                     self.data[self.hue] = pd.to_numeric(self.data[self.hue])
@@ -624,7 +610,7 @@ class GeoPlot:
             else:
                 g = ax.scatter(self.data[self.geoX], self.data[self.geoY], c=self.data[self.hue],
                                cmap=self.palette, edgecolor=ecol, alpha=alpha,linewidth=lw,s=20)
-                if self.hue != 'count':
+                if self.hue != 'count' and not self.categorical:
                     cb = plt.colorbar(g)
                     cb.set_label(self.hue)
 
@@ -639,7 +625,7 @@ class GeoPlot:
         else:
             title += '\nCount=' + str(count)
 
-        plt.title(title)
+        plt.title(title)        
         return ''
 
     def getPlotImage(self,fig, ax):

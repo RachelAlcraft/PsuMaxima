@@ -160,8 +160,8 @@ class GeoReport:
         count = 0
         for pdb in self.pdbCodes:
             count = count + 1
-            if not pdbmanager.existsPdb(pdb):
-                print('PSU: get',pdb,count,'/',len(self.pdbCodes))
+            #if not pdbmanager.existsPdb(pdb):
+                #print('PSU: get',pdb,count,'/',len(self.pdbCodes))
             apdb = pdbmanager.getPdb(pdb,allAtoms)
             data = apdb.getGeoemtryCsv(calcList, hueList,bfactorFactor,restrictedAa)
             dfs.append(data)
@@ -192,7 +192,7 @@ class GeoReport:
 
 
     def printReport(self, reportName,fileName):
-        print('PSU: create report',reportName,'for',fileName)
+        #print('PSU: create report',reportName,'for',fileName)
         self.flush()
 
         printList = []
@@ -439,7 +439,7 @@ class GeoReport:
 
     #def printCsvToHtml(self, queryList,pdbList,title,cols,printPath,fileName):
     def printToHtml(self, maintitle, cols, fileName):
-        print('PSU: formatting to html...')
+        #print('PSU: formatting to html...')
         width=str(100/cols)
         reportPath = self.outDataPath + fileName + ".html"
         count = 0
@@ -485,7 +485,7 @@ class GeoReport:
                         geoqSplit.data = data
                         geoqSplit.title = title + ' ' + split
 
-                    print('PSU: plot',count,'/',len(self.plots))
+                    #print('PSU: plot',count,'/',len(self.plots))
                     if type(geoqSplit) is geop.GeoOverlay:
                         html += self.twoPlotsOverlay(geoPl.plotA,geoPl.plotB,width)
                     elif type(geoqSplit) is geop.GeoDifference:
@@ -497,7 +497,7 @@ class GeoReport:
                 #'<hr/><p>Produced by PsuGeometry, written by Rachel Alcraft<br/>Please cite the application note...</p></body>\n'
 
         if fileName == "STRING":
-            return html #without the header and the footer
+            return '<hr/><br/>' + html #without the header and the footer
         else:
             html += '<hr/><p style = "background-color:tomato;" >'
             html += '<a href = "https://rachelalcraft.github.io/psugeometry.html" title = "PsuGeometry" target = "_self">PsuGeometry</a>'

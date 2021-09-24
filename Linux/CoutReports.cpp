@@ -218,10 +218,10 @@ void CoutReports::coutAtoms(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp)
         cout << "END_DENSITYADJUSTED\n";
 
         cout << "BEGIN_LAPLACIANADJUSTED\n";
-        cout << "REMARK   1 Atom positions for " << pdb->getPdbCode() << " adjusted on density maxima by Leucippus (Birkbeck University of London 2021).\n";
+        cout << "REMARK   1 Atom positions for " << pdb->getPdbCode() << " adjusted on laplacian minima by Leucippus (Birkbeck University of London 2021).\n";
         cout << "REMARK   2 Software developed by Rachel Alcraft (2021) - supervisor Mark A. Williams.\n";
         cout << "REMARK   3 Only atoms with full occupancy have been included.\n";
-        cout << "REMARK   4 Where a nearby density peak could not be found the atom has been removed\n";
+        cout << "REMARK   4 Where a nearby laplacian peak could not be found the atom has been removed\n";
 
         numAtoms = 0;
         for (unsigned int i = 0; i < pdb->Atoms.size(); ++i)

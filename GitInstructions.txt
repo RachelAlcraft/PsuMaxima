@@ -8,3 +8,14 @@ git push
 
 RachelAlcraft
 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
+
+Opening VS Code with correct cmake version
+Open terminal here /d/user6/ab002/Desktop/Link to Thesis/PhD/Github/PsuMaxima/Linux/build
+enter the following commands
+
+module use -a /s/software/modules
+module load cmake/v3.17.0
+code
+
+
+

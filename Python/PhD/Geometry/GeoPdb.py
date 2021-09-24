@@ -1,4 +1,4 @@
-
+#!/l_mnt/python/envs/teaching/bin/python3 
 #import Bio.PDB as bio
 import pandas as pd
 import numpy as np
@@ -109,7 +109,7 @@ class GeoPdb:
             self.pdbCode = 'ghost'
 
     def createDataStructure(self):
-        print('PSU: create data structure',self.pdbCode)
+        #print('PSU: create data structure',self.pdbCode)
         dicdfs = []
         for atom in self.atoms:
             dic={   'pdbCode':atom.values['pdbCode'],'resolution':atom.values['resolution'],
@@ -160,7 +160,7 @@ class GeoPdb:
             import Bio.PDB as bio
             self.hasPDB = True
             pdbCode = self.pdbCode.lower()
-            print('PSU: load from BioPython', self.pdbCode)
+            #print('PSU: load from BioPython', self.pdbCode)
             parser = bio.PDBParser()
             biodl = bio.PDBList()
             structure = None
@@ -172,7 +172,7 @@ class GeoPdb:
             except:
                 if '_ADJ' not in self.pdbDataPath:#never download the pdb to an adjusted directory
                     import time
-                    print('!!! Downloading from pdb: ',self.pdbDataPath,pdbCode)
+                    #print('!!! Downloading from pdb: ',self.pdbDataPath,pdbCode)
                     biodl.download_pdb_files([pdbCode], pdir=self.pdbDataPath, file_format='pdb')
                     time.sleep(1)
                     try:
@@ -216,7 +216,7 @@ class GeoPdb:
                                     if not self.keepDisordered and useAtom:
                                         if atom.get_occupancy() < 1:
                                             useAtom = False
-                                            print('debug not passed disordered', atom,atom.get_occupancy())
+                                            #print('debug not passed disordered', atom,atom.get_occupancy())
 
                                     if useAtom:
                                         atomID=atom.get_full_id()[0] +chain + str(rid) +atom.get_name()
@@ -268,10 +268,10 @@ class GeoPdb:
 
 
 
-                print('PSU: loaded successfully from BioPython', self.pdbCode)
+                #print('PSU: loaded successfully from BioPython', self.pdbCode)
                 self.hasPDB = True
             else:
-                print('!!! PSU: failed to load', self.pdbCode, 'from',self.pdbDataPath)
+                #print('!!! PSU: failed to load', self.pdbCode, 'from',self.pdbDataPath)
                 self.hasPDB = False
 
         # except:
@@ -309,7 +309,7 @@ class GeoPdb:
 
 
     def getGeoemtryCsv(self,geoListEntered, hues,bfactorFactor = -1,restrictedAa = 'ALL'):
-        print('PSU Geometry csv for - ', self.pdbCode)
+        #print('PSU Geometry csv for - ', self.pdbCode)
         # geo in format C-1, C+1, C
         #print('PSU: creating geometry dataframe')
         dics = []

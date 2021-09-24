@@ -117,6 +117,7 @@ def runCppModule(pdb,interpNum,Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,
         df2a = getCsvFromCppResults(exe_resultA, 'ATOMDENSITY')
         df2b = getCsvFromCppResults(exe_resultA, 'DENSITYADJUSTED')
         df2c = getCsvFromCppResults(exe_resultA, 'LAPLACIANADJUSTED')
+        
 
       ### CALL SLICES #######################################
       if D9:

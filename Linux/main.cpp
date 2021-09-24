@@ -9,7 +9,7 @@
 int main(int argc, char* argv[])
 {
     /******   OP SPECIFIC SETTINGS  ***************/
-    bool isLinux = false;
+    bool isLinux = true;
     // **** LINUX PANDORA **** //
     string ccp4directory = "/d/projects/u/ab002/Thesis/PhD/Data/Ccp4/";
     string pdbdirectory = "/d/projects/u/ab002/Thesis/PhD/Data/Pdb/";
