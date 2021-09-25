@@ -264,13 +264,7 @@ void CoutReports::coutSlices(Ccp4* ccp4, PdbFile* pdb,Interpolator* interp, Vect
 {
     SpaceTransformation space(central,linear,planar);
     //dummy use of slice function
-    //DEBUG CHECK
-    VectorThree ccc = space.applyTransformation(central);
-    VectorThree ccr = space.reverseTransformation(central);
-    VectorThree lll = space.applyTransformation(linear);
-    VectorThree llr = space.reverseTransformation(linear);
-    VectorThree ppp = space.applyTransformation(planar);
-    VectorThree ppr = space.reverseTransformation(planar);
+        
     //////////////
     cout << "BEGIN_DENSITYSLICE\n";    
     int length = (int)(width / gap);
@@ -327,6 +321,47 @@ void CoutReports::coutSlices(Ccp4* ccp4, PdbFile* pdb,Interpolator* interp, Vect
         }        
     }
     cout << "END_LAPLACIANSLICE\n";
+
+    //FINALLY CRATE THE position matrix
+    cout << "BEGIN_POSITIONSLICE\n";
+    cout << "i,j,Position\n";
+    //we do not need a massive matrix of zeros, these positions go with the above, so we fill with zeros and then place these points
+    VectorThree ccc = space.reverseTransformation(central);    
+    VectorThree lll = space.reverseTransformation(linear);    
+    VectorThree ppp = space.reverseTransformation(planar);
+    ccc = ccc/gap;
+    ccc.A += (double)halfLength;
+    ccc.B += halfLength;    
+    int x = (int)ccc.A;
+    int y = (int)ccc.B;
+    double val = 1;
+    if (abs(ccc.C > 0.01))
+        val = 0.5;//non-planar
+    cout << x << "," << y << "," << val << "\n";
+
+    lll = lll/gap;
+    lll.A += (double)halfLength;
+    lll.B += halfLength;    
+    x = (int)lll.A;
+    y = (int)lll.B;
+    val = 1;
+    if (abs(lll.C > 0.01))
+        val = 0.5;//non-planar
+    cout << x << "," << y << "," << val << "\n";
+
+    ppp = ppp/gap;
+    ppp.A += (double)halfLength;
+    ppp.B += halfLength;    
+    x = (int)ppp.A;
+    y = (int)ppp.B;
+    val = 1;
+    if (abs(ppp.C > 0.01))
+        val = 0.5;//non-planar
+    cout << x << "," << y << "," << val << "\n";
+
+    
+    cout << "END_POSITIONSLICE\n";
+
 }
 
 void CoutReports::coutSynthetic(string atoms, string model, Algorithmic* interp, VectorThree central, VectorThree linear, VectorThree planar, double width, double gap)

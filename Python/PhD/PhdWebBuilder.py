@@ -601,6 +601,7 @@ def getBodyRun3(pdb,dataABC,width,gran,D7):
             if len(dataABC) > 3:
                 dataD = dataABC[3]
                 havePos = True
+                print(dataD)
             
             
             string += '<table style="table-layout:fixed;width:95%;display:block;display:table"><tr>'

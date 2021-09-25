@@ -80,7 +80,7 @@ def runCppModule(pdb,interpNum,Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,
     #try:
     df1a,df1b,df1c = pd.DataFrame(),pd.DataFrame(),pd.DataFrame()
     df2a, df2b, df2c = pd.DataFrame(), pd.DataFrame(), pd.DataFrame()
-    df4, df5, df6 = pd.DataFrame(),pd.DataFrame(),pd.DataFrame()
+    df4, df5, df6,df7 = pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame()
     exePath ="/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima"
     if debug:
       exePath = 'C:/Dev/Github/PsuMaxima/Linux/out/build/x64-Release/PsuMaxima.exe'
@@ -137,9 +137,10 @@ def runCppModule(pdb,interpNum,Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,
         #print(dfI)
         df4 = getCsvFromCppResults(exe_resultS, 'DENSITYSLICE')
         df5 = getCsvFromCppResults(exe_resultS, 'RADIANTSLICE')
-        df6 = getCsvFromCppResults(exe_resultS, 'LAPLACIANSLICE')      
+        df6 = getCsvFromCppResults(exe_resultS, 'LAPLACIANSLICE')
+        df7 = getCsvFromCppResults(exe_resultS, 'POSITIONSLICE')
 
-      return [[df1a,df1b,df1c],[df2a,df2b,df2c],[df4,df5,df6]]
+      return [[df1a,df1b,df1c],[df2a,df2b,df2c],[df4,df5,df6,df7]]
     #except:
       #print("results from exe=",result)
       #return []
