@@ -1,2 +1,2 @@
-# PsuMaxima
+# Leucippus
  C++ batch library
