@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="icon" href="img/atom.ico"><title>Leucippus Upload</title>
+<link rel="icon" href="img/atom.ico"><title>Leucippus Local</title>
 <style> 
 body {text-align:left;background-color:LightSteelBlue;margin-left: 52px;}
 img {width:85%;border:1px solid MistyRose; }
@@ -18,50 +18,55 @@ a:hover {color:white;}
 <h1>
 <div style="background-color:black;padding:10px">
 <font color="DC143C">Leu</font><font color="AliceBlue">cip</font><font color="DC143C">pus</font>
-<img style="width:25px;border:2px;" src="img/atom.ico" alt="Leucippus Atom">
+<img style="width:25px;border:2px" src="img/atom.ico" alt="Leucippus Atom">
 <font color="AliceBlue">Atomic </font><font color="Crimson">Density </font><font color="AliceBlue">Explorer</font>
 </div>
 </h1>
 <p style="background-color:Crimson;margin:5px;padding:5px;color:AliceBlue;">
    <a href='Leucippus.html' title='Home' target='_self'>PhD Home</a>
- ~  <a href='Peaks.html' title='Peaks' target='_self'>Peaks Explorer</a>
- ~  <a href='Slices.html' title='Slices' target='_self'>Local Maps</a>
- ~  <a href='Geometry.html' title='Geometry' target='_self'>Geometry</a>
- ~  <a href='InputPeaks.html' title='Upload' target='_self'>User Uploads</a>
+ ~  <a href='Peaks.html' title='Home' target='_self'>Peaks Explorer</a>
+ ~  <a href='Slices.html' title='Home' target='_self'>Local Maps</a>
+ ~  <a href='Geometry.html' title='Home' target='_self'>Geometry</a>
+ ~  <a href='InputPeaks.html' title='Home' target='_self'>User Uploads</a>
  ~  <a href='Documentation.html' title='Docs' target='_self'>About</a>
 ~ <a href='https://www.bbk.ac.uk/departments/biology/' title='Birkbeck' target='_blank'>Birkbeck Biology</a>
 </p>
+
+
 <hr/>
+
+
 <p>
 <h3>PhD project: <font color="DC143C">Leu</font>cip<font color="DC143C">pus</font> - Atomic <font color="DC143C">Density</font> Explorer</h3>
 </p>
-<hr/>
-<h3>User File Upload</h3>
-<p>You may upload a ccp4 format file of electron density, and a matching pdb file with atomic coordinates here. You will then be able to use those files in Leucippus with the code we return to you in place of a pdb code.<br/>
-Note that we expect a matching electron densiity and pdb file, the atomic coordinates are used for distance reports. If you do not have a pdb file you can enter a dummy file (at least 2 characters).<br/>
-Note also that the Fo and Fc num that are passed in for ccp4 files are not used for user files - we assume you have manipulated the file into your desired format already (it saves you also uploading a diff file).<br/><br/>
-
-<b>Please be aware that we do not keep the data for any guaranteed length of time and these files are available for you to access and use on our servers during your session.</b>
+<p>
+This python-based tool analyses geometry in any pdb format files (xray, nmr...).
 </p>
 
 <hr/>
-
  <div>
-
-<form method="post" action="/cgi-bin/cgiwrap/ab002/PhD/Upload.cgi" enctype="multipart/form-data" >
+<form method="post" action="/cgi-bin/cgiwrap/ab002/PhD/Geometry.cgi" accept-charset="UTF-8">
 <b>~~ Application access credentials ~~</b><br/><i>You must enter a valid email address to access this software. Passwords will be forthcoming.</i><br/>Email address: <input type='text' name='email' value='' /> Password: <input type='text' name='password' value='not used' /><hr/>
 
-<hr/>
+<h3>Geometry Comparison of 2 Structures</h3>
+<p><b>Pdb Codes: </b>They can be 4 digit pdb codes, or your uploaded pdb. You can compare an amended structure.</p>
+Enter pdb code A: <input type="text" name="PdbA" value="1ejg" size="6"/>
+Enter pdb code B: <input type="text" name="PdbB" value="3nir" size="6"/><br/>
+<p><b>Geos: </b>
+The 3 geos will be shown as histograms and scatter plots for each pdb and against each other in rotation. Geos can be any distance, angle or dihedral described by the atom code and a colon, e.g.
+<li>N:CA for the distance between backbone N and CA</li>
+<li>N:CA:C for the backbone angle, which also has an alias TAU</li>
+<li>N:CA:C:N+1 or PSI to descibe a dihedral</li>
+<li>You can define anything, eg CA-2:C:CA+2 if you want</li>
+<li>Instead of a Geo you can alternatively use bfactor</li>
+</p>
+GeoA: <input type="text" name="GeoHueA" value="N:CA" size="6"/>
+GeoB: <input type="text" name="GeoHueB" value="CA:C" size="6"/>
+GeoC: <input type="text" name="GeoHueC" value="bfactor" size="6"/><br/>
 
-Enter a 4 character code for your files: <input type="text" name="userCode" value="0abc"><br/><br/>
-Ccp4 File (ccp4 extension): <input type="file" name="fileCcp4"><br/><br/>
-Pdb File (ent extension): <input type="file" name="filePdb"><br/><br/>
-<input type="submit" value="Upload"></p>
 
-
-
+<br/><input type="Submit" value="Compare Geometry"/>
 </form>
-
 </div>
 
 <hr/>

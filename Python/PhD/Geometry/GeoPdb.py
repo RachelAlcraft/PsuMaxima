@@ -262,7 +262,10 @@ class GeoPdb:
                     self.averageBfactor = bfactorTotal/bfactorCount
                     # Now set the bFactorRatio for all atoms
                     for atom in self.atoms:
-                        atom.values['bfactorRatio'] = atom.values['bfactor'] / self.averageBfactor
+                        try:
+                            atom.values['bfactorRatio'] = atom.values['bfactor'] / self.averageBfactor
+                        except:
+                            atom.values['bfactorRatio'] = 0
                 else:
                     self.averageBfactor = 0
 

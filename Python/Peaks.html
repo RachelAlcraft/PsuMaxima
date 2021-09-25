@@ -24,9 +24,10 @@ a:hover {color:white;}
 </h1>
 <p style="background-color:Crimson;margin:5px;padding:5px;color:AliceBlue;">
    <a href='Leucippus.html' title='Home' target='_self'>PhD Home</a>
- ~  <a href='InputPeaks.html' title='Home' target='_self'>User Uploads</a>
- ~  <a href='Peaks.html' title='Home' target='_self'>Peaks Explorer</a>
- ~  <a href='Slices.html' title='Home' target='_self'>Local Maps</a>
+ ~  <a href='Peaks.html' title='Peaks' target='_self'>Peaks Explorer</a>
+ ~  <a href='Slices.html' title='Slices' target='_self'>Local Maps</a>
+ ~  <a href='Geometry.html' title='Geometry' target='_self'>Geometry</a>
+ ~  <a href='InputPeaks.html' title='Upload' target='_self'>User Uploads</a>
  ~  <a href='Documentation.html' title='Docs' target='_self'>About</a>
 ~ <a href='https://www.bbk.ac.uk/departments/biology/' title='Birkbeck' target='_blank'>Birkbeck Biology</a>
 </p>
@@ -40,7 +41,7 @@ a:hover {color:white;}
 </p>
 <p>
 This webpage interfaces with a C++ executable which calculates density maxima in ccp4 files from the PDBe. 
-<i>Only valid for structures with ccp4 files stored on the ebi cloud. </i>
+<br/><i>Enter either a pdb code with ccp4 on the ebi, or a user upload code</i>
 </p>
 
 
@@ -55,10 +56,12 @@ This webpage interfaces with a C++ executable which calculates density maxima in
 <table style="text-align: left;">
 <tr><td><label for="D1">1) Peaks visual projection to 3 planes</label></td><td><input type="checkbox" id="Data1" name="Data1" value="1" checked="checked"></td></tr>
 <tr><td><label for="D2">2) Peaks data in pseudo-pdb file</label></td><td><input type="checkbox" id="Data2" name="Data2" value="1" checked="checked"></td></tr>
-<tr><td><label for="D3">3) Peaks info as html grid</label></td><td><input type="checkbox" id="Data3" name="Data3" value="1"></td></tr>
-<tr><td><label for="D4">4) Peaks visual projection, atoms only (unit cell)</label></td><td><input type="checkbox" id="Data4" name="Data4" value="1"></td></tr>
+<tr><td><label for="D3">3) Peaks info as html grid</label></td><td><input type="checkbox" id="Data3" name="Data3" value="1"  checked="checked"></td></tr>
+<tr><td><label for="D4">4) Peaks visual projection, atoms only (unit cell)</label></td><td><input type="checkbox" id="Data4" name="Data4" value="1"  checked="checked"></td></tr>
 <tr><td><label for="D5">5) Density visual projection, all atoms</label></td><td><input type="checkbox" id="Data5" name="Data5" value="1" checked="checked"></td></tr>
 <tr><td><label for="D6">6) Atoms visualised on AtomNo</label></td><td><input type="checkbox" id="Data6" name="Data6" value="1" checked="checked"></td></tr>
+<tr><td><label for="D7">7) Create density adjusted pdb file</label></td><td><input type="checkbox" id="Data7" name="Data7" value="1"></td></tr>
+<tr><td><label for="D8">8) Create laplacian adjusted pdb file</label></td><td><input type="checkbox" id="Data8" name="Data8" value="1"></td></t,D8,D8>
 <!--<tr><td><label for="D7">7) Visualised electron density planes</label></td><td><input type="checkbox" id="Data7" name="Data7" value="1" checked="checked"></td></tr>-->
 </table>
 </td><td><div style="text-align: left;">

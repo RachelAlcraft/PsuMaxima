@@ -7,6 +7,7 @@ import base64
 import os
 
 def userSuccess(email,password):
+    email=email.lower()
     isok = True
     #Does the email address contaion an @ sign?
     on_at = email.split('@')
@@ -35,6 +36,7 @@ def userSuccess(email,password):
 
 def userOwnWebPage(email,string,debug=False):
     isok = True
+    email = email.lower()
     #Does the email address contaion an @ sign?
     on_at = email.split('@')
     pageName = email#on_at[0] + "_" + on_at[1]
@@ -100,11 +102,11 @@ def getHeader(Geometry=False):
     string += '</h1>'
     string += '<p style="background-color:Crimson;margin:5px;padding:5px;color:AliceBlue;">'
     
-    string += '<a href="/../../~ab002/Leucippus.html" title="Home" target="_self">PhD Home</a>'
-    string += " ~  <a href='/../../~ab002/InputPeaks.html' title='Upload' target='_self'>User Uploads</a>\n"
+    string += '<a href="/../../~ab002/Leucippus.html" title="Home" target="_self">PhD Home</a>'    
     string += ' ~  <a href="/../../~ab002/Peaks.html" title="Peaks" target="_self">Peaks Explorer</a>'
     string += " ~  <a href='/../../~ab002/Slices.html' title='Slices' target='_self'>Local Maps</a>\n"
     string += " ~  <a href='/../../~ab002/Geometry.html' title='Geometry' target='_self'>Geometry</a>"
+    string += " ~  <a href='/../../~ab002/InputPeaks.html' title='Upload' target='_self'>User Uploads</a>\n"
     string += " ~  <a href='/../../~ab002/Documentation.html' title='Docs' target='_self'>About</a>"    
     string += " ~ <a href='https://www.bbk.ac.uk/departments/biology/' title='Birkbeck' target='_blank'>Birkbeck Biology</a>"
     string += '</p>'
@@ -119,8 +121,8 @@ def getBodyUserUpload(userCode, username, password):
     string += '<hr/>\n'
     string += '<h3>User File Upload</h3>\n'
     string += '<p>You may upload a ccp4 format file of electron density, and a matching pdb file with atomic coordinates here. You will then be able to use those files in Leucippus with the code we return to you in place of a pdb code.<br/>\n'
-    string += 'Note that we expect a matching electron densiity and pdb file, the atomic coordinates are sued for distance reports. If you do not have a pdb file you can enter a blank file.<br/>\n'
-    string += 'Note also that the Fo and Fc num that are passed in for ccp4 files are not used for user files - we assume you have manipulated the file into your desired format alresdy (it saves you also uploading a diff file).<br/><br/>\n'
+    string += 'Note that we expect a matching electron densiity and pdb file, the atomic coordinates are used for distance reports. If you do not have a pdb file you can enter a dummy file (at least 2 characters).<br/>\n'
+    string += 'Note also that the Fo and Fc num that are passed in for ccp4 files are not used for user files - we assume you have manipulated the file into your desired format already (it saves you also uploading a diff file).<br/><br/>\n'
     string += '<b>Please be aware that we do not keep the data for any guaranteed length of time and thise files are available for you to access and use on our servers during your session.</b>\n'
     string += '</p>\n'
     
@@ -151,7 +153,8 @@ def getBodySlices(pdbCode, username, password,interpMethod, Fos,Fcs,cX,cY,cZ,lX,
     string += '<h3>PhD project: <font color="DC143C">Leu</font>cip<font color="DC143C">pus</font> - Atomic <font color="DC143C">Density</font> Explorer</h3>\n'
     string += '</p>\n'
     string += '<p>\n'
-    string += 'This webpage interfaces with a C++ executable which calculates synthetic density for the given atoms. This tool is used to explore Gaussian Overlap and Density Drift.\n'
+    string +='This webpage interfaces with a C++ executable which calculates density slices in ccp4 files.\n'
+    string +='<br/><i>Enter either a pdb code with ccp4 on the ebi, or a user upload code</i>\n'    
     string += '</p>\n'
     string += '<hr/>\n'
     string += '<div>\n'
@@ -207,7 +210,7 @@ def getBodyGeometry(pdbCodeA, pdbCodeB, username, password,GeoA, GeoB, GeoC):
     string += '<h3>PhD project: <font color="DC143C">Leu</font>cip<font color="DC143C">pus</font> - Atomic <font color="DC143C">Density</font> Explorer</h3>\n'
     string += '</p>\n'
     string += '<p>\n'
-    string += 'This webpage interfaces with a C++ executable which calculates synthetic density for the given atoms. This tool is used to explore Gaussian Overlap and Density Drift.\n'
+    string += 'This python-based tool analyses geometry in any pdb format files (xray, nmr...).\n'
     string += '</p>\n'
     string += '<hr/>\n'
     string += '<div>\n'
@@ -313,7 +316,7 @@ def getBodyA(pdb, interpNum, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,
     string += '</p>\n'
     string += '<p>\n'
     string += 'This webpage interfaces with a C++ executable which calculates density maxima in ccp4 files from the PDBe. \n'
-    string += '<i>Only valid for structures with ccp4 files stored on the ebi cloud. </i>\n'    
+    string += '<br/><i>Enter either a pdb code with ccp4 on the ebi, or a user upload code. </i>\n'    
     string += ' </p>\n'
 
     string += '<hr/>\n'
@@ -551,6 +554,20 @@ def scatterToMatrix(data,length,hue, cap):
             if mtx[i,j] > maxCap:
                 mtx[i,j] = maxCap
     return mtx, minVal
+
+def scatterToMatrixMin(data,length,hue, cap):
+    import math    
+    minVal = data[hue].values.min()
+    maxCap = minVal * cap
+    real_len = len(data[hue].values)
+    sq_len = int(math.sqrt(real_len))
+        
+    mtx = data[hue].values.reshape(int(sq_len),int(sq_len))
+    for i in range(sq_len):
+        for j in range(sq_len):
+            if mtx[i,j] < maxCap:
+                mtx[i,j] = maxCap
+    return mtx, minVal
     
 
 def addPosToMtx(mtx,length,minVal,data):
@@ -598,7 +615,7 @@ def getBodyRun3(pdb,dataABC,width,gran,D7):
 
             mtxD,minD = scatterToMatrix(dataA,length,'Density',dContour)
             mtxR,minR = scatterToMatrix(dataB,length,'Radiant',1)
-            mtxL,minL = scatterToMatrix(dataC,length,'Laplacian',lContour)
+            mtxL,minL = scatterToMatrixMin(dataC,length,'Laplacian',1)
             
             if havePos:
                 mtxD = addPosToMtx(mtxD,length,minD,dataD)
