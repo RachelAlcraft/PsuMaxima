@@ -570,6 +570,11 @@ double Algorithmic::getValue(double x, double y, double z)
         Atom atom = _atoms[i];
         value += atom.getIAMDensity(VectorThree(x, y, z));
     }
+    if (value > 1000)
+    {
+        int bp = 0;
+        ++bp;
+    }
     return value;
 }
 void Algorithmic::addAtoms(vector<Atom> atoms)

@@ -27,24 +27,25 @@ userstring = ""
 pdb = '1ejg'
 interpNum = 2
 asCSV = True
-cX, cY, cZ = 0, 0, 0
-lX, lY, lZ = 0, 0, 0
-pX, pY, pZ = 0, 0, 0
+
+cX, cY, cZ = 9.373,-7.688,-15.546
+lX, lY, lZ = 9.5,-9.079,-14.937
+pX, pY, pZ = 9.64,-7.542,-16.748
 username = "RachelTest"
 password = ""
 # Data return choices
 # PEAKS
 D1, D2, D3, D4 = False, False, False, False #vis projection, pseudo file, html grid, unit cell
 # ATOMS
-D5,D6,D7,D8 = True,True,True,True #atoms projection, atomno projection, density adjusted, laplacian adjusted
+D5,D6,D7,D8 = False,False,False,False #atoms projection, atomno projection, density adjusted, laplacian adjusted
 # SLICES
-D9 =  False
+D9 =  True
 
 width = 5
-gran = 0.1
+gran = 0.05
 interpMethod = 'spline'
-Fos = 2
-Fcs = -1
+Fos = 1
+Fcs = 0
 
 
 #####################################################
@@ -89,7 +90,7 @@ if True:
             start = time.time()
             data = Maxima.runCppModule(pdb, interpNum, Fos, Fcs, cX, cY, cZ, lX, lY, lZ, pX, pY, pZ, width, gran, False,
                                        False, False, False, False, False, False,False,D9,debug=True)
-            userstring += pwb.getBodyRun3(pdb, data[2], width, gran, D7)
+            userstring += pwb.getBodyRun3(pdb, data[2], width, gran, D9)
             end = time.time()
             ts = getTimeDiff(start, end)
             print('completed in',ts)

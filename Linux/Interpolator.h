@@ -29,6 +29,8 @@ public:
 	double getDzDz(double x, double y, double z, double val);
 	VectorThree getNearbyAtomPeak(VectorThree XYZ, bool density);
 	VectorThree getNearbyGridPeak(VectorThree XYZ, bool density);	
+	virtual void addAtoms(vector<Atom> atoms) {}
+	virtual void createBondElectrons() {}
 
 protected:
 	VectorThree getNearestPeakRecursive(VectorThree Orig, VectorThree XYZ, bool density, int level, double width, int cap, bool invalidNonConvergence);

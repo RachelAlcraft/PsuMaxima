@@ -364,31 +364,60 @@ void CoutReports::coutSlices(Ccp4* ccp4, PdbFile* pdb,Interpolator* interp, Vect
 
 }
 
-void CoutReports::coutSynthetic(string atoms, string model, Algorithmic* interp, VectorThree central, VectorThree linear, VectorThree planar, double width, double gap)
+void CoutReports::coutSyntheticIAM(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp)
 {
-    //The atoms are a list of lines    
-    vector<string> lines = helper::stringToVector(atoms, "@");
-    //we want to turn each line ibnto a synthetic atom
-    
-    vector<Atom> atomsList;
-    for (unsigned int i = 0; i < lines.size(); ++i)
+    interp->addAtoms(pdb->Atoms);
+    cout << "BEGIN_SYNTHETIC_IAM\n";
+    cout << "i,j,k,Density\n";
+    cout << ccp4->W01_NX << "," << ccp4->W02_NY << "," << ccp4->W03_NZ << ",Dimensions\n";
+    for (int i = 0; i < ccp4->W01_NX; ++i)
     {
-        string line = lines[i];
-        if (line.size() > 5)
+        for (int j = 0; j < ccp4->W02_NY; ++j)
         {
-            atomsList.push_back(Atom(line, false));
+            for (int k = 0; k < ccp4->W03_NZ; ++k)
+            {
+                VectorThree XYZ = ccp4->getXYZFromCRS(VectorThree(i,j,k).reverse());
+                double val = interp->getValue(XYZ.A, XYZ.B, XYZ.C);
+                if (abs(val) > 0.0001)
+                    cout << i << "," << j << "," << k << "," << val <<"\n";
+            }
         }
     }
-    
-    interp->addAtoms(atomsList);
+
+    cout << "END_SYNTHETIC_IAM\n";
+
+}
+
+void CoutReports::coutSyntheticSlice(string atoms, string model, Interpolator* interp, VectorThree central, VectorThree linear, VectorThree planar, double width, double gap)
+{
+    //The atoms are a list of lines
+    if (atoms.size() > 2)
+    {
+        vector<string> lines = helper::stringToVector(atoms, "@");
+        //we want to turn each line ibnto a synthetic atom
+
+        vector<Atom> atomsList;
+        for (unsigned int i = 0; i < lines.size(); ++i)
+        {
+            string line = lines[i];
+            if (line.size() > 5)
+            {
+                atomsList.push_back(Atom(line, false));
+            }
+        }
+
+        interp->addAtoms(atomsList);
+
+        cout << "BEGIN_ATOMDATA\n";
+        cout << "AtomStrings\n";
+        for (unsigned int i = 0; i < atomsList.size(); ++i)
+            cout << atomsList[i].info() << "\n";
+        cout << "END_ATOMDATA\n";
+    }
     if (model == "BEM")
         interp->createBondElectrons();//will add bond electron pairs here when do that model TODO
     
-    cout << "BEGIN_ATOMDATA\n";   
-    cout << "AtomStrings\n";
-    for (unsigned int i = 0; i < atomsList.size(); ++i)
-        cout << atomsList[i].info() << "\n";        
-    cout << "END_ATOMDATA\n";    
+  
     //CRETAE SYNTHETIC DENSITY SLICES
     SpaceTransformation space(central, linear, planar);            
     //////////////

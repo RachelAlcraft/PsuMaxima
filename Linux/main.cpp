@@ -49,8 +49,9 @@ int main(int argc, char* argv[])
     ////INPUT = "PEAKS|1ejg|5|2|-1|";
     //INPUT = "PEAKS|user_0abc|5|2|-1|";
     //INPUT = "ATOMS|1ejg|5|2|-1|";
-    INPUT = "SLICES|1ejg|5|1|-1|9.373-7.688-15.546|9.5-9.079-14.937|9.64-7.542-16.748|5-0.02";
+    INPUT = "SLICES|1ejg|5|0|0|9.373-7.688-15.546|9.5-9.079-14.937|9.64-7.542-16.748|3-0.1";
     //INPUT = "SYNTHETIC|@CA,9.5,9.079,14.937,1,2.4,1.00,-,-,-,-,-,-,- @C,9.373,7.688,15.546,2,2.6,1.00,-,-,-,-,-,-,- @O,9.64,7.542,16.748,3,2.6,1.00,-,-,-,-,-,-,- |iam|9.373-7.688-15.546|9.5-9.079-14.937|9.64-7.542-16.748|5-0.02";    
+    //INPUT = "SYN_CCP4IAM|1ejg|5|2|-1|";
     if (argc >= 2)
         INPUT = argv[1];
     if (true)
@@ -118,34 +119,51 @@ int main(int argc, char* argv[])
 
     if (COMMAND == "SYNTHETIC")
     {        
-        CoutReports::coutSynthetic(atoms, model, new Algorithmic(), VectorThree(cX, cY, cZ), VectorThree(lX, lY, lZ), VectorThree(pX, pY, pZ), width, gap);    
+        CoutReports::coutSyntheticSlice(atoms, model, new Algorithmic(), VectorThree(cX, cY, cZ), VectorThree(lX, lY, lZ), VectorThree(pX, pY, pZ), width, gap);
     }
     else
     {
         /***************************************************/
         Ccp4 myCcp4(pdb, ccp4directory,Fos,Fcs);
-        PdbFile myPdb(pdb, pdbdirectory);
-        Interpolator* interp;
+        PdbFile myPdb(pdb, pdbdirectory);        
         //INTERPNUM is the encoded interpolator, so 0 == nearest
-
-        if (COMMAND == "PEAKS")//TODO don;t know why we need thvenaz for peaks...
-            interp = new Thevenaz(myCcp4.Matrix, myCcp4.W01_NX, myCcp4.W02_NY, myCcp4.W03_NZ);
-        else if (INTERPNUM == 0)
-            interp = new Nearest(myCcp4.Matrix, myCcp4.W01_NX, myCcp4.W02_NY, myCcp4.W03_NZ);
+        if (COMMAND == "SYN_CCP4IAM")
+        {
+            CoutReports::coutSyntheticIAM(&myCcp4, &myPdb, new Algorithmic());
+        }
         else
-            interp = new Thevenaz(myCcp4.Matrix, myCcp4.W01_NX, myCcp4.W02_NY, myCcp4.W03_NZ);
-        
-        if (COMMAND == "PEAKS")
         {
-            CoutReports::coutPeaks(&myCcp4, &myPdb, interp, INTERPNUM);
-        }
-        else if (COMMAND == "ATOMS")
-        {
-            CoutReports::coutAtoms(&myCcp4, &myPdb, interp);
-        }
-        else if (COMMAND == "SLICES")
-        {
-            CoutReports::coutSlices(&myCcp4, &myPdb, interp, VectorThree(cX, cY, cZ), VectorThree(lX, lY, lZ), VectorThree(pX, pY, pZ), width, gap);
+            Interpolator* interp;
+            if (COMMAND == "PEAKS")//TODO don't know why we need thvenaz for peaks...
+                interp = new Thevenaz(myCcp4.Matrix, myCcp4.W01_NX, myCcp4.W02_NY, myCcp4.W03_NZ);
+            else if (INTERPNUM == 0)
+                interp = new Nearest(myCcp4.Matrix, myCcp4.W01_NX, myCcp4.W02_NY, myCcp4.W03_NZ);
+            else
+                interp = new Thevenaz(myCcp4.Matrix, myCcp4.W01_NX, myCcp4.W02_NY, myCcp4.W03_NZ);
+
+            if (COMMAND == "PEAKS")
+            {
+                CoutReports::coutPeaks(&myCcp4, &myPdb, interp, INTERPNUM);
+            }
+            else if (COMMAND == "ATOMS")
+            {
+                CoutReports::coutAtoms(&myCcp4, &myPdb, interp);
+            }
+            else if (COMMAND == "SLICES")
+            {
+                if (Fos == 0 && Fcs == 0)
+                {
+                    interp = new Algorithmic();
+                    interp->addAtoms(myPdb.Atoms);
+                    CoutReports::coutSyntheticSlice("", "IAM", interp, VectorThree(cX, cY, cZ), VectorThree(lX, lY, lZ), VectorThree(pX, pY, pZ), width, gap);
+                }
+                else
+                {
+                    CoutReports::coutSlices(&myCcp4, &myPdb, interp, VectorThree(cX, cY, cZ), VectorThree(lX, lY, lZ), VectorThree(pX, pY, pZ), width, gap);
+                }
+
+                
+            }
         }
         
     }

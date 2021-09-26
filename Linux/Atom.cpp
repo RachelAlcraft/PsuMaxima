@@ -12,6 +12,7 @@ using namespace std;
 
 Atom::Atom(string line, bool fromPdb)
 {
+	MotionLine = false;
 	_line = line;
 	if (fromPdb)	
 		makePdbAtom(line);			
@@ -56,7 +57,7 @@ void Atom::makePdbAtom(string line)
 	// 7 - 11        Integer       serial       Atom  serial number.
 	AtomNo = atol(trim(line.substr(6, 5)).c_str());
 	//13 - 16        Atom          name         Atom name.
-	string elementName = trim(line.substr(12, 4));
+	AtomType = trim(line.substr(12, 4));
 	//16 - 17        The accupancy code if there is one
 	string occupant = trim(line.substr(16, 1));
 	//18 - 20        Residue name  resName      Residue name.
@@ -81,7 +82,7 @@ void Atom::makePdbAtom(string line)
 	Occupancy = atof(occ.c_str());
 	//61 - 66        Real(8.3)     b factor   Double
 	string bfac = trim(line.substr(60, 6));
-	double bfactor = atof(bfac.c_str());
+	BFactor = atof(bfac.c_str());
 	//77 - 78        LString(2)    element      Element symbol, right-justified.
 	Element = "";
 	if (line.length() > 76)
@@ -168,17 +169,22 @@ double Atom::getIAMDensityInternal(VectorThree ABC, VectorThree XYZ, double occu
     {
         double density = 0;
         vector<double> cromerMann = PeriodicTable::getCromerMannCoefficients(AtomType);
+		if (cromerMann.size() > 1)
+		{
 
-        density += getDensityComponent(distance, cromerMann[0], (cromerMann[4] + BFactor));
-        density += getDensityComponent(distance, cromerMann[1], (cromerMann[5] + BFactor));
-        density += getDensityComponent(distance, cromerMann[2], (cromerMann[6] + BFactor));
-        density += getDensityComponent(distance, cromerMann[3], (cromerMann[7] + BFactor));
-        double c = cromerMann[8];
-        c = getDensityComponent(distance, c, BFactor);
-        if (!isnan((double)c))
-            density += c;
+			density += getDensityComponent(distance, cromerMann[0], (cromerMann[4] + BFactor));
+			density += getDensityComponent(distance, cromerMann[1], (cromerMann[5] + BFactor));
+			density += getDensityComponent(distance, cromerMann[2], (cromerMann[6] + BFactor));
+			density += getDensityComponent(distance, cromerMann[3], (cromerMann[7] + BFactor));
+			double c = cromerMann[8];
+			c = getDensityComponent(distance, c, BFactor);
+			if (!isnan((double)c))
+				density += c;
 
-        return occupancy * density;
+			return occupancy * density;
+		}
+		else
+			return 0;
     }
     else
     {
@@ -199,7 +205,7 @@ double Atom::getDensityComponent(double d, double x, double y)
     Passed in:
     x * [4 * pi / y]^1.5 + exp[-4 * pi^2*r^2 / y]
     */
-    if (y == 0)
+    if (abs(y) < 0.00001)
         return 0;
 
     double bottom = 4 * M_PI / y;
@@ -208,8 +214,10 @@ double Atom::getDensityComponent(double d, double x, double y)
 
     double index = 4 * pow(M_PI, 2) * pow(d, 2) / y;
     double exponent = exp(index);
-    exponent = 1 / exponent;
-
+	if (abs(exponent) < 0.00001)
+		return 0;
+    
+	exponent = 1 / exponent;
     return x * raised * exponent;
 }
 
