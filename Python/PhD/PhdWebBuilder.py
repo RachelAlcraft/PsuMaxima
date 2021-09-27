@@ -601,13 +601,13 @@ def getBodyRun3(pdb,dataABC,width,gran,D7):
             if len(dataABC) > 3:
                 dataD = dataABC[3]
                 havePos = True
-                print(dataD)
+                #print(dataD)
             
             
             string += '<table style="table-layout:fixed;width:95%;display:block;display:table"><tr>'
             string += '<td style="width:33%;">Density</td><td style="width:33%;">Radiant</td><td style="width:33%;">Laplacian</td></tr><tr>'
 
-            dContour = 0.3
+            dContour = 0.5
             lContour = 0.2
             if pdb == "Synthetic":
                 dContour = 0.8

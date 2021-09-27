@@ -8,7 +8,7 @@ Interpolator::Interpolator(vector<float> matrix, int x, int y, int z)
 	XLen = x;
 	YLen = y;
 	ZLen = z;
-    h = 0.01;
+    h = 0.001;
 }
 
 int Interpolator::getPosition(int x, int y, int z)

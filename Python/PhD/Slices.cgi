@@ -103,8 +103,11 @@ cgistring = ""
 
 
 userstring += pwb.getBodySlices(pdbCode, username, password,interpMethod, Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran)
-if access:  
-  print('<p>' + str(1) + '/' + str(1) + ' Calculating local map slices...(approx ' + str(6) + ' seconds)...')  
+if access:
+  if int(Fos) == 0 and int(Fcs) == 0:
+      print('<p>' + str(1) + '/' + str(1) + ' Calculating IAM model from pdb coods for local map slices...(approx ' + str(60) + ' seconds)...')  
+  else:
+      print('<p>' + str(1) + '/' + str(1) + ' Calculating local map slices...(approx ' + str(6) + ' seconds)...')  
   sys.stdout.flush() # update the user interface      
   start = time.time()
   data = Maxima.runCppModule(pdbCode,interpNum,Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,False,False,False,False,False,False,False,False,True)

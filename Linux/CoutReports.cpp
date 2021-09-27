@@ -9,6 +9,7 @@
 #include <iostream>
 #include <algorithm>
 #include <iomanip>
+#include <cmath>
 
 #include "VectorThree.h"
 #include "helper.h"
@@ -378,7 +379,8 @@ void CoutReports::coutSyntheticIAM(Ccp4* ccp4, PdbFile* pdb, Interpolator* inter
             {
                 VectorThree XYZ = ccp4->getXYZFromCRS(VectorThree(i,j,k).reverse());
                 double val = interp->getValue(XYZ.A, XYZ.B, XYZ.C);
-                if (abs(val) > 0.0001)
+                double absval = abs(val);
+                if (absval > 0.0001)
                     cout << i << "," << j << "," << k << "," << val <<"\n";
             }
         }
