@@ -156,6 +156,11 @@ int main(int argc, char* argv[])
         Ccp4 myCcp4(ccp4Code, MAT_TYPE,ccp4directory, Fos, Fcs);
         myCcp4.printText(ccp4directory);
     }
+    else if (COMMAND == "TEXTCOUT")
+    {
+        Ccp4 myCcp4(ccp4Code, MAT_TYPE, ccp4directory, Fos, Fcs);
+        CoutReports::coutText(&myCcp4);
+    }
     else
     {
         /***************************************************/

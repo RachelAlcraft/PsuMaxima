@@ -514,3 +514,8 @@ void CoutReports::coutSyntheticSlice(string atoms, string model, Interpolator* i
     cout << "END_POSITIONSLICE\n";
 
 }
+
+void CoutReports::coutText(Ccp4* ccp4)
+{
+    ccp4->coutText();
+}

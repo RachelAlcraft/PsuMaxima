@@ -593,6 +593,57 @@ void Ccp4::createWordsData(string directory, vector<string>& dataStr, vector<int
     createWordsList(symmetry,length,nCnRnS);
 }
 
+void Ccp4::coutText()
+{
+    vector<string> textFile;
+    int symmetry = _wordsDataIntMain[23]; //the length of the symmetry data is held here
+    int length = (int)_wordsDataIntMain.size();
+    int nCnRnS = _wordsDataIntMain[0] * _wordsDataIntMain[1] * _wordsDataIntMain[2];
+
+    if (_wordsList.size() == _wordsDataIntMain.size())
+    {
+        cout << "BEGIN_RAWTEXT\n";
+        cout << "Word,Data\n";
+
+        //and print it out                
+        cout << setprecision(3);
+        for (unsigned int i = 0; i < _wordsList.size(); ++i)
+        {
+            cout << _wordsList[i] << ",";
+            if (10 <= i && i < 16)
+                cout << _wordsDataFloatMain[i] << "\n";
+            else if (19 <= i && i < 22)
+                cout << _wordsDataFloatMain[i] << "\n";
+            else if (25 <= i && i < 37)
+                cout << _wordsDataFloatMain[i] << "\n";
+            else if (37 <= i && i < 54)
+                cout << _wordsDataStrMain[i] << "\n";
+            else if (i == 54)
+                cout << _wordsDataFloatMain[i] << "\n";
+            else if (i == 55)
+                cout << _wordsDataIntMain[i] << "\n";
+            else if (56 <= i && i < 256)
+                cout << _wordsDataStrMain[i] << "\n";
+            //symmetry
+            else if (256 <= i && i < length - nCnRnS)
+                cout << _wordsDataStrMain[i] << "\n";
+            //voxels
+            else if (i >= length - nCnRnS)//voxels
+                cout << _wordsDataFloatMain[i] << "\n";
+            else
+                cout << _wordsDataIntMain[i] << "\n";
+
+
+        }
+        cout << "END_RAWTEXT\n";
+    }
+    else
+    {
+        cout << "Error in words creation";
+    }
+
+}
+
 void Ccp4::printText(string directory)
 {
     //createWordsData(directory);
@@ -643,8 +694,6 @@ void Ccp4::printText(string directory)
     {
         cout << "Error in words creation";
     }
-
-
 
 }
 

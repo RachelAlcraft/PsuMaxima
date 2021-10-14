@@ -99,6 +99,7 @@ public:
 	VectorThree getCRS(int position);
 	void CreatePeaks(Interpolator* interp, int interpNum);
 	void printText(string directory);
+	void coutText();
 private:
 	void loadMainFile(string pdbCode, string directory);	
 	void loadDiffFile(string pdbCode, string directory);		
