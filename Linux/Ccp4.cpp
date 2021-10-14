@@ -658,7 +658,7 @@ void Ccp4::printText(string directory)
         //and print it out
         ofstream outfile;
         string outfilename = _directory + _pdbCode + "_ccp4.txt";
-        outfile.open(outfilename, ios::out);
+        outfile.open(outfilename.c_str(), ios::out);
         outfile << setprecision(3);
         for (unsigned int i = 0; i < _wordsList.size(); ++i)
         {
