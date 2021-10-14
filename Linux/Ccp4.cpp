@@ -13,6 +13,7 @@
 
 #include "Ccp4.h"
 #include "VectorThree.h"
+#include <iomanip>
 
 
 using namespace std;
@@ -20,15 +21,17 @@ using namespace std;
 typedef unsigned char uchar;
 
 
-Ccp4::Ccp4(string pdbCode, string directory, int Fos, int Fcs)
+Ccp4::Ccp4(string pdbCode, string type, string directory, int Fos, int Fcs)
 {
+    _type = type;
     _fos = Fos;
     _fcs = Fcs;
     _noMains = _fos + _fcs;
 	_noDiffs = (_fos - _fcs) - (_fos + _noMains);
     
     if (_noDiffs != 0)
-        loadDiffFile(pdbCode,directory);
+        loadDiffFile(pdbCode, directory);
+            
     loadMainFile(pdbCode,directory);
     //now create the peaks matrix
 
@@ -51,7 +54,7 @@ Ccp4::Ccp4(string pdbCode, string directory, int Fos, int Fcs)
 
 }
 
-void Ccp4::loadMainFile(string pdbCode, string directory)
+/*void Ccp4::loadMainFile(string pdbCode, string directory)
 {
     PI = 3.14159265;
     _loaded = false;
@@ -68,7 +71,7 @@ void Ccp4::loadMainFile(string pdbCode, string directory)
 
     ifstream infile;
     infile.open((_directory + pdbCode + ".ccp4").c_str(), ios::binary | ios::in);
-    //This opens the WORDS in the ccp4	    
+    //This opens the WORDS in th  ccp4	    
     infile.read((char*)&W01_NX, sizeof(W01_NX));
     infile.read((char*)&W02_NY, sizeof(W02_NY));
     infile.read((char*)&W03_NZ, sizeof(W03_NZ));
@@ -205,6 +208,100 @@ void Ccp4::loadMainFile(string pdbCode, string directory)
     _dimOrder[0] = W01_NX;
     _dimOrder[1] = W02_NY;
     _dimOrder[2] = W03_NZ;
+}*/
+void Ccp4::loadMainFile(string pdbCode, string directory)
+{
+    PI = 3.14159265;
+    _loaded = false;
+    _resolution = 0.0;
+    _endian = isBigEndian();
+
+    _pdbCode = pdbCode;
+    _resolution = 0.78;
+    _directory = directory;
+
+    createWordsData(_directory, _wordsDataStrMain, _wordsDataIntMain, _wordsDataFloatMain, false);
+       
+    W01_NX = _wordsDataIntMain[0];
+    W02_NY = _wordsDataIntMain[1];
+    W03_NZ = _wordsDataIntMain[2];
+    _w05_NXSTART = _wordsDataIntMain[4];
+    _w06_NYSTART = _wordsDataIntMain[5];
+    _w07_NZSTART = _wordsDataIntMain[6];
+    _w08_MX = _wordsDataIntMain[7];
+    _w09_MY = _wordsDataIntMain[8];
+    _w10_MZ = _wordsDataIntMain[9];
+    float w11_CELLA_X = _wordsDataFloatMain[10];
+    float w12_CELLA_Y = _wordsDataFloatMain[11];
+    float w13_CELLA_Z = _wordsDataFloatMain[12];
+    _w14_CELLB_X = _wordsDataFloatMain[13];
+    _w15_CELLB_Y = _wordsDataFloatMain[14];
+    _w16_CELLB_Z = _wordsDataFloatMain[15];
+    _w17_MAPC = _wordsDataIntMain[16];
+    _w18_MAPR = _wordsDataIntMain[17];
+    _w19_MAPS = _wordsDataIntMain[18];
+    _w17_MAPC -= 1;
+    _w18_MAPR -= 1;
+    _w19_MAPS -= 1;
+    float w20_DMIN = _wordsDataFloatMain[19];
+    float w21_DMAX = _wordsDataFloatMain[20];
+    _w22_DMEAN = _wordsDataFloatMain[21];
+    
+    
+    _loaded = true;
+    int len = W01_NX * W02_NY * W03_NZ;
+    int startBulk = (int)_wordsDataFloatMain.size() - len;
+    int count = 0;
+    for (unsigned int i = startBulk; i < _wordsDataFloatMain.size(); ++i)
+    {
+        float mtx = _wordsDataFloatMain[i];
+        Matrix.push_back(mtx);        
+        count++;
+    }
+    calculateOrthoMat(w11_CELLA_X, w12_CELLA_Y, w13_CELLA_Z, _w14_CELLB_X, _w15_CELLB_Y, _w16_CELLB_Z);
+    calculateOrigin(_w05_NXSTART, _w06_NYSTART, _w07_NZSTART, _w17_MAPC, _w18_MAPR, _w19_MAPS);
+
+    _map2xyz.push_back(0);
+    _map2xyz.push_back(0);
+    _map2xyz.push_back(0);
+    _map2xyz[_w17_MAPC] = 0;
+    _map2xyz[_w18_MAPR] = 1;
+    _map2xyz[_w19_MAPS] = 2;
+
+    _map2crs.push_back(0);
+    _map2crs.push_back(0);
+    _map2crs.push_back(0);
+    _map2crs[0] = _w17_MAPC;
+    _map2crs[1] = _w18_MAPR;
+    _map2crs[2] = _w19_MAPS;
+
+    _cellDims.push_back(0.0);
+    _cellDims.push_back(0.0);
+    _cellDims.push_back(0.0);
+    _cellDims[0] = w11_CELLA_X;
+    _cellDims[1] = w12_CELLA_Y;
+    _cellDims[2] = w13_CELLA_Z;
+
+    _axisSampling.push_back(0);
+    _axisSampling.push_back(0);
+    _axisSampling.push_back(0);
+    _axisSampling[0] = _w08_MX;
+    _axisSampling[1] = _w09_MY;
+    _axisSampling[2] = _w10_MZ;
+
+    _crsStart.push_back(0);
+    _crsStart.push_back(0);
+    _crsStart.push_back(0);
+    _crsStart[0] = _w05_NXSTART;
+    _crsStart[1] = _w06_NYSTART;
+    _crsStart[2] = _w07_NZSTART;
+
+    _dimOrder.push_back(0);
+    _dimOrder.push_back(0);
+    _dimOrder.push_back(0);
+    _dimOrder[0] = W01_NX;
+    _dimOrder[1] = W02_NY;
+    _dimOrder[2] = W03_NZ;
 }
 void Ccp4::loadDiffFile(string pdbCode, string directory)
 {
@@ -217,101 +314,130 @@ void Ccp4::loadDiffFile(string pdbCode, string directory)
     _resolution = 0.78;
     _directory = directory;
     //Load the binary data
+    createWordsData(_directory, _wordsDataStrDiff, _wordsDataIntDiff, _wordsDataFloatDiff,true);
+    
+    _loaded = false;
+    _resolution = 0.0;
+    _endian = isBigEndian();
 
-    //std::ifstream input((_directory + pdbCode + ".ccp4").c_str(), std::ios::binary);
-    //std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(input), {});
+    _pdbCode = pdbCode;
+    _resolution = 0.78;
+    _directory = directory;
 
-    ifstream infile;
-    infile.open((_directory + pdbCode + "_diff.ccp4").c_str(), ios::binary | ios::in);
-    //This opens the WORDS in the ccp4	    
-    infile.read((char*)&W01_NX, sizeof(W01_NX));
-    infile.read((char*)&W02_NY, sizeof(W02_NY));
-    infile.read((char*)&W03_NZ, sizeof(W03_NZ));
-    int MODE = 0;
-    infile.read((char*)&MODE, sizeof(MODE));
-    infile.read((char*)&_w05_NXSTART, sizeof(_w05_NXSTART));
-    infile.read((char*)&_w06_NYSTART, sizeof(_w06_NYSTART));
-    infile.read((char*)&_w07_NZSTART, sizeof(_w07_NZSTART));
-    infile.read((char*)&_w08_MX, sizeof(_w08_MX));
-    infile.read((char*)&_w09_MY, sizeof(_w09_MY));
-    infile.read((char*)&_w10_MZ, sizeof(_w10_MZ));
-    float w11_CELLA_X = 0.0;
-    infile.read((char*)&w11_CELLA_X, sizeof(w11_CELLA_X));
-    float w12_CELLA_Y = 0.0;
-    infile.read((char*)&w12_CELLA_Y, sizeof(w12_CELLA_Y));
-    float w13_CELLA_Z = 0.0;
-    infile.read((char*)&w13_CELLA_Z, sizeof(w13_CELLA_Z));
-    _w14_CELLB_X = 0.0;
-    infile.read((char*)&_w14_CELLB_X, sizeof(_w14_CELLB_X));
-    _w15_CELLB_Y = 0.0;
-    infile.read((char*)&_w15_CELLB_Y, sizeof(_w15_CELLB_Y));
-    _w16_CELLB_Z = 0.0;
-    infile.read((char*)&_w16_CELLB_Z, sizeof(_w16_CELLB_Z));
-    infile.read((char*)&_w17_MAPC, sizeof(_w17_MAPC));
-    infile.read((char*)&_w18_MAPR, sizeof(_w18_MAPR));
-    infile.read((char*)&_w19_MAPS, sizeof(_w19_MAPS));
-    _w17_MAPC -= 1;
-    _w18_MAPR -= 1;
-    _w19_MAPS -= 1;
+    W01_NX = _wordsDataIntDiff[0];
+    W02_NY = _wordsDataIntDiff[1];
+    W03_NZ = _wordsDataIntDiff[2];
 
-    float w20_DMIN = 0.0;
-    infile.read((char*)&w20_DMIN, sizeof(w20_DMIN));
-    float w21_DMAX = 0.0;
-    infile.read((char*)&w21_DMAX, sizeof(w21_DMAX));
-    infile.read((char*)&_w22_DMEAN, sizeof(_w22_DMEAN));
-
-    int ISPG = 0;
-    infile.read((char*)&ISPG, sizeof(ISPG));
-    int NYSYMBT = 0;
-    infile.read((char*)&NYSYMBT, sizeof(NYSYMBT));
-    int EXTTYP = 0;
-    infile.read((char*)&EXTTYP, sizeof(EXTTYP));
-    int NVERSION = 0;
-    infile.read((char*)&NVERSION, sizeof(NVERSION));
-    float ORIGIN_X = 0.0;
-    infile.read((char*)&ORIGIN_X, sizeof(ORIGIN_X));
-    float ORIGIN_Y = 0.0;
-    infile.read((char*)&ORIGIN_X, sizeof(ORIGIN_Y));
-    float ORIGIN_Z = 0.0;
-    infile.read((char*)&ORIGIN_Z, sizeof(ORIGIN_Z));
-    //we don;t want any of the rest of this, but we want the last bit as long as the matrix is:
-    vector<float> tmpData;
-    float bulk = 0.0;
-
-    unsigned char temp[sizeof(float)];
-    while (infile.read(reinterpret_cast<char*>(temp), sizeof(float)))
-        //while (infile.read((char*)&bulk, sizeof(float)))
-    {
-        if (false) // big endian method???
-        {
-            unsigned char t = temp[0];
-            temp[0] = temp[3];
-            temp[3] = t;
-            t = temp[1];
-            temp[1] = temp[2];
-            temp[2] = t;
-            float bulk = reinterpret_cast<float&>(temp);
-            tmpData.push_back(bulk);
-        }
-        else
-        {
-            float bulk = reinterpret_cast<float&>(temp);
-            tmpData.push_back(bulk);
-        }
-    }
-    infile.close();
     _loaded = true;
-
     int len = W01_NX * W02_NY * W03_NZ;
-    int startBulk = (int)tmpData.size() - len;
+    int startBulk = (int)_wordsDataFloatDiff.size() - len;
     int count = 0;
-    for (unsigned int i = startBulk; i < tmpData.size(); ++i)
+    for (unsigned int i = startBulk; i < _wordsDataFloatDiff.size(); ++i)
     {
-        float mtx = tmpData[i];
-        MatrixDiff.push_back(mtx);        
+        float mtx = _wordsDataFloatDiff[i];
+        MatrixDiff.push_back(mtx);
         count++;
+    }    
+}
+void Ccp4::createWordsList(int symmetry, int length, int nCnRnS)
+{//https://ftp.ebi.ac.uk/pub/databases/emdb/doc/Map-format/current/EMDB_map_format.pdf
+    //int unless otherwise stated
+    _wordsList.push_back("1_NC");
+    _wordsList.push_back("2_NR");
+    _wordsList.push_back("3_NS");
+
+    _wordsList.push_back("4_MODE");
+    
+    _wordsList.push_back("5_NCSTART");
+    _wordsList.push_back("6_NRSTART");
+    _wordsList.push_back("7_NSSTART");
+
+    _wordsList.push_back("8_NX");
+    _wordsList.push_back("9_NY");
+    _wordsList.push_back("10_NZ");
+
+    _wordsList.push_back("11_X_LENGTH");//float
+    _wordsList.push_back("12_Y_LENGTH");//float
+    _wordsList.push_back("13_Z_LENGTH");//float
+
+    _wordsList.push_back("14_ALPHA");//float
+    _wordsList.push_back("15_BETA");//float
+    _wordsList.push_back("16_GAMMA");//float
+
+    _wordsList.push_back("17_MAPC");
+    _wordsList.push_back("18_MAPR");
+    _wordsList.push_back("19_MAPS");
+
+    _wordsList.push_back("20_AMIN");//float
+    _wordsList.push_back("21_AMAX");//float
+    _wordsList.push_back("22_AMEAN");//float
+
+    _wordsList.push_back("23_ISPG");
+
+    _wordsList.push_back("24_NYYMBT");//num of bytes in symmetry table
+        
+    _wordsList.push_back("25_LSKFLG");//skew flag
+
+    _wordsList.push_back("26_SKWMAT_S11");//float, skew matrix
+    _wordsList.push_back("27_SKWMAT_S12");//float, skew matrix
+    _wordsList.push_back("28_SKWMAT_S13");//float, skew matrix
+    _wordsList.push_back("29_SKWMAT_S21");//float, skew matrix
+    _wordsList.push_back("30_SKWMAT_S22");//float, skew matrix
+    _wordsList.push_back("31_SKWMAT_S23");//float, skew matrix
+    _wordsList.push_back("32_SKWMAT_S31");//float, skew matrix
+    _wordsList.push_back("33_SKWMAT_S32");//float, skew matrix
+    _wordsList.push_back("34_SKWMAT_S33");//float, skew matrix
+
+    _wordsList.push_back("35_SKWTRN_T1");//float, skew turn
+    _wordsList.push_back("36_SKWTRN_T2");//float, skew turn
+    _wordsList.push_back("37_SKWTRN_T3");//float, skew turn
+    
+    for (unsigned int i = 38; i < 53; ++i)
+    {
+        stringstream word;
+        word << i << "_EXTRA";//binary
+        _wordsList.push_back(word.str());
+    }
+
+    _wordsList.push_back("53_MAP");//char MRC or CCP4 I think
+    _wordsList.push_back("54_MACHST");//binary machine stamp
+    _wordsList.push_back("55_RMS");//float root mean square deviation
+    _wordsList.push_back("56_NLABL");// num of labels
+
+    for (unsigned int i = 57; i < 257; ++i)
+    {
+        stringstream word;
+        word << i << "_LABEL";//binary
+        _wordsList.push_back(word.str());
+    }
+
+    //symmetry info not EDMS XRAY only
+    int startVoxels = length - nCnRnS+1;
+    int symCount = 0;
+    for (int i = 257; i < startVoxels; ++i)
+    {
+        ++symCount;
+        stringstream word;
+        word << symCount << "_SYM";//binary
+        _wordsList.push_back(word.str());
+    }
+    //voxels we have to work out backwards from the data
+    int voxCount = 0;
+    for (int i = startVoxels; i < length+1; ++i)
+    {
+        ++voxCount;
+        stringstream word;
+        word << voxCount << "_VOXEL";//float
+        _wordsList.push_back(word.str());
     }
     
+
+
+
+
+
+
+
 }
 double Ccp4::getResolution()
 {
@@ -333,34 +459,6 @@ float Ccp4::getDensity(int C, int R, int S)
     int pos = getPosition(C, R, S);
     return Matrix[pos];
 }
-
-
-
-/*VectorThree Ccp4::getNearestPeakOld(VectorThree CRS, Interpolator* interp, int interpNum)
-{
-    double biggestDensity = getDensity(CRS.A, CRS.B, CRS.C);
-    VectorThree biggestCRS = CRS;
-    for (int i = -1 * (interpNum - 1); i < interpNum; ++i)
-    {
-        for (int j = -1 * (interpNum - 1); j < interpNum; ++j)
-        {
-            for (int k = -1 * (interpNum - 1); k < interpNum; ++k)
-            {
-                float c = CRS.A + float(i)/float(interpNum);
-                float r = CRS.B + float(j)/float(interpNum);
-                float s = CRS.C + float(k)/float(interpNum);
-                double interpDensity  = interp->getValue(s, r, c);
-                if (interpDensity > biggestDensity)
-                {
-                    biggestCRS = VectorThree(c, r, s);
-                    biggestDensity = interpDensity;
-                }
-            }
-
-        }
-    }
-    return biggestCRS;
-}*/
 
 
 
@@ -462,6 +560,90 @@ void Ccp4::CreatePeaks(Interpolator* interp, int interpNum)
             DenLapPeaks.push_back(pair<pair<double, VectorThree>, pair<double, VectorThree> >(densityPair, laplacianPair));
         }
     }
+
+
+}
+
+void Ccp4::createWordsData(string directory, vector<string>& dataStr, vector<int>& dataInt, vector<float>& dataFloat, bool isDiff)
+{
+    ifstream infile;
+    string filename = _directory + _pdbCode + ".ccp4";
+    if (isDiff)
+        filename = _directory + _pdbCode + "_diff.ccp4";
+
+    infile.open(filename.c_str(), ios::binary | ios::in);    
+    unsigned char temp[sizeof(float)];
+    while (infile.read(reinterpret_cast<char*>(temp), sizeof(float)))
+    {
+        string ss(reinterpret_cast<char const*>(temp));
+        float sf = reinterpret_cast<float&>(temp);
+        int si = reinterpret_cast<int&>(temp);
+
+        if (ss.size() > 8)
+            ss = ss.substr(8);
+
+        dataStr.push_back(ss);
+        dataFloat.push_back(sf);
+        dataInt.push_back(si);
+    }
+    infile.close();
+    int symmetry = dataInt[23]; //the length of the symmetry data is held here
+    int length = (int)dataInt.size();
+    int nCnRnS = dataInt[0] * dataInt[1] * dataInt[2];
+    createWordsList(symmetry,length,nCnRnS);
+}
+
+void Ccp4::printText(string directory)
+{
+    //createWordsData(directory);
+    int symmetry = _wordsDataIntMain[23]; //the length of the symmetry data is held here
+    int length = (int)_wordsDataIntMain.size();
+    int nCnRnS = _wordsDataIntMain[0] * _wordsDataIntMain[1] * _wordsDataIntMain[2];
+
+
+    if (_wordsList.size() == _wordsDataIntMain.size())
+    {
+
+        //and print it out
+        ofstream outfile;
+        string outfilename = _directory + _pdbCode + "_ccp4.txt";
+        outfile.open(outfilename, ios::out);
+        outfile << setprecision(3);
+        for (unsigned int i = 0; i < _wordsList.size(); ++i)
+        {
+            outfile << _wordsList[i] << "=";
+            if (10 <= i && i < 16)
+                outfile << _wordsDataFloatMain[i] << "\n";
+            else if (19 <= i && i < 22)
+                outfile << _wordsDataFloatMain[i] << "\n";
+            else if (25 <= i && i < 37)
+                outfile << _wordsDataFloatMain[i] << "\n";
+            else if (37 <= i && i < 54)
+                outfile << _wordsDataStrMain[i] << "\n";
+            else if (i == 54)
+                outfile << _wordsDataFloatMain[i] << "\n";
+            else if (i == 55)
+                outfile << _wordsDataIntMain[i] << "\n";
+            else if (56 <= i && i < 256)
+                outfile << _wordsDataStrMain[i] << "\n";
+            //symmetry
+            else if (256 <= i && i < length - nCnRnS)
+                outfile << _wordsDataStrMain[i] << "\n";
+            //voxels
+            else if (i >= length - nCnRnS)//voxels
+                outfile << _wordsDataFloatMain[i] << "\n";
+            else
+                outfile << _wordsDataIntMain[i] << "\n";
+
+            
+        }
+        outfile.close();
+    }
+    else
+    {
+        cout << "Error in words creation";
+    }
+
 
 
 }
@@ -643,12 +825,4 @@ bool Ccp4::isBigEndian()
     } u;
     u.i = 1;
     return (u.b[0] == 1) ? true : false;
-}
-
-
-
-
-
-
-
- 
+} 

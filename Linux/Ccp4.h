@@ -17,6 +17,7 @@ using namespace std;
 class Ccp4
 {
 private:
+	string _type;
 	bool _endian;
 	double PI;
 	bool _loaded;
@@ -28,6 +29,14 @@ private:
 	int _fcs;
 	int _noMains;
 	int _noDiffs;
+	vector<string> _wordsList;
+	vector<string> _wordsDataStrMain;
+	vector<int> _wordsDataIntMain;
+	vector<float> _wordsDataFloatMain;
+	vector<string> _wordsDataStrDiff;
+	vector<int> _wordsDataIntDiff;
+	vector<float> _wordsDataFloatDiff;
+	
 
 	//THE "WORDS" from the Ccp4 file	
 public:
@@ -78,7 +87,7 @@ public:
 	//map<string, VectorThree> InterpolatedPeaks;
 
 public:
-	Ccp4(string pdbCode, string directory, int Fos, int Fcs);	
+	Ccp4(string pdbCode, string type, string directory, int Fos, int Fcs);	
 	double getResolution();
 	bool isLoaded();
 	string getPdbCode();	
@@ -89,9 +98,12 @@ public:
     int getPosition(int C, int R, int S);
 	VectorThree getCRS(int position);
 	void CreatePeaks(Interpolator* interp, int interpNum);
+	void printText(string directory);
 private:
 	void loadMainFile(string pdbCode, string directory);	
 	void loadDiffFile(string pdbCode, string directory);		
+	void createWordsData(string directory, vector<string>& dataStr, vector<int>& dataInt, vector<float>& dataFloat, bool isDiff);
+	void createWordsList(int symmetry, int length, int nCnRnS);
 };
 
 

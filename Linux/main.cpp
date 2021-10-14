@@ -15,16 +15,23 @@ int main(int argc, char* argv[])
     string pdbdirectory = "/d/projects/u/ab002/Thesis/PhD/Data/Pdb/";
     string userCcp4directory = "/d/projects/u/ab002/Thesis/PhD/Data/UserCcp4/";
     string userPdbdirectory = "/d/projects/u/ab002/Thesis/PhD/Data/UserPdb/";
+    string emdbCcp4directory = "/d/projects/u/ab002/Thesis/PhD/Data/EmdbCcp4/";
+    string emdbPdbdirectory = "/d/projects/u/ab002/Thesis/PhD/Data/EmdbPdb/";
+    string MAT_TYPE = "XRAY";
     if (!isLinux)
     {
         // **** Windows laptop rachel  **** //
         /***************************************************/
         ccp4directory = "C:/Dev/Github/ProteinDataFiles/ccp4_data/";
         pdbdirectory = "C:/Dev/Github/ProteinDataFiles/pdb_data/";
+        emdbCcp4directory = "C:/Dev/Github/ProteinDataFiles/EMDB/ccp4_data/";
+        emdbPdbdirectory = "C:/Dev/Github/ProteinDataFiles/EMDB/pdb_data/";
     }
     /******   INPUTS  ***************/
     cout << "Started..." << "\n";
-    string pdb = "";
+    string pdbInput = "";
+    string pdbCode = "";
+    string ccp4Code = "";
     string COMMAND = "";    
     int INTERPNUM = 0;
     int Fos = 2;
@@ -46,12 +53,20 @@ int main(int argc, char* argv[])
 
     // Inputs euither through code or command line called from python
     string INPUT = "";
-    ////INPUT = "PEAKS|1ejg|5|2|-1|";
+    //INPUT = "SLICES|1ejg|5|1|-1|9.373_7.688_15.546|9.5_9.079_14.937|9.64_7.542_16.748|50_0.5";
+    //INPUT = "PEAKS|1ejg|5|2|-1|";
     //INPUT = "PEAKS|user_0abc|5|2|-1|";
     //INPUT = "ATOMS|1ejg|5|2|-1|";
-    INPUT = "SLICES|1us0|5|0|0|9.373-7.688-15.546|9.5-9.079-14.937|9.64-7.542-16.748|3-0.1";
+    //INPUT = "SLICES|1us0|5|0|0|9.373-7.688-15.546|9.5_9.079_14.937|9.64_7.542_16.748|3_0.1";
     //INPUT = "SYNTHETIC|@CA,9.5,9.079,14.937,1,2.4,1.00,-,-,-,-,-,-,- @C,9.373,7.688,15.546,2,2.6,1.00,-,-,-,-,-,-,- @O,9.64,7.542,16.748,3,2.6,1.00,-,-,-,-,-,-,- |iam|9.373-7.688-15.546|9.5-9.079-14.937|9.64-7.542-16.748|5-0.02";    
     //INPUT = "SYN_CCP4IAM|1ejg|5|2|-1|";
+    
+    //EMDB tests
+    //INPUT = "TEXT|emdb_21995_5a1a|5|2|-1|";
+    //INPUT = "SLICES|emdb_21995_5a1a|5|2|-1|148.265_93.322_67.859|147.349_93.606_66.761|149.223_94.495_68.019|3_0.1";
+    //INPUT = "SLICES|5a1a|5|2|-1|148.265_93.322_67.859|147.349_93.606_66.761|149.223_94.495_68.019|5_0.05";
+    INPUT = "SLICES|emdb_21995_5a1a|5|0|1|148.265_93.322_67.859|147.349_93.606_66.761|149.223_94.495_68.019|10_0.05";
+    
     if (argc >= 2)
         INPUT = argv[1];
     if (true)
@@ -64,11 +79,11 @@ int main(int argc, char* argv[])
             cout << (string)inputs[i] << "\n";
 
         COMMAND = (string)inputs[0];
-        pdb = (string)inputs[1];
+        pdbInput = (string)inputs[1];
         INTERPNUM = atol(inputs[2].c_str());
         Fos = atol(inputs[3].c_str());
         Fcs = atol(inputs[4].c_str());        
-        cout << "pdb=" << pdb << "\n";
+        cout << "pdb=" << pdbInput << "\n";
 
         if (COMMAND == "SLICES" || COMMAND == "SYNTHETIC")
         {
@@ -76,10 +91,10 @@ int main(int argc, char* argv[])
             string linear = inputs[6];
             string planar = inputs[7];
             string image_size = inputs[8];
-            vector<string> cCoords = helper::stringToVector(central, "-");
-            vector<string> lCoords = helper::stringToVector(linear, "-");
-            vector<string> pCoords = helper::stringToVector(planar, "-");
-            vector<string> imSize = helper::stringToVector(image_size, "-");
+            vector<string> cCoords = helper::stringToVector(central, "_");
+            vector<string> lCoords = helper::stringToVector(linear, "_");
+            vector<string> pCoords = helper::stringToVector(planar, "_");
+            vector<string> imSize = helper::stringToVector(image_size, "_");
             cX = atof(cCoords[0].c_str());
             cY = atof(cCoords[1].c_str());
             cZ = atof(cCoords[2].c_str());
@@ -107,8 +122,10 @@ int main(int argc, char* argv[])
         cout << "END_USERINPUTS\n";
     }
     //if the coder is USER_ tghen we have user uploaded data    
+    pdbCode = pdbInput;
+    ccp4Code = pdbInput;
     
-    size_t user = pdb.find("user_");
+    size_t user = pdbInput.find("user_");
     if (user != string::npos)
     {
         ccp4directory = userCcp4directory;
@@ -117,15 +134,33 @@ int main(int argc, char* argv[])
         Fcs = -1;
     }
 
+    size_t emdb = pdbInput.find("emdb_");
+    if (emdb != string::npos)
+    {
+        MAT_TYPE = "EM";
+        ccp4directory = emdbCcp4directory;
+        pdbdirectory = emdbPdbdirectory;
+        Fos = 2;
+        Fcs = -1;
+        vector<string> cInputs = helper::stringToVector(pdbInput, "_");
+        pdbCode = "emdb_" + cInputs[2];
+        ccp4Code = "emdb_" + cInputs[1];
+    }
+
     if (COMMAND == "SYNTHETIC")
     {        
         CoutReports::coutSyntheticSlice(atoms, model, new Algorithmic(), VectorThree(cX, cY, cZ), VectorThree(lX, lY, lZ), VectorThree(pX, pY, pZ), width, gap);
     }
+    else if (COMMAND == "TEXT")
+    {
+        Ccp4 myCcp4(ccp4Code, MAT_TYPE,ccp4directory, Fos, Fcs);
+        myCcp4.printText(ccp4directory);
+    }
     else
     {
         /***************************************************/
-        Ccp4 myCcp4(pdb, ccp4directory,Fos,Fcs);
-        PdbFile myPdb(pdb, pdbdirectory);        
+        Ccp4 myCcp4(ccp4Code, MAT_TYPE,ccp4directory,Fos,Fcs);
+        PdbFile myPdb(pdbCode, pdbdirectory);        
         //INTERPNUM is the encoded interpolator, so 0 == nearest
         if (COMMAND == "SYN_CCP4IAM")
         {
