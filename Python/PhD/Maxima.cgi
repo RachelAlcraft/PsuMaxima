@@ -117,6 +117,8 @@ if form.getvalue('Data7'):
    D7=True
 if form.getvalue('Data8'):
    D8=True
+if form.getvalue('Data9'):
+   D9=True
   
 if interpMethod == "spline":
   interpNum = 5
@@ -153,7 +155,7 @@ sys.stdout.flush() # update the user interface
 cgistring = ""
 
 
-userstring += pwb.getBodyA(pdb,interpNum,asCSV,username,password,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,interpMethod,Fos,Fcs,D1,D2,D3,D4,D5,D6,D7,D8)
+userstring += pwb.getBodyA(pdb,interpNum,asCSV,username,password,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,interpMethod,Fos,Fcs,D1,D2,D3,D4,D5,D6,D7,D8,D9)
 if access:
   havepdb, haveed = Maxima.doWeHaveAllFiles(pdb)
   userstring += pwb.getBodyRun0(pdb)
@@ -162,11 +164,13 @@ if access:
   #sys.stdout.flush() # update the user interface
 
   totalRuns = 0
-  if D1 or D2 or D3:
+  if D1 or D2 or D3 or D4:
     totalRuns += 1
-  if D4 or D5 or D6:
+  if D5 or D6:
     totalRuns += 1
-  if D7:
+  if D7 or D8:
+    totalRuns += 1
+  if D9:
     totalRuns += 1
 
   runNo = 0
@@ -189,13 +193,45 @@ if access:
       sys.stdout.flush() # update the user interface
       
       
-    if D5 or D6 or D7 or D8:
+    if D5 or D6:
       runNo += 1
       print('<p>' + str(runNo) + '/' + str(totalRuns) + ' Inspecting atoms...(approx 45 seconds)...')      
       sys.stdout.flush() # update the user interface
       start = time.time()
-      data = Maxima.runCppModule(pdb,interpNum,Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,False,False,False,False,D5,D6,D7,D8,False)
-      userstring += pwb.getBodyRun2(pdb,data[1],D5,D6,D7,D8)
+      data = Maxima.runCppModule(pdb,interpNum,Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,False,False,False,False,D5,D6,False,False,False)
+      userstring += pwb.getBodyRun2(pdb,data[1],D5,D6,False,False)
+      end = time.time()
+      ts = getTimeDiff(start,end)
+      print('completed in')
+      print(ts)
+      print(' </p>')
+      sys.stdout.flush() # update the user interface
+      html = ""
+
+    if D7 or D8:
+      runNo += 1
+      print('<p>' + str(runNo) + '/' + str(totalRuns) + ' Adjusting atoms...(approx 45 seconds)...')      
+      sys.stdout.flush() # update the user interface
+      start = time.time()
+      data = Maxima.runCppModule(pdb,interpNum,Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,False,False,False,False,False,False,D7,D8,False)
+      userstring += pwb.getBodyRun2(pdb,data[1],False,False,D7,D8)
+      end = time.time()
+      ts = getTimeDiff(start,end)
+      print('completed in')
+      print(ts)
+      print(' </p>')
+      sys.stdout.flush() # update the user interface
+      html = ""
+
+
+    if D9:
+      runNo += 1
+      print('<p>' + str(runNo) + '/' + str(totalRuns) + ' Converting binary map to text...(approx 15 seconds)...')      
+      sys.stdout.flush() # update the user interface
+      start = time.time()
+      data = Maxima.runCppModuleText(pdb)
+      #print(data)
+      userstring += pwb.getBodyRunText(pdb,data)
       end = time.time()
       ts = getTimeDiff(start,end)
       print('completed in')
@@ -227,7 +263,7 @@ else:
 
 #print out the options to the cgi
 
-cgistring += pwb.getBodyA(pdb,interpNum,asCSV,username,password,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,interpMethod,Fos,Fcs,D1,D2,D3,D4,D5,D6,D7,D8)
+cgistring += pwb.getBodyA(pdb,interpNum,asCSV,username,password,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,interpMethod,Fos,Fcs,D1,D2,D3,D4,D5,D6,D7,D8,D9)
 cgistring += pwb.getFooter()
 
 

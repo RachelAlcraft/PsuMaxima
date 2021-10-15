@@ -18,7 +18,8 @@ private:
 
 public:		
     static void coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int interpNum);
-    static void coutAtoms(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp);
+    static void coutAtomsDensity(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp);
+    static void coutAtomsAdjusted(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp);
     static void coutSlices(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, VectorThree central, VectorThree linear, VectorThree planar,double width,double gap);
     static void coutSyntheticSlice(string atoms, string model, Interpolator* interp, VectorThree central, VectorThree linear, VectorThree planar, double width, double gap);
     static void coutSyntheticIAM(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp);

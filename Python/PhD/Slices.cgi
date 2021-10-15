@@ -104,28 +104,33 @@ cgistring = ""
 
 userstring += pwb.getBodySlices(pdbCode, username, password,interpMethod, Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran)
 if access:
-  if int(Fos) == 0 and int(Fcs) == 0:
-      print('<p>' + str(1) + '/' + str(1) + ' Calculating IAM model from pdb coods for local map slices...(approx ' + str(60) + ' seconds)...')  
-  else:
-      print('<p>' + str(1) + '/' + str(1) + ' Calculating local map slices...(approx ' + str(6) + ' seconds)...')  
-  sys.stdout.flush() # update the user interface      
-  start = time.time()
-  data = Maxima.runCppModule(pdbCode,interpNum,Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,False,False,False,False,False,False,False,False,True)
-  userstring += pwb.getBodyRun3(pdbCode,data[2],width,gran,True)
-  end = time.time()
-  ts = getTimeDiff(start,end)
-  print('completed in')
-  print(ts)
-  print(' </p>')
-  sys.stdout.flush() # update the user interface
+  havepdb, haveed = Maxima.doWeHaveAllFiles(pdbCode)
+  if haveed and havepdb:
+      if int(Fos) == 0 and int(Fcs) == 0:
+          print('<p>' + str(1) + '/' + str(1) + ' Calculating IAM model from pdb coods for local map slices...(approx ' + str(60) + ' seconds)...')  
+      else:
+          print('<p>' + str(1) + '/' + str(1) + ' Calculating local map slices...(approx ' + str(6) + ' seconds)...')  
+      sys.stdout.flush() # update the user interface      
+      start = time.time()
+      data = Maxima.runCppModule(pdbCode,interpNum,Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,False,False,False,False,False,False,False,False,True)
+      userstring += pwb.getBodyRun3(pdbCode,data[2],width,gran,True)
+      end = time.time()
+      ts = getTimeDiff(start,end)
+      print('completed in')
+      print(ts)
+      print(' </p>')
+      sys.stdout.flush() # update the user interface
+  
           
-  #we now create the users own html page
-  userstring += pwb.getFooter()
-  results = pwb.userOwnWebPage(username,userstring)
+      #we now create the users own html page
+      userstring += pwb.getFooter()
+      results = pwb.userOwnWebPage(username,userstring)
 
-  #and inform the cgi script of the results
-  print(results)
-  sys.stdout.flush() # update the user interface
+      #and inform the cgi script of the results
+      print(results)
+      sys.stdout.flush() # update the user interface
+  else:
+      cgistring += "<h2>!!! No pdb or electron  density found.</h2>"
     
         
 else:

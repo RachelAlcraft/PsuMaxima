@@ -19,8 +19,20 @@ import sys
 import Config as cfg
 
 def getFile(filename, url):
-  import urllib.request
-  urllib.request.urlretrieve(url,filename)
+  #import urllib.request  
+  #urllib.request.urlretrieve(url,filename)
+  import requests #https://stackoverflow.com/questions/32763720/timeout-a-file-download-with-python-urllib
+  request = requests.get(url, timeout=100, stream=True)  
+  with open(filename, 'wb') as fh:    # Open the output file and make sure we write in binary mode
+    count = 0
+    for chunk in request.iter_content(1024 * 1024*10): # Walk through the request response in chunks of 1024 * 1024 bytes, so 1MiB
+        fh.write(chunk)
+        print(count,end=',')
+        count +=1
+        sys.stdout.flush()
+  print('Downloaded')
+        
+  
 
 def getCsvFromCppResults(cppResults,ID):
   startPos = cppResults.find('BEGIN_' + ID) + len('BEGIN_' + ID)
@@ -44,22 +56,37 @@ def doWeHaveAllFiles(pdbCode,debug=False):
   origPdb = directory + 'Pdb/pdb' + pdbCode + '.ent'
   ccp4File = directory + 'Ccp4/' + pdbCode + '.ccp4'
   ccp4Diff = directory + 'Ccp4/' + pdbCode + '_diff.ccp4'
+  isXray = True
+  ccp4Num = '0'
+  pdbOnly = pdbCode
   if debug:
     directory = 'C:/Dev/Github/ProteinDataFiles/'
     origPdb = directory + 'pdb_data/pdb' + pdbCode + '.ent'
     ccp4File = directory + 'ccp4_data/' + pdbCode + '.ccp4'
     ccp4Diff = directory + 'ccp4_data/' + pdbCode + '_diff.ccp4'
 
+  
   if pdbCode[:5] == "user_":
     origPdb = cfg.UserDataPdbDir + 'pdb' + pdbCode + '.ent'
     ccp4File = cfg.UserDataCcp4Dir + pdbCode + '.ccp4'
     ccp4Diff = cfg.UserDataCcp4Dir + pdbCode + '.ccp4' # no diff file
-
+  elif pdbCode[:4] == 'emdb':
+    # Find the number and the pdb code from the format emdb_12345_1abc
+    inps = pdbCode.split('_')
+    pdbNewCode = 'emdb_' + inps[2]    
+    ccp4NewCode = 'emdb_' + inps[1]
+    origPdb = cfg.EmdbPdbDir + 'pdb' + pdbNewCode + '.ent'
+    pdbOnly = inps[2]      
+    ccp4FileZip = cfg.EmdbCcp4Dir + ccp4NewCode + '.map.gz'
+    ccp4File = cfg.EmdbCcp4Dir + ccp4NewCode + '.ccp4'    
+    isXray = False
+    ccp4Num = inps[1]
+  
   if os.path.isfile(origPdb):
     havePDB = True
   else:
-    try:
-      getFile(origPdb,'https://www.ebi.ac.uk/pdbe/entry-files/download/pdb' + pdbCode + '.ent')
+    try:      
+      getFile(origPdb,'https://www.ebi.ac.uk/pdbe/entry-files/download/pdb' + pdbOnly + '.ent')      
       havePDB = True
     except:
       havePDB = False
@@ -68,9 +95,33 @@ def doWeHaveAllFiles(pdbCode,debug=False):
     haveED = True
   else:
     try:
-      getFile(ccp4File,'https://www.ebi.ac.uk/pdbe/coordinates/files/' + pdbCode + '.ccp4')
-      getFile(ccp4Diff,'https://www.ebi.ac.uk/pdbe/coordinates/files/' + pdbCode +'_diff.ccp4')
-      haveED = True
+      if isXray:
+        getFile(ccp4File,'https://www.ebi.ac.uk/pdbe/coordinates/files/' + pdbCode + '.ccp4')
+        getFile(ccp4Diff,'https://www.ebi.ac.uk/pdbe/coordinates/files/' + pdbCode +'_diff.ccp4')
+      else:
+        emdbPath = 'https://ftp.ebi.ac.uk/pub/databases/emdb/structures/EMD-' + ccp4Num + '/map/emd_' + ccp4Num + '.map.gz'        
+        if not os.path.isfile(ccp4FileZip):
+          print('This file needs to be downloaded: ', emdbPath)
+          print('\n')
+          print('EMDB map files can be large, contact us if there are any problems with this file\n')
+          getFile(ccp4FileZip,emdbPath)
+
+        import gzip
+        import shutil
+        #https://www.codegrepper.com/code-examples/python/how+to+extract+gz+file+python
+        # now we need to unzip it
+        print('Unzipping...')
+        sys.stdout.flush()
+        with gzip.open(ccp4FileZip,'rb') as f_in:
+          with open(ccp4File,'wb') as f_out:
+            shutil.copyfileobj(f_in,f_out)
+
+        print('...unzipped')
+        sys.stdout.flush()
+        import os
+        os.remove(ccp4FileZip)
+        
+      haveED = True        
     except:
       haveED = False
       
@@ -105,8 +156,8 @@ def runCppModule(pdb,interpNum,Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,
         df1c = getCsvFromCppResults(exe_resultP, 'CHIMERAPEAKS')
       
       ### CALL ATOMS ######################################
-      if D5 or D6 or D7 or D8:
-        commandlineAtoms = "ATOMS|" + pdb + "|" + str(interpNum) + "|"+ str(Fos) + "|"+ str(Fcs) + "|"
+      if D5 or D6:
+        commandlineAtoms = "ATOMSDENSITY|" + pdb + "|" + str(interpNum) + "|"+ str(Fos) + "|"+ str(Fcs) + "|"
         #print('...called Leucippus with params:' + commandlineAtoms + ' ...')        
         #------------------------------------------------
         pigA = sub.Popen([exePath, commandlineAtoms], stdout=sub.PIPE)
@@ -115,18 +166,31 @@ def runCppModule(pdb,interpNum,Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,
         pigA.kill()      
         #------------------------------------------------
         df2a = getCsvFromCppResults(exe_resultA, 'ATOMDENSITY')
-        df2b = getCsvFromCppResults(exe_resultA, 'DENSITYADJUSTED')
-        df2c = getCsvFromCppResults(exe_resultA, 'LAPLACIANADJUSTED')
+                
+      ### CALL ATOMS ######################################
+      if D7 or D8:
+        commandlineAtomsAdj = "ATOMSADJUSTED|" + pdb + "|" + str(interpNum) + "|"+ str(Fos) + "|"+ str(Fcs) + "|"
+        #print('...called Leucippus with params:' + commandlineAtoms + ' ...')        
+        #------------------------------------------------
+        pigAa = sub.Popen([exePath, commandlineAtomsAdj], stdout=sub.PIPE)
+        resultAa = pigAa.communicate(input=b"This is sample text.\n")
+        exe_resultAa = str(resultAa[0],'utf-8')
+        pigAa.kill()      
+        #------------------------------------------------        
+        df2b = getCsvFromCppResults(exe_resultAa, 'DENSITYADJUSTED')
+        df2c = getCsvFromCppResults(exe_resultAa, 'LAPLACIANADJUSTED')
         
-
+          
+        
       ### CALL SLICES #######################################
       if D9:
         commandlineSlices = "SLICES|" + pdb + "|" + str(interpNum) + "|" + str(Fos) + "|"+ str(Fcs) + "|"        
-        commandlineSlices += str(cX) + "-" + str(cY) + "-" + str(cZ) + "|"
-        commandlineSlices += str(lX) + "-" + str(lY) + "-" + str(lZ) + "|"
-        commandlineSlices += str(pX) + "-" + str(pY) + "-" + str(pZ) + "|"
-        commandlineSlices += str(width) + "-" + str(gran)
-        #print('...called Leucippus with params:' + commandlineSlices + ' ...')        
+        commandlineSlices += str(cX) + "_" + str(cY) + "_" + str(cZ) + "|"
+        commandlineSlices += str(lX) + "_" + str(lY) + "_" + str(lZ) + "|"
+        commandlineSlices += str(pX) + "_" + str(pY) + "_" + str(pZ) + "|"
+        commandlineSlices += str(width) + "_" + str(gran)
+
+        print('...called Leucippus with params:' + commandlineSlices + ' ...')        
         #------------------------------------------------
         pigS = sub.Popen([exePath, commandlineSlices], stdout=sub.PIPE)
         resultS = pigS.communicate(input=b"This is sample text.\n")
@@ -145,6 +209,23 @@ def runCppModule(pdb,interpNum,Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,
       #print("results from exe=",result)
       #return []
 
+def runCppModuleText(pdb):
+    commandline = "TEXTCOUT|" + pdb + "|5|-2|1|"
+    df1 = pd.DataFrame()
+    #print(commandline)
+    pig = sub.Popen(["/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima", commandline], stdout=sub.PIPE)            
+    try:
+      result = pig.communicate(input=b"This is sample text.\n")
+      exe_result = str(result[0],'utf-8')
+    except:
+      pig.kill()
+      result = pig.communicate(input=b"This is sample text.\n")
+      exe_result = str(result[0],'utf-8')
+    #print(exe_result)    
+    df1 = getCsvFromCppResults(exe_result, 'RAWTEXT')
+    pig.kill()
+    #print(df1)
+    return [df1]
 
 def runCppModuleSyntheticDensity(atoms,model,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran):        
     #try:
@@ -152,10 +233,10 @@ def runCppModuleSyntheticDensity(atoms,model,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gr
     if True:
       ### CALL Synthetic Density ######################################              
       commandlineSnth = "SYNTHETIC|" + atoms + "|" + model + "|2|-1|"        
-      commandlineSnth += str(cX) + "-" + str(cY) + "-" + str(cZ) + "|"
-      commandlineSnth += str(lX) + "-" + str(lY) + "-" + str(lZ) + "|"
-      commandlineSnth += str(pX) + "-" + str(pY) + "-" + str(pZ) + "|"
-      commandlineSnth += str(width) + "-" + str(gran)          
+      commandlineSnth += str(cX) + "_" + str(cY) + "_" + str(cZ) + "|"
+      commandlineSnth += str(lX) + "_" + str(lY) + "_" + str(lZ) + "|"
+      commandlineSnth += str(pX) + "_" + str(pY) + "_" + str(pZ) + "|"
+      commandlineSnth += str(width) + "_" + str(gran)          
       #print('...called Leucippus with params:' + commandlineSnth + ' ...')
       
       

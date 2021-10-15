@@ -309,7 +309,7 @@ def getBodyMenuSynth(username, password,atoms,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,g
     
 
 
-def getBodyA(pdb, interpNum, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,interpMethod,Fos,Fcs,D1,D2,D3,D4,D5,D6,D7,D8):    
+def getBodyA(pdb, interpNum, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,interpMethod,Fos,Fcs,D1,D2,D3,D4,D5,D6,D7,D8,D9):    
     string = '<hr/>\n'    
     string += '<p>\n'
     string += '<h3>PhD project: <font color="DC143C">Leu</font>cip<font color="DC143C">pus</font> - Atomic <font color="DC143C">Density</font> Explorer</h3>\n'
@@ -333,7 +333,7 @@ def getBodyA(pdb, interpNum, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,
     string += 'Enter 4 digit pdb code: <input type="text" name="dataInput" value=' + pdb + ' />\n'    
     string += '<br/><br/>\n'
     #Data return format
-    r1,r2,r3,r4,r5,r6,r7,r8 = '','','','','','','',''
+    r1,r2,r3,r4,r5,r6,r7,r8,r9 = '','','','','','','','',''
     if D1:
         r1 = 'checked="checked"'
     if D2:
@@ -352,6 +352,8 @@ def getBodyA(pdb, interpNum, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,
         r7 = 'checked="checked"'
     if D8:
         r8 = 'checked="checked"'
+    if D9:
+        r9 = 'checked="checked"'
 
 
     string += '<table><tr><td style="background-color:Crimson;color:AliceBlue">~~ Choose results to display ~~</td>\n'
@@ -367,7 +369,7 @@ def getBodyA(pdb, interpNum, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,
     string += '<tr><td><label for="D6">6) Atoms visualised on AtomNo</label></td><td><input type="checkbox" id="Data6" name="Data6" value="1" ' + r6 + '></td></tr>\n'
     string += '<tr><td><label for="D7">7) Create density adjusted pdb file</label></td><td><input type="checkbox" id="Data7" name="Data7" value="1"' + r7 + ' ></td></tr>\n'
     string += '<tr><td><label for="D8">8) Create laplacian adjusted pdb file</label></td><td><input type="checkbox" id="Data8" name="Data8" value="1"' + r8 + ' ></td></tr>\n'
-    #string += '<tr><td><label for="D7">7) Visualised electron density planes</label></td><td><input type="checkbox" id="Data7" name="Data7" value="1" ' + r7 + '></td></tr>\n'
+    string += '<tr><td><label for="D9">9) View raw density map</label></td><td><input type="checkbox" id="Data9" name="Data9" value="1"' + r9 + ' ></td></tr>\n'        
     string += '</table>\n'
     string += '</td>'
 
@@ -421,8 +423,15 @@ def getBodyA(pdb, interpNum, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,
 
 def getBodyRun0(pdb):
     string = '<hr/>\n'
-    string += '<h3>RESULTS: ' + pdb + '</h3>'        
-    string += '<p>EBI Link <a class="change_link_color" href="https://www.ebi.ac.uk/pdbe/entry/pdb/' + pdb + '" title="EBI link" target="_blank">Open protein pdb ebi link</a></p>'
+    string += '<h3>RESULTS: ' + pdb + '</h3>'
+    if 'user' in pdb:
+        string += ''
+    elif 'emdb' in pdb:
+        vpdb = pdb.split('_')
+        string += '<p>EMDB Link <a class="change_link_color" href="https://www.ebi.ac.uk/emdb/EMD-' + vpdb[1] + '" title="EMDB link" target="_blank">Open protein map emdb link</a></p>'
+        string += '<p>EBI Link <a class="change_link_color" href="https://www.ebi.ac.uk/pdbe/entry/pdb/' + vpdb[2] + '" title="EBI link" target="_blank">Open protein pdb ebi link</a></p>'
+    else:    
+        string += '<p>EBI Link <a class="change_link_color" href="https://www.ebi.ac.uk/pdbe/entry/pdb/' + pdb + '" title="EBI link" target="_blank">Open protein pdb ebi link</a></p>'
     return string
     
 def getBodyRun1(pdb, dataABC, asCsv,D1,D2,D3,D4,debug=False):
@@ -485,6 +494,20 @@ def getBodyRun1(pdb, dataABC, asCsv,D1,D2,D3,D4,debug=False):
         string = '<font color="DC143C"><h1>Exe failed to create data</h1></font>'
     return string
     
+def getBodyRunText(pdb,data):    
+    dataA = data[0]
+    string = '<hr/>\n'
+    string += '<h4>9)Binary map converted to text for ' + pdb + ' (first 500 lines)</h4>'
+    csvhtml, csvtext = dataFrameToText(dataA)
+
+    string += '<p>Density Map Documentation Link <a class="change_link_color" href="https://ftp.ebi.ac.uk/pub/databases/emdb/doc/Map-format/current/EMDB_map_format.pdf" title="Map Doc link" target="_blank">Open map document ebi link</a></p>'
+    
+        
+    string += csvhtml
+    return string
+    
+    
+
 def getBodyRun2(pdb, dataABC,D5,D6,D7,D8,debug=False):
     string = ""
     if len(dataABC) > 0:        

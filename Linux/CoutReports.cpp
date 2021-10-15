@@ -157,7 +157,7 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
 
 }
 
-void CoutReports::coutAtoms(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp)
+void CoutReports::coutAtomsDensity(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp)
 {
     cout << "BEGIN_ATOMDENSITY\n";
     cout << "Density,X,Y,Z,AtomNo,AtomLine\n";
@@ -176,8 +176,11 @@ void CoutReports::coutAtoms(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp)
         }
     }
     cout << "END_ATOMDENSITY\n";   
+    
 
-
+}
+void CoutReports::coutAtomsAdjusted(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp)
+{    
     if (pdb->isLoaded())
     {
         cout << "BEGIN_DENSITYADJUSTED\n";

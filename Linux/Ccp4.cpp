@@ -12,6 +12,7 @@
 #include <cstring> // memcpy
 
 #include "Ccp4.h"
+#include "helper.h"
 #include "VectorThree.h"
 #include <iomanip>
 
@@ -579,8 +580,20 @@ void Ccp4::createWordsData(string directory, vector<string>& dataStr, vector<int
         float sf = reinterpret_cast<float&>(temp);
         int si = reinterpret_cast<int&>(temp);
 
-        if (ss.size() > 8)
+        if (ss.size() > 8)        
             ss = ss.substr(8);
+        
+        
+        int pos = ss.find(",");
+        if (pos>0)
+        {
+            vector<string> sv = helper::stringToVector(ss,",");
+            ss = "";
+            for (unsigned int c=0;c<sv.size();++c)
+            {
+                ss += sv[c] + ".";
+            }
+        }
 
         dataStr.push_back(ss);
         dataFloat.push_back(sf);
@@ -606,8 +619,12 @@ void Ccp4::coutText()
         cout << "Word,Data\n";
 
         //and print it out                
-        cout << setprecision(3);
-        for (unsigned int i = 0; i < _wordsList.size(); ++i)
+        cout << setprecision(8);
+        int length = _wordsList.size();
+        int end = _wordsList.size();
+        if (length > 500)
+            end = 500;
+        for (unsigned int i = 0; i < end; ++i)
         {
             cout << _wordsList[i] << ",";
             if (10 <= i && i < 16)
@@ -659,7 +676,7 @@ void Ccp4::printText(string directory)
         ofstream outfile;
         string outfilename = _directory + _pdbCode + "_ccp4.txt";
         outfile.open(outfilename.c_str(), ios::out);
-        outfile << setprecision(3);
+        outfile << setprecision(8);
         for (unsigned int i = 0; i < _wordsList.size(); ++i)
         {
             outfile << _wordsList[i] << "=";

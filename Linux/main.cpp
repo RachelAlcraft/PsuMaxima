@@ -53,10 +53,11 @@ int main(int argc, char* argv[])
 
     // Inputs euither through code or command line called from python
     string INPUT = "";
+    //INPUT = "TEXTCOUT|1ejg|5|-2|1|";
     //INPUT = "SLICES|1ejg|5|1|-1|9.373_7.688_15.546|9.5_9.079_14.937|9.64_7.542_16.748|50_0.5";
     //INPUT = "PEAKS|1ejg|5|2|-1|";
     //INPUT = "PEAKS|user_0abc|5|2|-1|";
-    //INPUT = "ATOMS|1ejg|5|2|-1|";
+    INPUT = "ATOMSDENSITY|emdb_22145_6xe9|5|2|-1|";
     //INPUT = "SLICES|1us0|5|0|0|9.373-7.688-15.546|9.5_9.079_14.937|9.64_7.542_16.748|3_0.1";
     //INPUT = "SYNTHETIC|@CA,9.5,9.079,14.937,1,2.4,1.00,-,-,-,-,-,-,- @C,9.373,7.688,15.546,2,2.6,1.00,-,-,-,-,-,-,- @O,9.64,7.542,16.748,3,2.6,1.00,-,-,-,-,-,-,- |iam|9.373-7.688-15.546|9.5-9.079-14.937|9.64-7.542-16.748|5-0.02";    
     //INPUT = "SYN_CCP4IAM|1ejg|5|2|-1|";
@@ -65,7 +66,7 @@ int main(int argc, char* argv[])
     //INPUT = "TEXT|emdb_21995_5a1a|5|2|-1|";
     //INPUT = "SLICES|emdb_21995_5a1a|5|2|-1|148.265_93.322_67.859|147.349_93.606_66.761|149.223_94.495_68.019|3_0.1";
     //INPUT = "SLICES|5a1a|5|2|-1|148.265_93.322_67.859|147.349_93.606_66.761|149.223_94.495_68.019|5_0.05";
-    INPUT = "SLICES|emdb_21995_5a1a|5|0|1|148.265_93.322_67.859|147.349_93.606_66.761|149.223_94.495_68.019|10_0.05";
+    //INPUT = "SLICES|emdb_21995_5a1a|5|0|1|148.265_93.322_67.859|147.349_93.606_66.761|149.223_94.495_68.019|10_0.05";
     
     if (argc >= 2)
         INPUT = argv[1];
@@ -185,9 +186,13 @@ int main(int argc, char* argv[])
             {
                 CoutReports::coutPeaks(&myCcp4, &myPdb, interp, INTERPNUM);
             }
-            else if (COMMAND == "ATOMS")
+            else if (COMMAND == "ATOMSDENSITY")
             {
-                CoutReports::coutAtoms(&myCcp4, &myPdb, interp);
+                CoutReports::coutAtomsDensity(&myCcp4, &myPdb, interp);
+            }
+            else if (COMMAND == "ATOMSADJUSTED")
+            {
+                CoutReports::coutAtomsAdjusted(&myCcp4, &myPdb, interp);
             }
             else if (COMMAND == "SLICES")
             {

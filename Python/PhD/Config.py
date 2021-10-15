@@ -8,3 +8,6 @@ Ccp4Dir = '/d/projects/u/ab002/Thesis/PhD/Data/Ccp4/'
 UserDataCcp4Dir='/d/projects/u/ab002/Thesis/PhD/Data/UserCcp4/'
 UserDataPdbDir='/d/projects/u/ab002/Thesis/PhD/Data/UserPdb/'
 UserLogDir='/d/projects/u/ab002/Thesis/PhD/Data/Users/'
+
+EmdbPdbDir='/d/projects/u/ab002/Thesis/PhD/Data/EmdbPdb/'
+EmdbCcp4Dir = '/d/projects/u/ab002/Thesis/PhD/Data/EmdbCcp4/'
