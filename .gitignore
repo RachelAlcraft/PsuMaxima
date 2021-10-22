@@ -61,3 +61,12 @@ Linux/out/build/x64-Debug/.ninja_deps
 Linux/out/build/x64-Debug/.ninja_log
 Linux/out/build/x64-Release/.ninja_deps
 Linux/out/build/x64-Release/.ninja_log
+*.pyc
+Linux/out/build/x64-Debug/.ninja_deps
+Linux/out/build/x64-Debug/.ninja_log
+Linux/out/build/x64-Release/.ninja_deps
+Linux/out/build/x64-Release/.ninja_log
+Linux/.vs/Linux/v16/Browse.VC.db-wal
+Linux/.vs/Linux/v16/Browse.VC.db-shm
+Linux/.vs/Linux/v16/.suo
+Linux/.vs/slnx.sqlite

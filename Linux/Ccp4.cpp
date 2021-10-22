@@ -525,7 +525,7 @@ void Ccp4::CreatePeaks(Interpolator* interp, int interpNum)
 
     //Now we want to get density and laplacian for every peak
     vector<string> keyList;
-    unsigned int maxdensity = 10000;
+    unsigned int maxdensity = 100000;
     if (MatrixPeaks.size() < maxdensity)
         maxdensity = (int)MatrixPeaks.size();
 
@@ -606,7 +606,7 @@ void Ccp4::createWordsData(string directory, vector<string>& dataStr, vector<int
     createWordsList(symmetry,length,nCnRnS);
 }
 
-void Ccp4::coutText()
+void Ccp4::coutText(bool cap500)
 {
     vector<string> textFile;
     int symmetry = _wordsDataIntMain[23]; //the length of the symmetry data is held here
@@ -622,7 +622,7 @@ void Ccp4::coutText()
         cout << setprecision(8);
         int length = _wordsList.size();
         int end = _wordsList.size();
-        if (length > 500)
+        if (length > 500 && cap500)
             end = 500;
         for (unsigned int i = 0; i < end; ++i)
         {
@@ -661,13 +661,12 @@ void Ccp4::coutText()
 
 }
 
-void Ccp4::printText(string directory)
+void Ccp4::printText(string directory,bool cap500)
 {
     //createWordsData(directory);
     int symmetry = _wordsDataIntMain[23]; //the length of the symmetry data is held here
     int length = (int)_wordsDataIntMain.size();
     int nCnRnS = _wordsDataIntMain[0] * _wordsDataIntMain[1] * _wordsDataIntMain[2];
-
 
     if (_wordsList.size() == _wordsDataIntMain.size())
     {
@@ -677,7 +676,12 @@ void Ccp4::printText(string directory)
         string outfilename = _directory + _pdbCode + "_ccp4.txt";
         outfile.open(outfilename.c_str(), ios::out);
         outfile << setprecision(8);
-        for (unsigned int i = 0; i < _wordsList.size(); ++i)
+        
+        int end = _wordsList.size();
+        if (length > 500 && cap500)
+            end = 500;
+
+        for (unsigned int i = 0; i < end; ++i)
         {
             outfile << _wordsList[i] << "=";
             if (10 <= i && i < 16)

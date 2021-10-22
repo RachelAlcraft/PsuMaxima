@@ -53,19 +53,13 @@ def doWeHaveAllFiles(pdbCode,debug=False):
   allFiles = True
   #Files from the PDBE
   directory = '/d/projects/u/ab002/Thesis/PhD/Data/'
-  origPdb = directory + 'Pdb/pdb' + pdbCode + '.ent'
-  ccp4File = directory + 'Ccp4/' + pdbCode + '.ccp4'
-  ccp4Diff = directory + 'Ccp4/' + pdbCode + '_diff.ccp4'
+  origPdb = cfg.PdbDir + 'pdb' + pdbCode + '.ent'
+  ccp4File = cfg.Ccp4Dir + pdbCode + '.ccp4'
+  ccp4Diff = cfg.Ccp4Dir + pdbCode + '_diff.ccp4'
   isXray = True
   ccp4Num = '0'
   pdbOnly = pdbCode
-  if debug:
-    directory = 'C:/Dev/Github/ProteinDataFiles/'
-    origPdb = directory + 'pdb_data/pdb' + pdbCode + '.ent'
-    ccp4File = directory + 'ccp4_data/' + pdbCode + '.ccp4'
-    ccp4Diff = directory + 'ccp4_data/' + pdbCode + '_diff.ccp4'
 
-  
   if pdbCode[:5] == "user_":
     origPdb = cfg.UserDataPdbDir + 'pdb' + pdbCode + '.ent'
     ccp4File = cfg.UserDataCcp4Dir + pdbCode + '.ccp4'
@@ -129,12 +123,12 @@ def doWeHaveAllFiles(pdbCode,debug=False):
 
 def runCppModule(pdb,interpNum,Fos,Fcs,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gran,D1,D2,D3,D4,D5,D6,D7,D8,D9,debug=False):
     #try:
+    import Config as cfg
     df1a,df1b,df1c = pd.DataFrame(),pd.DataFrame(),pd.DataFrame()
     df2a, df2b, df2c = pd.DataFrame(), pd.DataFrame(), pd.DataFrame()
     df4, df5, df6,df7 = pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame()
-    exePath ="/d/projects/u/ab002/Thesis/PhD/Github/PsuMaxima/Linux/build/PsuMaxima"
-    if debug:
-      exePath = 'C:/Dev/Github/PsuMaxima/Linux/out/build/x64-Release/PsuMaxima.exe'
+    exePath =cfg.ExePath
+
     if True:
       ### CALL PEAKS ######################################
       if D1 or D2 or D3 or D4:        
@@ -262,5 +256,26 @@ def runCppModuleSyntheticDensity(atoms,model,cX,cY,cZ,lX,lY,lZ,pX,pY,pZ,width,gr
       #print("results from exe=",result)
       #return []
 
-    
+
+def runCppModuleSamples(pdb):
+  # try:
+  df1a, df1b = pd.DataFrame(), pd.DataFrame()
+  if True:
+    ### CALL Synthetic Density ######################################
+    commandlineSnth = "SAMPLES|" + pdb + "|5|2|-1|"
+    print('...called Leucippus with params:' + commandlineSnth + ' ...', cfg.ExePath)
+
+    # ------------------------------------------------
+    pigS = sub.Popen([cfg.ExePath, commandlineSnth],stdout=sub.PIPE)
+    resultS = pigS.communicate(input=b"This is sample text.\n")
+    exe_resultS = str(resultS[0], 'utf-8')
+    pigS.kill()
+    # ------------------------------------------------
+    df1a = getCsvFromCppResults(exe_resultS, 'DENSITYADJUSTED')
+    df1b = getCsvFromCppResults(exe_resultS, 'LAPLACIANADJUSTED')
+
+    return [pd.DataFrame(),df1a, df1b] #to be consistent, should be changes TODO
+
+
+
 

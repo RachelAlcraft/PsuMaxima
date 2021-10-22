@@ -9,7 +9,7 @@
 int main(int argc, char* argv[])
 {
     /******   OP SPECIFIC SETTINGS  ***************/
-    bool isLinux = true;
+    bool isLinux = false;
     // **** LINUX PANDORA **** //
     string ccp4directory = "/d/projects/u/ab002/Thesis/PhD/Data/Ccp4/";
     string pdbdirectory = "/d/projects/u/ab002/Thesis/PhD/Data/Pdb/";
@@ -54,13 +54,16 @@ int main(int argc, char* argv[])
     // Inputs euither through code or command line called from python
     string INPUT = "";
     //INPUT = "TEXTCOUT|1ejg|5|-2|1|";
+    //INPUT = "TEXT500|7a6a|5|-2|1|";
+    //INPUT = "TEXT|7a6a|5|-2|1|";
     //INPUT = "SLICES|1ejg|5|1|-1|9.373_7.688_15.546|9.5_9.079_14.937|9.64_7.542_16.748|50_0.5";
     //INPUT = "PEAKS|1ejg|5|2|-1|";
     //INPUT = "PEAKS|user_0abc|5|2|-1|";
-    INPUT = "ATOMSDENSITY|emdb_22145_6xe9|5|2|-1|";
+    //INPUT = "ATOMSDENSITY|7a6a|5|2|-1|";
     //INPUT = "SLICES|1us0|5|0|0|9.373-7.688-15.546|9.5_9.079_14.937|9.64_7.542_16.748|3_0.1";
     //INPUT = "SYNTHETIC|@CA,9.5,9.079,14.937,1,2.4,1.00,-,-,-,-,-,-,- @C,9.373,7.688,15.546,2,2.6,1.00,-,-,-,-,-,-,- @O,9.64,7.542,16.748,3,2.6,1.00,-,-,-,-,-,-,- |iam|9.373-7.688-15.546|9.5-9.079-14.937|9.64-7.542-16.748|5-0.02";    
     //INPUT = "SYN_CCP4IAM|1ejg|5|2|-1|";
+    INPUT = "SAMPLES|1ejg|5|2|-1|";
     
     //EMDB tests
     //INPUT = "TEXT|emdb_21995_5a1a|5|2|-1|";
@@ -155,12 +158,17 @@ int main(int argc, char* argv[])
     else if (COMMAND == "TEXT")
     {
         Ccp4 myCcp4(ccp4Code, MAT_TYPE,ccp4directory, Fos, Fcs);
-        myCcp4.printText(ccp4directory);
+        myCcp4.printText(ccp4directory,false);
+    }
+    else if (COMMAND == "TEXT500")
+    {
+        Ccp4 myCcp4(ccp4Code, MAT_TYPE, ccp4directory, Fos, Fcs);
+        myCcp4.printText(ccp4directory, true);
     }
     else if (COMMAND == "TEXTCOUT")
     {
         Ccp4 myCcp4(ccp4Code, MAT_TYPE, ccp4directory, Fos, Fcs);
-        CoutReports::coutText(&myCcp4);
+        CoutReports::coutText(&myCcp4,true);
     }
     else
     {
@@ -171,6 +179,12 @@ int main(int argc, char* argv[])
         if (COMMAND == "SYN_CCP4IAM")
         {
             CoutReports::coutSyntheticIAM(&myCcp4, &myPdb, new Algorithmic());
+        }
+        else if (COMMAND == "SAMPLES")
+        {
+            Interpolator* interpMap;
+            interpMap = new Thevenaz(myCcp4.Matrix, myCcp4.W01_NX, myCcp4.W02_NY, myCcp4.W03_NZ);
+            CoutReports::coutSamples(&myCcp4, &myPdb, interpMap, new Algorithmic());
         }
         else
         {

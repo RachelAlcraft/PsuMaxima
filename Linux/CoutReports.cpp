@@ -24,9 +24,23 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
 {
     ccp4->CreatePeaks(interp,interpNum);
 
-    unsigned int maxdensity = 9999;
-    if (ccp4->DenLapPeaks.size() < maxdensity)
-        maxdensity = (int)ccp4->DenLapPeaks.size();
+    unsigned int maxAtomNo = 99999;
+    int maxDensity = (int)ccp4->DenLapPeaks.size();
+    unsigned int maxResNo = 9999;
+    vector<string> chains;
+    chains.push_back("A");
+    chains.push_back("B");
+    chains.push_back("C");
+    chains.push_back("D");
+    chains.push_back("E");
+    chains.push_back("F");
+    chains.push_back("G");
+    chains.push_back("H");
+    chains.push_back("I");
+    chains.push_back("J");
+    chains.push_back("K");
+    //if (ccp4->DenLapPeaks.size() < maxdensity)
+    //    maxdensity = (int)ccp4->DenLapPeaks.size();
                 
     //https://www.wwpdb.org/documentation/file-format-content/format33/v3.3.html
     //"REMARK   1                                                                      "
@@ -37,12 +51,22 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
     cout << "REMARK   3 Dummy atoms positioned at peaks calculated using both density and the laplacian.\n";    
     cout << "REMARK   4 All atoms have dummy type PK; element H; and chain P.\n";    
     cout << "REMARK   5 Residue DEN is for density calculated peaks and LAP for laplacian calculated.\n"; 
-    int atomNo = 0;
+    unsigned int atomNo = 0;
     int resNo = 0;
-    for (unsigned int i = 0; i < maxdensity; ++i)
+    unsigned int i = 0;
+    unsigned int chainNo = 0;
+    while (atomNo < maxAtomNo && i < maxDensity)    
     {
         ++atomNo;
         ++resNo;
+        ++i;
+        if (resNo > maxResNo)
+        {
+            resNo = 0;
+            ++chainNo;
+        }
+        string chain = chains[chainNo];
+
         pair<double, VectorThree> densityPair = ccp4->DenLapPeaks[i].first;
         pair<double, VectorThree> laplacianPair = ccp4->DenLapPeaks[i].second;
                 
@@ -54,7 +78,7 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
         cout << helper::getNumberStringGaps(atomNo,0,5) << atomNo;                                  //2. Atom no - 7        
         cout << helper::getWordStringGaps("PK",3) << "PK";                                          //3. Atom type, eg CA, CB...        
         cout << helper::getWordStringGaps("DEN",6) << "DEN";                                        //4. Amino Acid        
-        cout << helper::getWordStringGaps("P",2)<< "P";                                            //5. Chain        
+        cout << helper::getWordStringGaps(chain,2)<< chain;                                            //5. Chain        
         cout << helper::getNumberStringGaps(resNo,0,4) << resNo;                                  //6. Residue number        
         cout << helper::getNumberStringGaps(XYZ.A,3,12) << setprecision(3) << fixed << XYZ.A;       //7. x coord
         cout << helper::getNumberStringGaps(XYZ.B,3,8) << setprecision(3) << fixed << XYZ.B;        //8. y coord
@@ -72,7 +96,7 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
         cout << helper::getNumberStringGaps(atomNo,0,5) << atomNo;                                  //2. Atom no - 7        
         cout << helper::getWordStringGaps("PK",3) << "PK";                                          //3. Atom type, eg CA, CB...        
         cout << helper::getWordStringGaps("LAP",6) << "LAP";                                        //4. Amino Acid        
-        cout << helper::getWordStringGaps("P",2)<< "P";                                            //5. Chain        
+        cout << helper::getWordStringGaps(chain,2)<< chain;                                            //5. Chain        
         cout << helper::getNumberStringGaps(resNo,0,4) << resNo;                                  //6. Residue number        
         cout << helper::getNumberStringGaps(XYZ.A,3,12) << setprecision(3) << fixed << XYZ.A;       //7. x coord
         cout << helper::getNumberStringGaps(XYZ.B,3,8) << setprecision(3) << fixed << XYZ.B;        //8. y coord
@@ -105,7 +129,7 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
         
     cout << "BEGIN_ALLPEAKS\n";
     cout << "Density,C,R,S,X,Y,Z,NearestAtom,Distance\n";
-    for (unsigned int i = 0; i < maxdensity; ++i)
+    for (unsigned int i = 0; i < maxDensity; ++i)
     {
                 
         VectorThree coords = ccp4->DenLapPeaks[i].first.second;
@@ -133,7 +157,7 @@ void CoutReports::coutPeaks(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, int 
 
     cout << "BEGIN_ATOMPEAKS\n";
     cout << "Density,C,R,S,X,Y,Z,NearestAtom,Distance\n";
-    for (unsigned int i = 0; i < maxdensity; ++i)
+    for (unsigned int i = 0; i < maxDensity; ++i)
     {
         VectorThree coords = ccp4->DenLapPeaks[i].first.second;
         double density = ccp4->DenLapPeaks[i].first.first;
@@ -367,6 +391,27 @@ void CoutReports::coutSlices(Ccp4* ccp4, PdbFile* pdb,Interpolator* interp, Vect
     cout << "END_POSITIONSLICE\n";
 
 }
+void CoutReports::coutSamples(Ccp4* ccp4, PdbFile* pdb, Interpolator* interpMap, Interpolator* interpSample)
+{
+    interpSample->addAtoms(pdb->Atoms);
+    vector<float> SyntheticMatrix;
+    for (unsigned int i = 0; i < ccp4->Matrix.size(); ++i)
+    {
+        VectorThree crs = ccp4->getCRS(i);
+        VectorThree XYZ = ccp4->getXYZFromCRS(crs.reverse());
+        double val = interpSample->getValue(XYZ.A, XYZ.B, XYZ.C);
+        double valCheck = interpMap->getValue(XYZ.A, XYZ.B, XYZ.C);
+        SyntheticMatrix.push_back(val);
+        
+    }
+    //now I can replace the ccp4 matrix with the sample matrix
+    ccp4->Matrix = SyntheticMatrix;
+    ccp4->MatrixDiff = SyntheticMatrix;
+    //and then I can find the adjusted pdb files with my new interpolator
+    Interpolator* interpMap2 = new Thevenaz(ccp4->Matrix, ccp4->W01_NX, ccp4->W02_NY, ccp4->W03_NZ);
+
+    coutAtomsAdjusted(ccp4, pdb, interpMap2);
+}
 
 void CoutReports::coutSyntheticIAM(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp)
 {
@@ -518,7 +563,7 @@ void CoutReports::coutSyntheticSlice(string atoms, string model, Interpolator* i
 
 }
 
-void CoutReports::coutText(Ccp4* ccp4)
+void CoutReports::coutText(Ccp4* ccp4,bool cap500)
 {
-    ccp4->coutText();
+    ccp4->coutText(cap500);
 }

@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import io
 import base64
 import os
+import Config as cfg
 
 def userSuccess(email,password):
     email=email.lower()
@@ -35,17 +36,17 @@ def userSuccess(email,password):
     return isok
 
 def userOwnWebPage(email,string,debug=False):
+    import Config as cfg
     isok = True
     email = email.lower()
     #Does the email address contaion an @ sign?
     on_at = email.split('@')
     pageName = email#on_at[0] + "_" + on_at[1]
 
-    directory = '/d/user6/ab002/WWW/Users/'
-    if debug:
-        directory = 'C:/Dev/Github/ProteinDataFiles/LeicippusTesting/'
+    directory = cfg.ResultsPath
 
     filename = directory + pageName + ".html"
+    print(filename)
             
     f = open(filename, "w")
     f.write(string)
@@ -56,7 +57,7 @@ def userOwnWebPage(email,string,debug=False):
     res += '<h3>Results ready for ' + pageName + '</h3>'
     res += '<p><i>This is your private results page, further results will be copied here, it will not be stored on the server so save as needed</i><p>'
     
-    pathname = 'https://student.cryst.bbk.ac.uk/~ab002/Users/' + pageName + '.html'
+    pathname = cfg.ResultsLink + pageName + '.html'
     res += '<div style="background-color:SpringGreen;">'
     res += '<p><b><br/>   Results: </b>'
     res += '<a class="change_link_color" href="' + pathname + '" title="Results" target="_self">Link to your results</a>\n'
@@ -175,8 +176,8 @@ def getBodySlices(pdbCode, username, password,interpMethod, Fos,Fcs,cX,cY,cZ,lX,
     string += '<p><b>Fo and Fc numbers:</b><br/>\n'
     string += 'The main ccp4 file contains 2Fo-Fc<br/>\n'
     string += 'The diff file contains Fo-Fc<br/>\n'
-    string += 'No Fos: <input type="text" name="Fos" value="' + Fos + '" size="2"/><br/>\n'
-    string += 'No Fcs: <input type="text" name="Fcs" value="' + Fcs + '" size="2"/><br/>\n'
+    string += 'No Fos: <input type="text" name="Fos" value="' + str(Fos) + '" size="2"/><br/>\n'
+    string += 'No Fcs: <input type="text" name="Fcs" value="' + str(Fcs) + '" size="2"/><br/>\n'
     string += '</p>\n'
     string += '</div></td>\n'
     string += '<td>\n'
@@ -392,8 +393,8 @@ def getBodyA(pdb, interpNum, dataAsCsv, username, password,cX,cY,cZ,lX,lY,lZ,pX,
     string += '<p><b>Fo and Fc numbers:</b><br/>\n'
     string += 'The main ccp4 file contains 2Fo-Fc<br/>\n'
     string += 'The diff file contains Fo-Fc<br/>\n'
-    string += 'No Fos: <input type="text" name="Fos" value="' + Fos + '" size="2"/><br/>\n'
-    string += 'No Fcs: <input type="text" name="Fcs" value="' + Fcs + '" size="2"/><br/>\n'
+    string += 'No Fos: <input type="text" name="Fos" value="' + str(Fos) + '" size="2"/><br/>\n'
+    string += 'No Fcs: <input type="text" name="Fcs" value="' + str(Fcs) + '" size="2"/><br/>\n'
     string += '</p>\n'
     string += '</div></td>\n\n'
     #string += '<td><div style="text-align: left;"><b>Enter three points to get a density contour slice from the electron density.</b></div>\n'    
@@ -451,7 +452,7 @@ def getBodyRun1(pdb, dataABC, asCsv,D1,D2,D3,D4,debug=False):
         if D1:
             string += '<hr/>\n'
             string += '<h4>1) Peaks visual projection to 3 planes</h4>'
-            string += dataFrameToImages(pdb,dataA,"X","Y","Z","Density","cubehelix_r")            
+            string += dataFrameToImages(pdb,dataA,"X","Y","Z","Density","cubehelix_r")
 
         ### DATA 2 Peaks data as CSV #################################
         #-- https://www.w3schools.com/howto/tryit.asp?filename=tryhow_html_download_link --#
@@ -508,7 +509,7 @@ def getBodyRunText(pdb,data):
     
     
 
-def getBodyRun2(pdb, dataABC,D5,D6,D7,D8,debug=False):
+def getBodyRun2(pdb, dataABC,D5,D6,D7,D8,synthetic=False,debug=False):
     string = ""
     if len(dataABC) > 0:        
         dataA = dataABC[0]#atomsd data
@@ -529,19 +530,39 @@ def getBodyRun2(pdb, dataABC,D5,D6,D7,D8,debug=False):
 
         if D7:
             csvhtml, csvtext = dataFrameToText(dataB)
-            savePseudoFile(pdb, csvtext, "density", debug=debug)
-            pathname = 'https://student.cryst.bbk.ac.uk/~ab002/Peaks/pdbdensity_' + pdb + '.ent'
+
+            if synthetic:
+                savePseudoFile(pdb, csvtext, "syndensity", debug=debug)
+                pathname = cfg.PeaksWebPath + 'pdbsyndensity_' + pdb + '.ent'
+            else:
+                savePseudoFile(pdb, csvtext, "density", debug=debug)
+                pathname = cfg.PeaksWebPath + 'pdbdensity_' + pdb + '.ent'
+
             string += '<hr/>\n'
-            string += '<h4>7) Pdb File adjusted to Density Peaks </h4>'
+            if synthetic:
+                string += '<h4>10) Synthetic density resampled and pdb file adjusted to Density Peaks </h4>'
+            else:
+                string += '<h4>7) Pdb File adjusted to Density Peaks </h4>'
+
+
             string += '<a class="change_link_color" href="' + pathname + '" download='+'pdbdensity_'+pdb + '.ent >Download density adjusted pdb file</a><br/><br/>'
             string += csvhtml
 
         if D8:
             csvhtml, csvtext = dataFrameToText(dataC)
-            savePseudoFile(pdb, csvtext, "laplacian", debug=debug)
-            pathname = 'https://student.cryst.bbk.ac.uk/~ab002/Peaks/pdblaplacian_' + pdb + '.ent'
+            if synthetic:
+                savePseudoFile(pdb, csvtext, "synlaplacian", debug=debug)
+                pathname =  cfg.PeaksWebPath + 'pdbsynlaplacian_' + pdb + '.ent'
+            else:
+                savePseudoFile(pdb, csvtext, "laplacian", debug=debug)
+                pathname = cfg.PeaksWebPath + 'pdblaplacian_' + pdb + '.ent'
+
             string += '<hr/>\n'
-            string += '<h4>8) Pdb File Adjusted to Laplacian Peaks </h4>'
+            if synthetic:
+                string += '<h4>11)Synthetic density resampled and pdb file adjusted to Laplacian Peaks </h4>'
+            else:
+                string += '<h4>8) Pdb File Adjusted to Laplacian Peaks </h4>'
+
             string += '<a class="change_link_color" href="' + pathname + '" download='+'pdblaplacian_'+pdb + '.ent >Download laplacian adjusted pdb file</a><br/><br/>'
             string += csvhtml
 
@@ -739,27 +760,26 @@ def dataFrameToText(df):
     return html,text
 
 def savePeaksFile(pdb, text,text2,debug=False):
-    filenameA = '/d/user6/ab002/WWW/Peaks/peaks_' + pdb + '.csv'
-    filenameB = '/d/user6/ab002/WWW/Peaks/pdbpeaks_' + pdb + '.ent'    
-    if debug:
-        filenameA = 'C:/Dev/Github/ProteinDataFiles/LeicippusTesting/PdbFiles/peaks_' + pdb + '.csv'
-        filenameB = 'C:/Dev/Github/ProteinDataFiles/LeicippusTesting/PdbFiles/pdbpeaks_' + pdb + '.ent'
+    import Config as cfg
+    try:
+        filenameA = cfg.PeaksPath + 'peaks_' + pdb + '.csv'
+        filenameB = cfg.PeaksPath + 'pdbpeaks_' + pdb + '.ent'
 
-    if not os.path.isfile(filenameA) or True:#for now save it always while the format is changing TODO
-        f = open(filenameA, "w")
-        f.write(text)
-        f.close()
+        if not os.path.isfile(filenameA) or True:#for now save it always while the format is changing TODO
+            f = open(filenameA, "w")
+            f.write(text)
+            f.close()
 
-    if not os.path.isfile(filenameB) or True:
-        f = open(filenameB, "w")
-        f.write(text2)
-        f.close()
+        if not os.path.isfile(filenameB) or True:
+            f = open(filenameB, "w")
+            f.write(text2)
+            f.close()
+    except:
+        print("Failed to save peaks file")
 
 def savePseudoFile(pdb, text,type,debug=False):
-    filename = '/d/user6/ab002/WWW/Peaks/pdb' + type + '_' + pdb + '.ent'
-    if debug:
-        filename = 'C:/Dev/Github/ProteinDataFiles/LeicippusTesting/PdbFiles/pdb' + type + '_' + pdb + '.ent'
-
+    import Config as cfg
+    filename = cfg.PeaksPath + 'pdb' + type + '_' + pdb + '.ent'
     if not os.path.isfile(filename) or True:#for now save it always while the format is changing TODO
         f = open(filename, "w")
         f.write(text)

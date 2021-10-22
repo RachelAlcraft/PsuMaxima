@@ -28,6 +28,7 @@ vector<string> helper::stringToVector(string input, string delim)
 
 string helper::getNumberStringGaps(double number, int dp, int length)
 {// we need fixed string intervals for pdb files in ent format	
+	number = round(number*1000)/1000;
 	int missingLength = length;	
 	if (dp > 0)
 	{

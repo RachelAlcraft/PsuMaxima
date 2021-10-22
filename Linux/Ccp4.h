@@ -98,8 +98,8 @@ public:
     int getPosition(int C, int R, int S);
 	VectorThree getCRS(int position);
 	void CreatePeaks(Interpolator* interp, int interpNum);
-	void printText(string directory);
-	void coutText();
+	void printText(string directory,bool cap500);
+	void coutText(bool cap500);
 private:
 	void loadMainFile(string pdbCode, string directory);	
 	void loadDiffFile(string pdbCode, string directory);		
