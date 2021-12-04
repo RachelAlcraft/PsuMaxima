@@ -651,7 +651,7 @@ def getBodyRun3(pdb,dataABC,width,gran,D7):
             string += '<table style="table-layout:fixed;width:95%;display:block;display:table"><tr>'
             string += '<td style="width:33%;">Density</td><td style="width:33%;">Radiant</td><td style="width:33%;">Laplacian</td></tr><tr>'
 
-            dContour = 0.5
+            dContour = 0.95
             lContour = 0.2
             if pdb == "Synthetic":
                 dContour = 0.8
@@ -666,9 +666,14 @@ def getBodyRun3(pdb,dataABC,width,gran,D7):
                 mtxD = addPosToMtx(mtxD,length,minD,dataD)
                 mtxR = addPosToMtx(mtxR,length,minR,dataD)
                 mtxL = addPosToMtx(mtxL,length,minL,dataD)
-            string += matrixToImage(pdb,mtxD,'magma_r',False,minD)
+            #string += matrixToImage(pdb,mtxD,'magma_r',False,minD)
+
+            import matplotlib.colors
+            cmap = matplotlib.colors.ListedColormap(['red', 'green'])
+
+            string += matrixToImage(pdb, mtxD, 'magma_r' , True, minD)
             string += matrixToImage(pdb,mtxR,'bone',False,minR)
-            string += matrixToImage(pdb,mtxL,'magma',False,minL)
+            string += matrixToImage(pdb,mtxL,'magma',True,minL)
 
                                     
             string += '</tr></table>'
@@ -806,7 +811,7 @@ def matrixToImage(pdb,mtx,pal,contour,minVal):
         
     image = ax.imshow(mtx, cmap=my_cmap, interpolation='nearest', origin='lower', aspect='equal',alpha=1,vmin=minVal)
     if contour:
-        image = plt.contour(mtx, colors='SlateGray', alpha=0.55, linewidths=0.3, levels=12)
+        image = plt.contour(mtx, colors='SlateGray', alpha=0.75, linewidths=0.35, levels=20)
     
 
     plt.axis('off')    

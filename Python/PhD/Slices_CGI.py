@@ -47,9 +47,9 @@ pdbCode = '7a6a'
 #pX, pY, pZ = 128.451,164.563,99.464#O
 #lX, lY, lZ = 130.435,164.683,98.532#N+1
 #largetst C:0
-#cX, cY, cZ = 146.596,86.651,140.976#C
-#pX, pY, pZ = 145.472,86.173,140.666#O
-#lX, lY, lZ = 146.919,87.885,140.731#N+1
+c_orig = 146.596,86.651,140.976#C
+o_orig = 145.472,86.173,140.666#O
+n1_orig = 146.919,87.885,140.731#N+1
 #looking at OE2 bond with NA
 #cX, cY, cZ = 147.915,87.284,145.793  #central OE2
 #pX, pY, pZ = 148.495,86.177,145.470  #planar CD
@@ -76,21 +76,18 @@ oe2_adj = 148.161,86.606,145.547         #OE2 adj
 n1_adj = 146.841,87.836,140.653          #N+1 adj
 soe2_adj = 145.548,87.999,149.554        #oe2 adj from S chain
 
-cX, cY, cZ = c_adj
-pX, pY, pZ = na_adj
-lX, lY, lZ = oe2_adj
+lX, lY, lZ = n1_orig
+cX, cY, cZ = c_orig
+pX, pY, pZ = o_orig
 
 
-
-
-
-username = "testuser@slices"
+username = "testuser@slicesOrig"
 password = ""
 Fos = 2
 Fcs = -1
 # Data return choices
-width=14
-gran=0.05
+width=6
+gran=0.025
 
 form = cgi.FieldStorage()
 if 'dataInput' in form:

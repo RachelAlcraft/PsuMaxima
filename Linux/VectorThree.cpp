@@ -99,10 +99,10 @@ double VectorThree::getAngle(VectorThree vec)
 
 double VectorThree::getDotProduct(VectorThree vec)
 {
-            double px = A * vec.A;
-            double py = B * vec.B;
-            double pz = C * vec.C;
-            return px + py + pz;
+    double px = A * vec.A;
+    double py = B * vec.B;
+    double pz = C * vec.C;
+    return px + py + pz;
 }
 string VectorThree::getKey()
 {

@@ -15,6 +15,7 @@
 #include "helper.h"
 #include "VectorThree.h"
 #include <iomanip>
+#include "Logger.h"
 
 
 using namespace std;
@@ -23,7 +24,7 @@ typedef unsigned char uchar;
 
 
 Ccp4::Ccp4(string pdbCode, string type, string directory, int Fos, int Fcs)
-{
+{    
     _type = type;
     _fos = Fos;
     _fcs = Fcs;
@@ -212,6 +213,7 @@ Ccp4::Ccp4(string pdbCode, string type, string directory, int Fos, int Fcs)
 }*/
 void Ccp4::loadMainFile(string pdbCode, string directory)
 {
+    Logger::getInstance().log("Loading ccp4 " + pdbCode);
     PI = 3.14159265;
     _loaded = false;
     _resolution = 0.0;
@@ -258,6 +260,12 @@ void Ccp4::loadMainFile(string pdbCode, string directory)
         float mtx = _wordsDataFloatMain[i];
         Matrix.push_back(mtx);        
         count++;
+        if (i % 500 == 0)
+        {
+            stringstream strc;
+            strc << i << "/" << _wordsDataFloatMain.size();
+            Logger::getInstance().log("..." + strc.str());
+        }
     }
     calculateOrthoMat(w11_CELLA_X, w12_CELLA_Y, w13_CELLA_Z, _w14_CELLB_X, _w15_CELLB_Y, _w16_CELLB_Z);
     calculateOrigin(_w05_NXSTART, _w06_NYSTART, _w07_NZSTART, _w17_MAPC, _w18_MAPR, _w19_MAPS);
@@ -303,9 +311,16 @@ void Ccp4::loadMainFile(string pdbCode, string directory)
     _dimOrder[0] = W01_NX;
     _dimOrder[1] = W02_NY;
     _dimOrder[2] = W03_NZ;
+
+    // Some testing
+    VectorThree test1 = getCRSFromXYZ(VectorThree(0, 0, 0));
+    VectorThree test2 = getXYZFromCRS(test1);
+    VectorThree test3 = getCRSFromXYZ(VectorThree(1, 1, 10));
+    VectorThree test4 = getXYZFromCRS(test3);
 }
 void Ccp4::loadDiffFile(string pdbCode, string directory)
 {
+    Logger::getInstance().log("Loading diff ccp4 " + pdbCode);
     PI = 3.14159265;
     _loaded = false;
     _resolution = 0.0;
@@ -338,6 +353,13 @@ void Ccp4::loadDiffFile(string pdbCode, string directory)
         float mtx = _wordsDataFloatDiff[i];
         MatrixDiff.push_back(mtx);
         count++;
+        if (count % 500 == 0)
+        {
+            stringstream strc;
+            strc << count << "/" << _wordsDataFloatDiff.size();
+            Logger::getInstance().log("..." + strc.str());
+
+        }
     }    
 }
 void Ccp4::createWordsList(int symmetry, int length, int nCnRnS)
@@ -431,14 +453,6 @@ void Ccp4::createWordsList(int symmetry, int length, int nCnRnS)
         word << voxCount << "_VOXEL";//float
         _wordsList.push_back(word.str());
     }
-    
-
-
-
-
-
-
-
 }
 double Ccp4::getResolution()
 {
@@ -574,8 +588,17 @@ void Ccp4::createWordsData(string directory, vector<string>& dataStr, vector<int
 
     infile.open(filename.c_str(), ios::binary | ios::in);    
     unsigned char temp[sizeof(float)];
+    int count = 0;
     while (infile.read(reinterpret_cast<char*>(temp), sizeof(float)))
     {
+        ++count;
+        if (count % 5000 == 0)
+        {
+            stringstream strc;
+            strc << "...word line " << count;
+            Logger::getInstance().log(strc.str());
+        }
+
         string ss(reinterpret_cast<char const*>(temp));
         float sf = reinterpret_cast<float&>(temp);
         int si = reinterpret_cast<int&>(temp);
@@ -778,8 +801,7 @@ void Ccp4::calculateOrthoMat(float w11_CELLA_X, float w12_CELLA_Y, float w13_CEL
     _orthoMat.putValue(0, 2, 0);
     _orthoMat.putValue(0, 2, 1);
     _orthoMat.putValue(w13_CELLA_Z * temp / sin(gamma), 2, 2);
-    _deOrthoMat = _orthoMat.getInverse();
-    //VectorThree XYZ = getXYZFromCRS(10,10,10); DEBUG CODE
+    _deOrthoMat = _orthoMat.getInverse();    
 }
 
 
