@@ -60,17 +60,19 @@ int main(int argc, char* argv[])
     //INPUT = "PEAKS|user_0abc|5|2|-1|";
     //INPUT = "ATOMSDENSITY|7a6a|5|2|-1|";
     //INPUT = "ATOMSADJUSTEDFILE|7a6a|5|2|-1|";
-    //INPUT = "SLICES|1us0|5|0|0|9.373-7.688-15.546|9.5_9.079_14.937|9.64_7.542_16.748|3_0.1";
+    //INPUT = "SLICESFILE|1us0|5|0|0|9.373-7.688-15.546|9.5_9.079_14.937|9.64_7.542_16.748|3_0.1";
     //INPUT = "SYNTHETIC|@CA,9.5,9.079,14.937,1,2.4,1.00,-,-,-,-,-,-,- @C,9.373,7.688,15.546,2,2.6,1.00,-,-,-,-,-,-,- @O,9.64,7.542,16.748,3,2.6,1.00,-,-,-,-,-,-,- |iam|9.373-7.688-15.546|9.5-9.079-14.937|9.64-7.542-16.748|5-0.02";    
     //INPUT = "SYN_CCP4IAM|1ejg|5|2|-1|";
     //INPUT = "SAMPLES|1ejg|5|2|-1|";
     //INPUT = "SAMPLESFILE|7a6a|5|2|-1|";
 
+    INPUT = "SLICESFILE|6zwh|5|1|0|20_0.1|-23.614_5.319_-16.667:-26.679_6.306_-18.075:-21.176_4.092_-17.251";
+
     //INPUT = "SLICESFILE|3nir|5|1|0|20_0.1|9.71_-12.376_15.907:0.975_-15.224_7.167:2.52_-13.584_7.06"; // a sulphuer in the middle
     //INPUT = "SLICESFILE|3nir|5|1|0|5_0.01|10.033_-10.398_12.281:10.727_-9.27_12.088:9.868_-11.242_11.386"; //a peptide bond
     //INPUT = "SLICESFILE|1ejg|5|1|0|5_0.01|10.033_-10.398_12.281:10.727_-9.27_12.088:9.868_-11.242_11.386"; //a peptide bond
     //INPUT = "SYN_CCP4IAMFILE|6eex|5|2|-1|";
-    INPUT = "EMBELLISHFILE|6eex|5|1|0|";
+    //INPUT = "EMBELLISHFILE|6eex|5|1|0|";
     
 
     //Adjusted
@@ -102,6 +104,7 @@ int main(int argc, char* argv[])
     psbuf = resfile.rdbuf();        // get file's streambuf
     std::cout.rdbuf(psbuf);         // assign streambuf to cout
     //##############################
+    Logger::getInstance().log(INPUT);
     
     if (newCOMMAND == COMMAND)
     {
