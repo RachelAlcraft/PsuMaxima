@@ -1,27 +1,27 @@
 #pragma once
 /************************************************************************
 * RSA Created 11.9.21
-* RSA Last updated 16.01.22
+* RSA Updated 16.01.22
 * 
 * Abstract class Interpolator
 * Implementation Nearest: a simple nearest neighbour implementation
-* Implementation Thevenaz: a beta slpine implemnentation taken from http://bigwww.epfl.ch/thevenaz/interpolation/
+* Implementation Thevenaz: a beta spline implemnentation taken from http://bigwww.epfl.ch/thevenaz/interpolation/
 * Implementation Algorithm: not really interpolation but calculating each point theoretically using the IAM model:
-*	References for IAM:		https://phenix-online.org/phenixwebsite_static/mainsite/files/presentations/latest/pavel_maps_2.pdf (p.7)
+*		References for IAM:	https://phenix-online.org/phenixwebsite_static/mainsite/files/presentations/latest/pavel_maps_2.pdf (p.7)
 							https://github.com/project-gemmi/gemmi/blob/master/include/gemmi/dencalc.hpp  
 							https://chem.libretexts.org/Bookshelves/Inorganic_Chemistry/Modules_and_Websites_(Inorganic_Chemistry)/Crystallography/X-rays/CromerMann_coefficients
            
-
 * This class implements different algorithms for interpolation. It is written for an electron density matrix
-* and this class mostly has no knowledge of this and is pure interpolation, with the exception of the Algorithm implementation
-* This could be improved such that the algorithm class could implement a function from elsewhere.
 * 
-* Outside of this interpolation class the electron density needs a firther transformation 
-* from lattice space to real space, but that does not concern the interpolator.
+* Outside of this interpolation class the electron density needs a further transformation from lattice space to real space.
 * 
-* The interpolator primarily returns values and derivatives. 
+* The interpolator returns values and derivatives. 
 * getRadiant is the first derivative, which is the l1 norm of del, the sum of the absolute values fo the first partial derivatives
 * getLaplacian is the more standard second derivative, the sum of the second partial derivatives
+* 
+* There is an algorithm to find the nearest peak within the matrix.
+* getNearestPeakRecursive
+* I considered a gradient descent, but in the end implemented a shrinking box algorithm.
 * 
 ************************************************************************/
 
@@ -95,9 +95,7 @@ protected:
 	vector<double> applyValue3(double val, vector<int> idc, int weight_length);
 	vector<double> applyValue5(double val, vector<int> idc, int weight_length);
 	vector<double> applyValue7(double val, vector<int> idc, int weight_length);
-	vector<double> applyValue9(double val, vector<int> idc, int weight_length);
-	
-
+	vector<double> applyValue9(double val, vector<int> idc, int weight_length);	
 };
 
 class Algorithmic :public Interpolator
