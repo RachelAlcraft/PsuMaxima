@@ -19,8 +19,12 @@ protected:
 	double h;
 public:	
 	Interpolator(vector<float> matrix, int x, int y, int z);	
+	void addMatrix(vector<float> matrix, int x, int y, int z);
 	virtual double getValue(double x, double y, double z) = 0;
 	float getExactValue(int x, int y, int z);
+	int getSize() { return Matrix.size(); }
+	vector<float> getStatsValues();
+	vector<int> getStatsPoses();
 	int getPosition(int x, int y, int z);
 	double getRadiant(double x, double y, double z);
 	double getLaplacian(double x, double y, double z);			

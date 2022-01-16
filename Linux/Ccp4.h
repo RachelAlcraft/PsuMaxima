@@ -1,4 +1,4 @@
-#pragma once
+ #pragma once
 
 /************************************************************************
 * RSA 4.9.21
@@ -88,6 +88,7 @@ public:
 
 public:
 	Ccp4(string pdbCode, string type, string directory, int Fos, int Fcs);	
+	void writeFile(vector<float> newMatrix, string fileName);
 	double getResolution();
 	bool isLoaded();
 	string getPdbCode();	

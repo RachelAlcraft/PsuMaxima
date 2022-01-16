@@ -10,6 +10,20 @@
 
 int main(int argc, char* argv[])
 {
+    /* FULL LIST OF COMMAND AND INPUTS
+    * Inputs are command and piped paramaters
+    * 0 = commands: TEXTCOUT, TEXT500, TEXT, SLICES, PEAKS, ATOMSDENSITY, ATOMSADJUSTEDFILE, SYNTHETIC, SYN_CCP4IAM, SAMPLES, EMBELLISH witha further FILE for file instead of cout output
+    * 1 = pdb code
+    * 2 = interpolation number
+    * 3 = Fos
+    * 4 = Fcs
+    * 5 = image size as width_gap
+    * 6 = points list of central:linear:planar+ cx_cy_cz:lx_ly_lz:px_py_pz+...
+    * 7 = logfile
+    * 8 = pdbDirectory
+    * 9 = ccp4Directory    
+    * 
+    */
     /******   OP SPECIFIC SETTINGS  ***************/
     bool isLinux = false;
     // **** LINUX PANDORA **** //
@@ -66,7 +80,7 @@ int main(int argc, char* argv[])
     //INPUT = "SAMPLES|1ejg|5|2|-1|";
     //INPUT = "SAMPLESFILE|7a6a|5|2|-1|";
 
-    INPUT = "SLICESFILE|6zwh|5|1|0|20_0.1|-23.614_5.319_-16.667:-26.679_6.306_-18.075:-21.176_4.092_-17.251";
+    //INPUT = "SLICESFILE|6zwh|5|1|0|20_0.1|-23.614_5.319_-16.667:-26.679_6.306_-18.075:-21.176_4.092_-17.251";
 
     //INPUT = "SLICESFILE|3nir|5|1|0|20_0.1|9.71_-12.376_15.907:0.975_-15.224_7.167:2.52_-13.584_7.06"; // a sulphuer in the middle
     //INPUT = "SLICESFILE|3nir|5|1|0|5_0.01|10.033_-10.398_12.281:10.727_-9.27_12.088:9.868_-11.242_11.386"; //a peptide bond
@@ -85,17 +99,45 @@ int main(int argc, char* argv[])
     //INPUT = "SLICES|emdb_21995_5a1a|5|2|-1|148.265_93.322_67.859|147.349_93.606_66.761|149.223_94.495_68.019|3_0.1";
     //INPUT = "SLICES|5a1a|5|2|-1|148.265_93.322_67.859|147.349_93.606_66.761|149.223_94.495_68.019|5_0.05";
     //INPUT = "SLICES|emdb_21995_5a1a|5|0|1|148.265_93.322_67.859|147.349_93.606_66.761|149.223_94.495_68.019|10_0.05";
-    
+    //INPUT = "EMBELLISHFILE|3nir|5|1|0|GRIDSIZE|CENTRAL|LINEAR|PLANAR|Csv/";
+    //INPUT = "TEXT500|1aho|5|1|0|GRIDSIZE|CENTRAL|LINEAR|PLANAR|Csv/";
+    //ccp4directory = "C:/Dev/Github/ProteinDataFiles/mtz_data/";
+    //INPUT = "TEXT|1aho|5|-2|1|";
+    INPUT = "DEFORMATIONFILE|6eex|5|2|-1|x|x|C:/Dev/Github/LeucipPipelines/Pipelines/DeformationDensity/1EMData/Data/|C:/Dev/Github/LeucipPipelines/Pipelines/DeformationDensity/1EMData/Data/|C:/Dev/Github/LeucipPipelines/Pipelines/DeformationDensity/1EMData/Data/";
+
+        
     if (argc >= 2)
-        INPUT = argv[1];
-
-
+        INPUT = argv[1];    
     vector<string> inputs = helper::stringToVector(INPUT, "|");
+    
     COMMAND = (string)inputs[0];
     pdbInput = (string)inputs[1];
-
+    if (inputs.size() > 2)
+        string interpNum = (string)inputs[2];        
+    if (inputs.size() > 3)
+        string Fos = (string)inputs[3];
+    if (inputs.size() > 4)
+        string Fcs = (string)inputs[4];
+    if (inputs.size() > 5)
+        string gridSize = (string)inputs[5];
+    if (inputs.size() > 6)
+        string coords = (string)inputs[6];                
+    if (inputs.size() > 7)
+        logdirectory = inputs[7];
+    if (inputs.size() > 8)
+        pdbdirectory = inputs[8];
+    if (inputs.size() > 9)
+        ccp4directory = inputs[9];        
+    
     bool diverted = false;
     string newCOMMAND = Logger::getInstance().init(logdirectory, COMMAND, pdbInput);
+
+    for (int i = 0; i < argc; ++i)
+    {
+        string inp = argv[i];
+        Logger::getInstance().log(inp);
+    }
+
     //##############################
     std::streambuf* psbuf, * backup;
     std::ofstream resfile;
@@ -262,6 +304,10 @@ int main(int argc, char* argv[])
             else if (COMMAND == "EMBELLISH")
             {
                 CoutReports::coutEmbellishPdb(&myCcp4, &myPdb, interp, INTERPNUM);
+            }
+            else if (COMMAND == "DEFORMATION")
+            {
+                CoutReports::coutDeformation(&myCcp4, &myPdb, interp, new Algorithmic());
             }
             else if (COMMAND == "ATOMSDENSITY")
             {

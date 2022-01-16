@@ -1,5 +1,6 @@
 #include "Interpolator.h"
 #include <cmath>
+#include <algorithm>
 
 // ****** ABSTRACT CLASS ****************************************
 Interpolator::Interpolator(vector<float> matrix, int x, int y, int z)
@@ -8,6 +9,15 @@ Interpolator::Interpolator(vector<float> matrix, int x, int y, int z)
 	XLen = x;
 	YLen = y;
 	ZLen = z;
+    h = 0.001;
+}
+
+void Interpolator::addMatrix(vector<float> matrix, int x, int y, int z)
+{
+    Matrix = matrix;
+    XLen = x;
+    YLen = y;
+    ZLen = z;
     h = 0.001;
 }
 
@@ -33,6 +43,40 @@ float Interpolator::getExactValue(int x, int y, int z)
         return Matrix[pos];
     else
         return 0;
+}
+
+vector<float> Interpolator::getStatsValues()
+{// returns min, q1, median,q3,max
+    vector<float> tmpmat = Matrix;    
+    std::sort(tmpmat.rbegin(), tmpmat.rend());
+    float min = tmpmat[0];
+    float max = tmpmat[tmpmat.size()-1];
+    float q1 = tmpmat[int(tmpmat.size() * 0.25)];
+    float q2 = tmpmat[int(tmpmat.size() * 0.5)];
+    float q3 = tmpmat[int(tmpmat.size() * 0.75)];
+    vector<float> stats;
+    stats.push_back(max);
+    stats.push_back(q3);
+    stats.push_back(q2); 
+    stats.push_back(q1); 
+    stats.push_back(min);                 
+    return stats;
+}
+
+vector<int> Interpolator::getStatsPoses()
+{// returns min, q1, median,q3,max
+    vector<float> tmpmat = Matrix;
+    std::sort(tmpmat.rbegin(), tmpmat.rend());    
+    int q1 = int(tmpmat.size() * 0.25);
+    int q2 = int(tmpmat.size() * 0.5);
+    int q3 = int(tmpmat.size() * 0.75);
+    vector<int> stats;
+    stats.push_back(tmpmat.size() - 1);
+    stats.push_back(q3);
+    stats.push_back(q2);
+    stats.push_back(q1);
+    stats.push_back(0);
+    return stats;
 }
 
 double Interpolator::getRadiant(double x, double y, double z)
@@ -568,7 +612,10 @@ double Algorithmic::getValue(double x, double y, double z)
     for (unsigned int i = 0; i < _atoms.size(); ++i)
     {
         Atom atom = _atoms[i];
-        value += atom.getIAMDensity(VectorThree(x, y, z));
+        if (atom.Element != "H")
+        {
+            value += atom.getIAMDensity(VectorThree(x, y, z));
+        }
     }
     if (value > 1000)
     {

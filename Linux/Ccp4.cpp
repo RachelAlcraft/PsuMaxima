@@ -52,8 +52,7 @@ Ccp4::Ccp4(string pdbCode, string type, string directory, int Fos, int Fcs)
             MatrixPeaks.push_back(pair<float, int>(mtx, i));
         
     }
-    Matrix = tmpMatrix;
-
+    Matrix = tmpMatrix;    
 }
 
 /*void Ccp4::loadMainFile(string pdbCode, string directory)
@@ -453,6 +452,51 @@ void Ccp4::createWordsList(int symmetry, int length, int nCnRnS)
         word << voxCount << "_VOXEL";//float
         _wordsList.push_back(word.str());
     }
+}
+void Ccp4::writeFile(vector<float> newMatrix, string tag)
+{
+    ofstream outfile;
+    string filename = _directory + _pdbCode + tag + ".ccp4";
+    outfile.open(filename, ios::out | ios::binary);
+    
+    int symmetry = _wordsDataIntMain[23]; //the length of the symmetry data is held here
+    int length = (int)_wordsDataIntMain.size();
+    int nCnRnS = _wordsDataIntMain[0] * _wordsDataIntMain[1] * _wordsDataIntMain[2];
+
+    if (_wordsList.size() == _wordsDataIntMain.size())
+    {                        
+        int length = _wordsList.size();
+        int end = _wordsList.size();        
+        for (unsigned int i = 0; i < end; ++i)
+        {            
+            if (10 <= i && i < 16)
+                outfile.write((char*)&_wordsDataFloatMain[i], sizeof(float));
+            else if (19 <= i && i < 22)
+                outfile.write((char*)&_wordsDataFloatMain[i], sizeof(float));
+            else if (25 <= i && i < 37)
+                outfile.write((char*)&_wordsDataFloatMain[i], sizeof(float));
+            else if (37 <= i && i < 54)
+                outfile.write((char*)&_wordsDataStrMain[i], sizeof(float));
+            else if (i == 54)
+                outfile.write((char*)&_wordsDataFloatMain[i], sizeof(float));
+            else if (i == 55)
+                outfile.write((char*)&_wordsDataIntMain[i], sizeof(int));
+            else if (56 <= i && i < 256)
+                outfile.write((char*)&_wordsDataStrMain[i], sizeof(float));
+            //symmetry
+            else if (256 <= i && i < length - nCnRnS)
+                outfile.write((char*)&_wordsDataStrMain[i], sizeof(float));
+            //voxels            
+            else if (i < length - nCnRnS)
+                outfile.write((char*)&_wordsDataIntMain[i], sizeof(int));
+            // else they are voxels and we have new ones
+        }
+        for (unsigned int v = 0; v < newMatrix.size(); ++v)
+        {
+            outfile.write((char*)&newMatrix[v], sizeof(float));
+        }
+        
+    }    
 }
 double Ccp4::getResolution()
 {

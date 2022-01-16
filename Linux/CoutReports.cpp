@@ -569,6 +569,136 @@ void CoutReports::coutSyntheticIAM(Ccp4* ccp4, PdbFile* pdb, Interpolator* inter
 
 }
 
+void CoutReports::coutDeformation(Ccp4* ccp4, PdbFile* pdb, Interpolator* interpMap, Interpolator* interpSample)
+{
+    Logger::getInstance().log("coutDeformation");
+    vector<float> orig_stats = interpMap->getStatsValues();
+    vector<int> orig_poses = interpMap->getStatsPoses();
+    cout << "BEGIN_ORIGINAL_STATS\n";
+    cout << "min,q1,q2,q3,max\n";
+    for (unsigned int o = 0; o < orig_poses.size(); ++o)
+    {
+        if (o > 0)
+            cout << ",";
+        cout << orig_poses[o];
+    }
+    for (unsigned int o = 0; o < orig_stats.size(); ++o)
+    {
+        if (o > 0)
+            cout << ",";
+        else
+            cout << "\n";
+        cout << orig_stats[o];
+    }
+    cout << "\n";
+    cout << "END_ORIGINAL_STATS\n";
+    
+    cout << "BEGIN_ORIGINAL\n";
+    cout << "i,j,k,Density\n";
+    cout << ccp4->W01_NX << "," << ccp4->W02_NY << "," << ccp4->W03_NZ << ",Dimensions\n";
+    for (int i = 0; i < ccp4->W01_NX; ++i)
+    {
+        for (int j = 0; j < ccp4->W02_NY; ++j)
+        {
+            for (int k = 0; k < ccp4->W03_NZ; ++k)
+            {
+                VectorThree XYZ = ccp4->getXYZFromCRS(VectorThree(i, j, k).reverse());                
+                double val_orig = interpMap->getValue(XYZ.A, XYZ.B, XYZ.C);
+                double absval = abs(val_orig);
+                if (absval > 0.0001)
+                    cout << i << "," << j << "," << k << "," << val_orig << "\n";
+            }
+        }
+    }
+    cout << "END_ORIGINAL\n";    
+    
+    Logger::getInstance().log("Add atoms");
+    interpSample->addAtoms(pdb->Atoms);
+    vector<float> iam_vals;
+    for (unsigned int i = 0; i < interpMap->getSize(); ++i)
+        iam_vals.push_back(0);
+    cout << "BEGIN_IAM\n";
+    cout << "i,j,k,Density\n";
+    cout << ccp4->W01_NX << "," << ccp4->W02_NY << "," << ccp4->W03_NZ << ",Dimensions\n";
+    for (int i = 0; i < ccp4->W01_NX; ++i)
+    {
+        for (int j = 0; j < ccp4->W02_NY; ++j)
+        {
+            for (int k = 0; k < ccp4->W03_NZ; ++k)
+            {
+                VectorThree XYZ = ccp4->getXYZFromCRS(VectorThree(i, j, k).reverse());
+                double val_syn = interpSample->getValue(XYZ.A, XYZ.B, XYZ.C);     
+                double absval = abs(val_syn);
+                int pos = interpMap->getPosition(i, j, k);
+                VectorThree tmp = ccp4->getCRS(pos);
+                iam_vals[pos] = val_syn;
+                if (absval > 0.0001)
+                    cout << i << "," << j << "," << k << "," << val_syn << "\n";
+                if ((i + j + k) % 100 == 0)
+                {
+                    stringstream ss;
+                    ss << i << "," << j << "," << k;
+                    Logger::getInstance().log(ss.str());
+                }
+            }
+        }
+    }
+    cout << "END_IAM\n";
+    ccp4->writeFile(iam_vals, "_IAM");
+    interpSample->addMatrix(iam_vals, ccp4->W01_NX, ccp4->W02_NY, ccp4->W03_NZ);
+    vector<float> syn_stats = interpSample->getStatsValues();
+    vector<int> syn_poses = interpMap->getStatsPoses();
+    cout << "BEGIN_IAM_STATS\n";
+    cout << "min,q1,q2,q3,max\n";
+    for (unsigned int o = 0; o < syn_poses.size(); ++o)
+    {
+        if (o > 0)
+            cout << ",";
+        cout << syn_poses[o];
+    }
+    for (unsigned int o = 0; o < orig_stats.size(); ++o)
+    {
+        if (o > 0)
+            cout << ",";
+        else
+            cout << "\n";
+        cout << syn_stats[o];
+    }
+    cout << "\n";
+    cout << "END_IAM_STATS\n";
+
+    cout << "BEGIN_DEFORMATION\n";    
+    cout << "i,j,k,Density\n";
+    cout << ccp4->W01_NX << "," << ccp4->W02_NY << "," << ccp4->W03_NZ << ",Dimensions\n";
+    for (int i = 0; i < ccp4->W01_NX; ++i)
+    {
+        for (int j = 0; j < ccp4->W02_NY; ++j)
+        {
+            for (int k = 0; k < ccp4->W03_NZ; ++k)
+            {
+                VectorThree XYZ = ccp4->getXYZFromCRS(VectorThree(i, j, k).reverse());
+                double val_orig = interpMap->getValue(XYZ.A, XYZ.B, XYZ.C);
+                int pos = interpMap->getPosition(i, j, k);
+                double val_syn = iam_vals[pos];                
+                double absval = abs(val_syn+val_orig);                
+                if (absval > 0.0001)
+                {
+                    double diff = val_orig - val_syn; //no attempt to manipulate them yet.
+                    cout << i << "," << j << "," << k << "," << diff << "\n";
+                }
+                if ((i + j + k) % 1000 == 0)
+                {
+                    stringstream ss;
+                    ss << i << "," << j << "," << k;
+                    Logger::getInstance().log(ss.str());
+                }
+            }
+        }
+    }
+    cout << "END_DEFORMATION\n";
+
+}
+
 void CoutReports::coutSyntheticSlices(string atoms, string model, Interpolator* interp, vector<VectorThree> centrals, vector<VectorThree> linears, vector<VectorThree> planars, double width, double gap)
 {
     Logger::getInstance().log("coutSyntheticSlice");

@@ -148,7 +148,7 @@ double Atom::getIAMDensity(VectorThree XYZ)
 
 double Atom::getIAMDensityInternal(VectorThree ABC, VectorThree XYZ, double occupancy)
 {
-	double DISTANCE_CAP = 5;
+	double DISTANCE_CAP = 10;
     /*
         https://www.phenix-online.org/presentations/latest/pavel_maps_2.pdf
         https://github.com/project-gemmi/gemmi/blob/master/include/gemmi/dencalc.hpp
