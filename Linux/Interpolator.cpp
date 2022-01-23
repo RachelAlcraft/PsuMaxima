@@ -182,9 +182,9 @@ Nearest::Nearest(vector<float> matrix, int x, int y, int z):Interpolator(matrix,
 
 double Nearest::getValue(double x, double y, double z)
 {
-    int i = int(x);
-    int j = int(y);
-    int k = int(z);
+    int i = int(round(x));
+    int j = int(round(y));
+    int k = int(round(z));
     return getExactValue(i, j, k);
 }
 // ****** Nearest Neighbour Implementation ****************************************
