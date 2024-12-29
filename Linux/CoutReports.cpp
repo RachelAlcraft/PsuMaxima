@@ -477,7 +477,7 @@ void CoutReports::coutSlice(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, Vect
     VectorThree lll = space.reverseTransformation(linear);    
     VectorThree ppp = space.reverseTransformation(planar);
     ccc = ccc/gap;
-    ccc.A += (double)halfLength;
+    ccc.A += (double)halfLength; 
     ccc.B += halfLength;    
     int x = (int)ccc.A;
     int y = (int)ccc.B;
@@ -500,7 +500,7 @@ void CoutReports::coutSlice(Ccp4* ccp4, PdbFile* pdb, Interpolator* interp, Vect
     ppp.A += (double)halfLength;
     ppp.B += halfLength;    
     x = (int)ppp.A;
-    y = (int)ppp.B;
+    y = (int)ppp.B; 
     val = 1;
     if (abs(ppp.C > 0.01))
         val = 0.5;//non-planar

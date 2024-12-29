@@ -228,7 +228,7 @@ double Thevenaz::getValue(double x, double y, double z)
 
     for (int l = 0; l <= _degree; ++l)
     {
-        xIndex[l] = i++;
+        xIndex[l] = i++; //if 71.1 passed in, for linear, we would want 71 and 72, 
         yIndex[l] = j++;
         zIndex[l] = k++;
     }
@@ -297,23 +297,22 @@ double Thevenaz::getValue(double x, double y, double z)
     //Perform interolation
     /* perform interpolation */
     int splineDegree = _degree;
-    double interpolated = 0.0;
+    double w3 = 0.0;
     for (k = 0; k <= splineDegree; k++)
     {
-        double w1 = 0.0;
+        double w2 = 0.0;
         for (j = 0; j <= splineDegree; j++)
         {
-            double w2 = 0.0;
+            double w1 = 0.0;
             for (i = 0; i <= splineDegree; i++)
             {
-                w2 += xWeight[i] * _coefficients[getPosition(xIndex[i], yIndex[j], zIndex[k])];
+                w1 += xWeight[i] * _coefficients[getPosition(xIndex[i], yIndex[j], zIndex[k])];
             }
-
-            w1 += yWeight[j] * w2;
+            w2 += yWeight[j] * w1;
         }
-        interpolated += zWeight[k] * w1;
+        w3 += zWeight[k] * w2;
     }
-    return interpolated;
+    return w3;
 }
 
 void Thevenaz::createCoefficients()
